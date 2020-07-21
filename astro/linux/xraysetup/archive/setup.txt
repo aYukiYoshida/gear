@@ -1,0 +1,28 @@
+
+Usage: xraysetup [TYPE]
+
+< HEASOFT && HEADAS >
+ heasoft       : heasoft v6.20
+ heasoft616    : heasoft v6.16
+ heasoft617    : heasoft v6.17
+ heasoft618    : heasoft v6.18
+ heasoft619    : heasoft v6.19
+ heasoft620    : heasoft v6.20
+ heasoft623    : heasoft v6.23
+ asca	       : heasoft v6.20
+ suzaku        : heasoft v6.20
+ maxi	       : heasoft v6.20
+ hitomi        : heasoft v6.20 
+ rxte	       : heasoft v6.20
+ integral      : heasoft v6.20
+ swift	       : heasoft v6.20
+ nustar	       : heasoft v6.20
+ nicer	       : heasoft v6.23
+
+ The tools for Einstein, CGRO, HEAO-1, OSO-8, Vela, and ROSAT are supported by HEAsoft ver 6.20. 
+
+< CHANDRA >
+ chandra       : CIAO v4.8
+ ciao          : CIAO v4.8
+ ciao48	       : CIAO v4.8
+
