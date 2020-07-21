@@ -1,0 +1,45 @@
+********************************************************************************
+funtools
+********************************************************************************
+
+
+
+===== Counts in Regions =====
+
+---fundamental script---
+funds9 funcnts "ds9" "x${i}_sky.fits" "physical;circle(775,1013,${r[${j}]})" "" |& cat
+
+
+---example 1---
+
+num11=`seq 1 11`
+r=(5 10 15 20 25 30 35 40 45 50 55)
+
+for i in 0 1 3 ;do
+echo "xis${i}"
+for j in ${num11} ;do
+funds9 funcnts "ds9" "x${i}_sky.fits" "physical;circle(775,1013,${r[${j}]})" "" |& sed -n "/   1/p" |sed "2d" |awk --assign reg="${j}" '{print reg,$2,$3}'
+done
+done
+
+
+---example 2 (calculation counts/sec)---
+
+num11=`seq 1 11`
+r=(5 10 15 20 25 30 35 40 45 50 55)
+xis=(0 1 3)
+exp=(9.966605085438490E+04 9.967005060970783E+04 9.967042707473040E+04)
+
+for i in 1 2 3 ;do
+cat << EOF >! x${xis[${i}]}_tmp
+#xis${xis[${i}]}
+#exposure time = ${exp[${i}]}
+reg counts    error    counts/sec  error
+EOF
+for j in ${num11} ;do
+funds9 funcnts "ds9" "x${xis[${i}]}_sky.fits" "physical;circle(775,1013,${r[${j}]})" "" |& sed -n "/   1/p" |sed "2d" |awk --assign reg="${j}" --assign exposure="${exp[${i}]}" '{print reg,"  "$2,$3,$2/exposure,"   "$3/exposure}' >> x${xis[${i}]}_tmp
+done
+done
+
+
+#EOF#

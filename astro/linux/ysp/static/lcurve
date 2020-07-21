@@ -1,0 +1,15 @@
+################################################################################
+lcurve
+################################################################################
+shellscript : autolcurve.sh 
+
+for id in 100021010 404054010 404055010 ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+cd ${dir}/${id}/hxd/analysis/lc/raw/lcurve
+for i in pin gso ;do
+autolcurve.sh lcfits=${i}_nbg.lc binsize=64 output=${i}_nbg_64s_lc.qdp clobber=yes
+done
+done
+
+
+#EOF#

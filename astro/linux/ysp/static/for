@@ -1,0 +1,31 @@
+********************************************************************************
+for
+********************************************************************************
+FORMAT
+　for var in ??? ;do
+      command 
+  done
+
+
+OPTION
+
+
+
+EXPLAIN
+  forループ構文の例
+
+
+
+EXAMPLE1
+  for i in *s.reg ;do
+    mv ${i} xis0_num_${i%_*reg}_src.reg
+  done
+
+
+EXAMPLE2
+  for i in 0 1 3 ;do
+    mv xis${i}.pha xis${i}_bgd.pha
+  done
+
+
+#EOF#

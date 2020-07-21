@@ -1,0 +1,26 @@
+********************************************************************************
+exposuremap
+********************************************************************************
+
+#FORMAT
+
+
+
+#EXPLAIN
+
+
+
+#OPTION
+
+
+
+#EXAMPLE
+xis=(0 1 2 3)
+attitude=ae101012010.att.gz
+
+for i in ${xis} ;do
+xisexpmapgen x${i}.expmap x${i}.pi ${attitude}
+done
+
+
+#EOF#

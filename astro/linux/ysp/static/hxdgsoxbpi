@@ -1,0 +1,24 @@
+################################################################################
+hxdgsoxbpi
+################################################################################
+================================================================================
+Non GTI filtered 
+================================================================================
+dir=/data09/yyoshida/Data/Suzaku/CenX-3
+id=`basename ${dir}/?????????`
+cd ${dir}/${id}/hxd/analysis
+
+nomrsp=rsp/ae_hxd_gsohxnom_20100524.rsp
+hxdgsoxbpi gsonom_rsp=${nomrsp} groupspec=NO clobber=YES << EOF
+evt/gso_raw.evt.gz
+evt/pse.evt.gz
+evt/gso_nxb.evt.gz
+tmp_
+EOF
+
+rm -f *.rsp 
+mv -f tmp_hxd_gso_sr.pi spec/raw/gso_raw.pi
+mv -f tmp_hxd_gso_nxb.pi spec/raw/gso_nxb.pi
+
+
+#EOF#

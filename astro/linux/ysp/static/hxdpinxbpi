@@ -1,0 +1,27 @@
+################################################################################
+hxdpinxbpi
+################################################################################
+================================================================================
+Non GTI filtered 
+================================================================================
+dir=/data09/yyoshida/Data/Suzaku/CenX-3
+id=`basename ${dir}/?????????`
+cd ${dir}/${id}/hxd/analysis
+
+nomrsp=rsp/ae_hxd_pinhxnome5_20080716.rsp
+fltrsp=rsp/ae_hxd_pinflate5_20080716.rsp
+hxdpinxbpi cxb_fname=CALC cxb_exposure=-1 cxb_randomize=NO \\
+pinnom_rsp=${nomrsp} pinflat_rsp=${fltrsp} groupspec=no clobber=YES << EOF
+evt/pin_raw.evt.gz
+evt/pse.evt.gz
+evt/pin_nxb.evt.gz
+tmp_
+EOF
+mv -f tmp_hxd_pin_sr.pi spec/raw/pin_raw.pi
+mv -f tmp_hxd_pin_bg.pi spec/raw/pin_bkg.pi
+mv -f tmp_hxd_pin_nxb.pi spec/raw/pin_nxb.pi
+mv -f tmp_hxd_pin_cxb.pi spec/raw/pin_cxb.pi
+
+
+
+#EOF#

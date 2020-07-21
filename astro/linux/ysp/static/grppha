@@ -1,0 +1,68 @@
+********************************************************************************
+grppha
+********************************************************************************
+
+===== some region =====
+
+xis=(0 1 2 3)
+reg=src
+regnum=(1 2 3 4 5 6 7 8)
+	      	  
+for i in ${xis} ;do
+for j in ${regnum} ;do
+cat << EOF >! x${i}_${reg}${j}_grp.txt
+x${i}_${reg}${j}.pi 
+!x${i}_${reg}${j}.pi
+RESET GROUPING
+group 0 255 16 256 511 32 512 1023 32 1024 2047 32 2048 4095 128
+group min 50
+exit
+EOF
+done
+done
+
+
+===== some region & some phase =====
+
+xis=(0 1 2 3)
+reg=src
+regnum=(1 2 3 4 5 6 7 8)
+phase=(010_035 035_093 093_010)
+
+for i in ${xis} ;do
+for j in ${regnum} ;do
+for k in ${phase} ;do
+cat << EOF >! x${i}_${reg}${j}_phase${k}_grp.txt
+x${i}_${reg}${j}_phase${k}.pi 
+x${i}_${reg}${j}_phase${k}_grp.pi 
+group 0 255 16 256 511 32 512 1023 32 1024 2047 32 2048 4095 128
+group min 50
+exit
+EOF
+done
+done
+done
+
+
+======================================================
+xis2の有無混在データ
+======================================================
+for id in 100021010 404054010 404055010 ;do
+dir=/home/yyoshida/Data/Suzaku/A0535_262
+cd ${dir}/${id}/xis/analysis/spec/src
+for i in x?_src.pi ;do
+cat << EOF >! ${i%.pi}_grp.txt
+${i}
+!${i}
+RESET GROUPING
+group min 200
+exit
+EOF
+done
+ysp -rg
+mv *grp_log.txt GRPPHALog/
+done
+
+
+
+#EOF#

@@ -1,0 +1,48 @@
+********************************************************************************
+download
+********************************************************************************
+
+
+===== Archive Datas of SUZAKU =====
+
+wgetop='-rL -nH -nv --cut-dirs=4'  ## suzaku first step guide
+wget ${wgetop} URL.....
+
+or
+
+wgetop="-nv -m --passive-ftp -nH --cut-dirs=3 -P ." 
+wget ${wgetop} URL.....
+
+
+or 
+
+
+wgetop='-nv -m -np -nH --cut-dirs=3 -R "index.html*"'  ## https://darts.isas.jaxa.jp/astro/suzaku/getData.html
+wget ${wgetop} URL.....
+
+
+================================================================================
+HXD-NXBイベントファイルのdownload
+================================================================================
+for seqn in 100021010 404054010 404055010 ;do
+url="ftp://legacy.gsfc.nasa.gov/suzaku/data/background/pinnxb_ver2.0_tuned"
+diraz="/data09/yyoshida/Data/Suzaku/A0535_262"
+obsdate=`fkeyprint ${diraz}/${seqn}/auxil/ae${seqn}.hk.gz+0 DATE-OBS|sed -n '/DATE-OBS=/p'|sed -e 's/-/_/g'|awk '{print $2}'|sed 's/.//'|sed 's/.............$//'`
+cd ${diraz}/${seqn}/hxd/event_rp
+wget ${url}/${obsdate}/ae${seqn}_hxd_pinbgd.evt.gz
+done
+
+
+for seqn in 100021010 404054010 404055010 ;do
+url="ftp://legacy.gsfc.nasa.gov/suzaku/data/background/gsonxb_ver2.5"
+diraz="/data09/yyoshida/Data/Suzaku/A0535_262"
+obsdate=`fkeyprint ${diraz}/${seqn}/auxil/ae${seqn}.hk.gz+0 DATE-OBS|sed -n '/DATE-OBS=/p'|sed -e 's/-/_/g'|awk '{print $2}'|sed 's/.//'|sed 's/.............$//'`
+cd ${diraz}/${seqn}/hxd/event_rp
+wget ${url}/${obsdate}/ae${seqn}_hxd_gsobgd.evt.gz
+done
+
+
+
+
+
+#EOF#

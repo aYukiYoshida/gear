@@ -1,0 +1,18 @@
+********************************************************************************
+marfrmf
+********************************************************************************
+
+
+=====rmfとarfのかけ算=====
+
+スペクトル同士を足すときに必要な作業
+
+for i in 2 3  ;do
+for j in 0 2 3 ;do
+marfrmf ac${i}_xi${j}.rmf ac${i}_xi${j}.arf ac${i}_xi${j}.rsp \
+telescop=SUZAKU instrume=XIS${j} filter=NONE DETNAM=NONE clobber="yes"
+done
+done
+
+
+#EOF#

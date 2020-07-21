@@ -1,0 +1,74 @@
+################################################################################
+ximage
+################################################################################
+FORMAT
+
+
+
+EXPLAIN
+
+
+
+OPTION
+
+
+
+EXAMPLE
+
+ref)
+/data08/myoshida/data/suzaku/CygX-3/401011010/xis/event_cl/analysis/20100704/log/xis.log
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+2) イメージの足し合せ
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+## CygOB2のイメージへのリンク
+ln -sf /data08/myoshida/data/suzaku/CygOB2/402030010/xis/event_cl/analysis/20091102/data/x
+is_all.img
+
+mv xis_all.img  cygob2_xisall.img
+
+
+ximage
+read/fits/size=2500/ra=308.21/dec=41.08/rebin=4/cygob2_xisall.img
+save_image
+read/fits/size=2500/rebin=4/tevj2032_xisall.img
+save_image
+read/fits/size=2500/rebin=4/cygx3_xisall.img
+save_image
+
+sum_images/ra=203253/dec=410300
+
+ximage
+read/fits/size=1000/rebin=4/cygob2_xisall.img
+read/fits/size=1000/rebin=4/tevj2032_xisall.img
+sum_images
+save_image
+read/fits/size=1000/rebin=4/cygx3_xisall.img
+sum_images
+write/fits output1.img
+
+ximage
+read/fits/size=800/rebin=4/cygob2_xisall.img
+read/fits/size=800/rebin=4/tevj2032_xisall.img
+sum_images
+save_image
+read/fits/size=800/rebin=4/cygx3_xisall.img
+sum_images
+write/fits output2.img
+
+ximage
+read/fits/size=3000/cygob2_xisall.img
+read/fits/size=3000/tevj2032_xisall.img
+sum_images
+save_image
+read/fits/size=3000/cygx3_xisall.img
+sum_images
+write/fits output3.img
+q
+
+## output3.imgを採用。
+
+
+
+#EOF#

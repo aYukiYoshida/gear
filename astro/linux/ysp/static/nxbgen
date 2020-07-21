@@ -1,0 +1,96 @@
+********************************************************************************
+nxbgen
+********************************************************************************
+Reduction History
+--------------------------------------------------------------------------------
+Date     | Author 
+--------------------------------------------------------------------------------
+20160505 | Y.Yoshida
+--------------------------------------------------------------------------------
+
+
+================================================================================
+xisnxbgen
+================================================================================
+orb=ae101012010.orb.gz 
+att=ae101012010.att.gz
+reg=(0_1 1_2 2_3 3_6)
+
+for j in 1 2 3 4 ;do
+for i in 0 1 2 3 ;do
+cat << EOF >! xis${i}_nxb_${reg[${j}]}.txt
+spec/sp_xis${i}_sci_off_nxb_${reg[${j}]}.pha 
+spec/sp_xis${i}_sci_off.pha
+SKYREG 
+region/soc_${reg[${j}]}_sky.reg 
+${orb}
+${att}
+EOF
+done
+done
+
+for i in xis*nxb*.txt ;do
+xisnxbgen clobber="yes" < ${i} 
+rm ${i} -f
+done
+
+
+================================================================================
+Noisy Pixel Map(ver.20160505)
+================================================================================
+ref)http://www.astro.isas.jaxa.jp/suzaku/analysis/xis/nxb_new2/
+
+dir='/data09/yyoshida/Data/Suzaku/1A1118-61'
+for seq in 403049010 403050010 ;do
+cd ${dir}/${seq}/xis/analysis/spec/src
+
+for x in 0 3 ;do
+pset xisnxbgen nxbevent=$CALDB/data/suzaku/xis/bcf/ae_xi${x}_nxbscion_20160128_rejectnpm.fits
+log=NXBGenLog/x${x}_srcreg_nxbgen.log
+xisnxbgen clobber=yes << EOF|tee ${log}
+x${x}_nxb.pi
+x${x}_src.pi
+SKYREG
+../../reg/src/x${x}_src.reg
+${dir}/${seq}/auxil/ae${seq}.orb.gz
+${dir}/${seq}/auxil/ae${seq}.att.gz
+EOF
+done
+
+for x in 1 ;do
+pset xisnxbgen nxbevent=$CALDB/data/suzaku/xis/bcf/ae_xi${x}_nxbscion_20110602_rejectnpm.fits
+log=NXBGenLog/x${x}_srcreg_nxbgen.log
+xisnxbgen clobber=yes << EOF|tee ${log}
+x${x}_nxb.pi
+x${x}_src.pi
+SKYREG
+../../reg/src/x${x}_src.reg
+${dir}/${seq}/auxil/ae${seq}.orb.gz
+${dir}/${seq}/auxil/ae${seq}.att.gz
+EOF
+done
+done
+
+
+================================================================================
+Noisy Pixel Map(old)
+================================================================================
+for id in 404054010 404055010 ;do
+nxbdir=/data09/yyoshida/Data/Suzaku/XIS/NXBGen
+cd ${dir}/${id}/xis/analysis2/spec/src
+for i in 0 1 3 ;do
+nxbevt=`ls ${nxbdir}/ae_xi${i}_nxbsciof_*_npm.evt`
+gti=../../gti/ae${id}xi${i}_marge.gti
+xisnxbgen clobber=yes nxbevent=${nxbevt} << EOF|tee NXBGENLog/x${i}_nxbgen_log.txt
+x${i}_nxb.pi
+x${i}_src.pi
+SKYREG
+../../region/src/x${i}_src.reg
+../../ae${id}.orb.gz
+../../ae${id}.att.gz
+EOF
+done
+done
+
+
+#EOF#

@@ -1,0 +1,34 @@
+********************************************************************************
+link
+********************************************************************************
+
+
+
+=====複数のファイルのリンク付け=====
+
+for i in ../../../*cl.evt ;do
+ln -sf ${i}
+done
+
+
+for i in /data09/yyoshida/data/gc/moleculer_cloud/mc-a/100027010/xis/event_cl/event/*cl.evt.gz ;do
+ln -sf ${i}
+done
+
+
+for i in /data09/yyoshida/data/gc/moleculer_cloud/mc-a/*/auxil/ae*.att.gz;do
+ln -sf ${i}
+done
+
+
+
+=====lnkal=====
+
+directory内のfileおよびdirectoryすべてをリンクづけするscript
+
+
+Usage : %lnkal "link source directory" "output directory"
+
+
+
+#EOF#

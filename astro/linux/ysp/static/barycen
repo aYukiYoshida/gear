@@ -1,0 +1,84 @@
+################################################################################
+barycen
+################################################################################
+FORMAT
+
+
+
+EXPLAIN
+
+
+
+OPTION
+
+
+================================================================================
+EXAMPLE for ysp script (xis)
+================================================================================
+dir='/data09/yyoshida/Data/Suzaku/1A1118-61'
+
+for seq in 403049010 403050010 ;do
+cd ${dir}/${seq}/xis/event_rp
+orbit=../../auxil/ae${seq}.orb.gz
+RA=`fkeyprint ${orbit}+0 RA_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+DEC=`fkeyprint ${orbit}+0 DEC_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+
+for evt in *_cl_gti_npm.evt ;do 
+cat << EOF >! ${evt%.evt.gz}_barycen.txt
+${evt}
+${orbit}
+${RA}
+${DEC}
+EOF
+done
+done
+
+
+================================================================================
+EXAMPLE for ysp script (hxd)
+================================================================================
+dir='/data09/yyoshida/Data/Suzaku/1A1118-61'
+
+for seq in 403049010 403050010 ;do
+cd ${dir}/${seq}/hxd/event_rp
+orbit=../../auxil/ae${id}.orb.gz
+RA=`fkeyprint ${orbit}+0 RA_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+DEC=`fkeyprint ${orbit}+0 DEC_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+
+for evt in ae${seq}_hxd_gsobgd.evt.gz ae${seq}_hxd_pinbgd.evt.gz ae${seq}hxd_0_gsono_cl.evt.gz ae${seq}hxd_0_pinno_cl.evt.gz ae${seq}hxd_0_pse_pure.evt.gz ;do
+gunzip ${evt}
+cat << EOF >! ${evt%.evt.gz}_barycen.txt
+${evt%.gz}
+${orbit}
+${RA}
+${DEC}
+EOF
+ysp -r bry
+gzip ${evt%.gz}
+done
+done
+
+================================================================================
+EXAMPLE direct command
+================================================================================
+dir=/data09/yyoshida/Data/Suzaku/CenX-3
+id=`basename ${dir}/?????????`
+cd ${dir}/${id}/xis/event_cl
+orbit=${dir}/${id}/auxil/ae${id}.orb.gz
+RA=`fkeyprint ${orbit}+0 RA_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+DEC=`fkeyprint ${orbit}+0 DEC_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+
+for i in *.evt.gz ;do 
+gunzip ${i}
+aebarycen << EOF |tee BarycenLog/${i%.evt.gz}_barycen.log
+${i%.gz}
+${orbit}
+${RA}
+${DEC}
+EOF
+gzip ${i%.gz}
+done
+
+
+
+#EOF#

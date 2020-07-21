@@ -1,0 +1,74 @@
+################################################################################
+hxdgsoxblc
+################################################################################
+================================================================================
+Non energy-filterd light curve vi hxdgsoxblc
+================================================================================
+dir=/data09/yyoshida/Data/Suzaku/CenX-3
+id=`basename ${dir}/?????????`
+cd ${dir}/${id}/hxd/analysis
+hxdgsoxblc binlc=1 clobber=yes synch=yes bkgsub=yes << EOF
+evt/gso_raw.evt.gz
+evt/pse.evt.gz
+evt/gso_nxb.evt.gz
+tmp_
+EOF
+mv -f tmp_hxd_gso_net.lc lc/raw/gso_nbg.lc
+mv -f tmp_hxd_gso_sr.lc lc/raw/gso_raw.lc
+mv -f tmp_hxd_gso_bg.lc lc/raw/gso_nxb.lc
+mv -f tmp_hxd_pse.lc lc/raw/hxd_pse.lc
+
+
+================================================================================
+Energy-divided light curve
+================================================================================
+#GSOのチャンネルとエネルギーの関係
+E=2(PI_SLOW + 0.5)
+
+uplimch=(45 45 72)
+uplime=(90 90 145)
+id=(100021010 404054010 404055010)
+for n in `seq 1 3` ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+cd ${dir}/${id[${n}]}/hxd/analysis
+for i in raw nxb ;do
+cat << EOF >! gso_${i}_extract_evt_phacut_60${uplime[${n}]}_xsel.txt
+
+read event evt/gso_${i}.evt.gz
+./
+set phaname PI_SLOW
+filter pha_cutoff 29 ${uplimch[${n}]}
+show filter
+extract event
+save event evt/tmp_gso_${i}_60${uplime[${n}]}.evt
+no
+exit
+no
+EOF
+done
+ysp -r xsl
+done
+
+det=gso
+uplime=(90 90 145)
+id=(100021010 404054010 404055010)
+for n in `seq 1 3` ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+cd ${dir}/${id[${n}]}/hxd/analysis
+srcevt=evt/tmp_${det}_raw_60${uplime[${n}]}.evt
+nxbevt=evt/tmp_${det}_nxb_60${uplime[${n}]}.evt
+hxdgsoxblc binlc=1 clobber=yes synch=yes bkgsub=yes << EOF
+${srcevt}
+evt/pse.evt.gz
+${nxbevt}
+auto_
+EOF
+mv -f auto_hxd_${det}_net.lc lc/energydiv/auto_${det}_nbg_60${uplime[${n}]}.lc
+mv -f auto_hxd_${det}_sr.lc lc/energydiv/auto_${det}_raw_60${uplime[${n}]}.lc
+mv -f auto_hxd_${det}_bg.lc lc/energydiv/auto_${det}_nxb_60${uplime[${n}]}.lc
+mv -f auto_hxd_pse.lc lc/raw
+rm -f ${srcevt} ${nxbevt}
+done
+
+
+#EOF#

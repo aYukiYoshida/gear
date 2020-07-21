@@ -1,0 +1,225 @@
+********************************************************************************
+arfgen
+********************************************************************************
+FORMAT
+
+
+
+EXPLAIN
+
+
+
+OPTION
+
+
+
+EXAMPLE
+1.arfgen for point source(SKY coordinate)
+2.arfgen for uniform source(SKY coordinate)
+3.arfgen with image fits file(SKY coordinate)
+4.arfgen with image fits file(DET coordinate)
+
+
+================================================================================
+1.arfgen for point source(SKY coordinate)
+================================================================================
+--------------------------------------------------------------------------------
+1-1.standard
+--------------------------------------------------------------------------------
+src_mode=SKYXY # fixed
+numreg=1 # fixed
+reg_mode=SKYREG # fixed
+reg_grp=(`seq 1 1 6`)
+att=../../ae405077010.att.gz
+
+for i in x?_src.reg ;do
+n=${i%_src.reg}
+reg=${i}
+arf=../../rsp/src/${i%.reg}.arf
+srcx=`sed -n 's/circle(//p' ${reg} |awk 'BEGIN { FS = "," } {printf "%f\n" , $1}'`
+srcy=`sed -n 's/circle(//p' ${reg} |awk 'BEGIN { FS = "," } {printf "%f\n" , $2}'`
+cat << EOF >! ${i%.reg}_arfgen.txt
+XIS${n#x} 
+${src_mode}
+${srcx} 
+${srcy} 
+${numreg}
+${reg_mode}
+${reg}
+${arf}
+MIXED 
+400000 
+0.005 
+../../spec/${n}.pi
+../../expmap/x${i}.expmap
+../../spec/${n}.pi 
+${att} 
+../../rsp/${n}.rmf 
+medium 
+EOF
+done
+done
+
+
+--------------------------------------------------------------------------------
+1-2.xis2の有無混在データ
+--------------------------------------------------------------------------------
+for id in 100021010 404054010 404055010 ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+cd ${dir}/${id}/xis/analysis/region/src
+src_mode=SKYXY
+numreg=1 
+reg_mode=SKYREG
+att=../../ae${id}.att.gz
+
+for i in x?_src.reg ;do
+n=${i%_src.reg}
+reg=${i}
+arf=../../rsp/src/${i%.reg}.arf
+srcx=`sed -n 's/circle(//p' ${reg} |awk 'BEGIN { FS = "," } {printf "%f\n" , $1}'`
+srcy=`sed -n 's/circle(//p' ${reg} |awk 'BEGIN { FS = "," } {printf "%f\n" , $2}'`
+cat << EOF >! ${i%.reg}_arfgen.txt
+XIS${n#x} 
+${src_mode}
+${srcx} 
+${srcy} 
+${numreg}
+${reg_mode}
+${reg}
+${arf}
+MIXED 
+400000 
+0.005 
+../../spec/${n}.pi
+../../expmap/${n}.expmap
+../../spec/${n}.pi 
+${att} 
+../../rsp/${n}.rmf 
+medium
+EOF
+done
+done
+
+
+================================================================================
+2.arfgen for uniform source(SKY coordinate)
+================================================================================
+xis=(0 1 2 3)
+rmin=0.0
+rmax=10.0
+numreg=1
+reg_cood=sky
+att=
+
+for i in ${xis} ;do
+cat << EOF >! x${i}_arfgen.txt
+XIS${i} 
+UNIFORM 
+${rmin} 
+${rmax}
+${numreg}
+SKYREG
+../region/x${i}_cal_${reg_cood}.reg
+x${i}_uniform.arf 
+MIXED 
+100000
+0.005 
+../spec/archive/x${i}.pha
+NONE 
+../spec/archive/x${i}.pha
+../../${att} 
+x${i}.rmf 
+medium
+EOF
+done
+
+
+================================================================================
+3.arfgen with image fits file(SKY coordinate)
+================================================================================
+xis=(0 1 2 3)
+op=_sci_off
+numreg=9
+reg=circle
+regcood=sky
+rn=(00_09 09_14 14_18 18_23 23_28 28_34 34_41 41_50 50_62)
+att=ae101012010.att.gz
+
+for i in ${xis} ;do
+cat << EOF >! x${i}_arfgen.txt
+XIS${i} 
+SKYFITS 
+../image/x${i}${op}.fits
+${numreg}
+SKYREG  
+EOF
+done
+for i in ${xis} ;do
+for j in ${reg_grp} ;do
+cat <<EOF >> x${i}_arfgen.txt
+../region/${reg}/x${i}_${reg}${j}_${reg_cood}.reg 
+${reg}/x${i}_${reg}${j}.arf 
+EOF
+done
+done
+for i in ${xis} ;do
+cat << EOF >> x${i}_arfgen.txt
+MIXED 
+400000
+0.005 
+../spec/archive/x${i}${op}.pha 
+../expmap/x${i}_map${op}.fits 
+../spec/archive/x${i}${op}.pha 
+../${att} 
+x${i}${op}.rmf 
+medium
+EOF
+done
+
+
+================================================================================
+4.arfgen with image fits file(DET coordinate)
+================================================================================
+xis=(0 1 2 3)
+op=_sci_off
+numreg=9
+reg=abox
+reg_cood=det
+rn=(1 2 3 4 5 6 7 8 9)
+att=ae101012010.att.gz
+
+for i in ${xis} ;do
+cat << EOF >! x${i}_arfgen.txt
+XIS${i} 
+DETFITS 
+../image/x${i}_det.fits
+${numreg}
+DETREG
+EOF
+done
+for i in ${xis} ;do
+for j in ${rn} ;do
+cat <<EOF >> x${i}_arfgen.txt
+../region/${reg}/x${i}_${reg}${j}_${reg_cood}.reg
+${reg}/x${i}_${reg}${j}.arf 
+EOF
+done
+done
+for i in ${xis} ;do
+cat << EOF >> x${i}_arfgen.txt
+MIXED 
+400000
+0.005 
+../spec/archive/x${i}${op}.pha 
+../expmap/x${i}_map${op}.fits 
+../spec/archive/x${i}${op}.pha 
+../${att} 
+x${i}${op}.rmf 
+medium
+EOF
+done
+
+
+#EOF#
+
+

@@ -1,0 +1,41 @@
+********************************************************************************
+xispi
+********************************************************************************
+
+---------------------------
+sci on(54row)
+---------------------------
+
+x03=ae101012010xi0_0_3x3n066a_cl.evt.gz
+x05=ae101012010xi0_0_5x5n066a_cl.evt.gz
+x13=ae101012010xi1_0_3x3n069b_cl.evt.gz
+x15=ae101012010xi1_0_5x5n069b_cl.evt.gz
+x23=ae101012010xi2_0_3x3n066a_cl.evt.gz
+x25=ae101012010xi2_0_5x5n066a_cl.evt.gz
+x33=ae101012010xi3_0_3x3n066a_cl.evt.gz
+x35=ae101012010xi3_0_5x5n066a_cl.evt.gz
+
+
+hk="/data09/yyoshida/data/SCF_effect/PERSEUS_CLUSTER/xis/hk"
+evt=(${x03} ${x05} ${x13} ${x15} ${x23} ${x25} ${x33} ${x35})
+s=(0 0 1 1 2 2 3 3)
+e=(3 5 3 5 3 5 3 5)
+
+for i in 1 2 3 4 5 6 7 8 ;do
+cat << EOF >! x${s[${i}]}${e[${i}]}_mk.txt
+${evt[${i}]}
+NOCTI/${evt[${i}]%.evt.gz}_nocti.evt
+${hk}/ae101012010xi${s[${i}]}_0.hk.gz
+EOF
+done
+
+#実行
+s=(0 0 1 1 2 2 3 3)
+mk="/data09/yyoshida/data/SCF_effect/makepi_20091111CTI0"
+for i in ${s} ;do  
+for k in 3 5;do
+xispi "makepifile=${mk}/ae_xi${i}_makepi_20091111CTI0.fits" < x${i}${k}_mk.txt 
+done
+done
+
+#EOF#

@@ -1,0 +1,310 @@
+********************************************************************************
+xspec
+********************************************************************************
+
+================================================================================
+xspec fitting window location
+================================================================================
+
+cat << EOF >! winloc.pco
+WIN      1
+LOC  5.00000007E-2 0.30199999 1 0.98000002
+LAB  NX OFF
+WIN      2
+LOC  5.00000007E-2 0.1 1 0.40000001
+EOF
+
+
+================================================================================
+make data set of each xis
+================================================================================
+xis=(0 1 2 3)
+sreg=src
+breg=bgd
+grp=(`seq 1 6`)
+
+for i in ${xis} ;do
+for j in ${grp} ;do
+cat << EOF >>! x${i}_${sreg}_all.xcm
+data ${j}:${j} ../../spec/phase/x${i}_${sreg}_phase${j}_grp.pi
+backgrnd ${j} ../../spec/phase/x${i}_${breg}_phase${j}.pi
+response ${j} ../../rsp/xis${i}.rmf
+arf ${j} ../../rsp/src/x${i}_${sreg}.arf
+EOF
+done
+done
+
+
+================================================================================
+make data set of many region
+================================================================================
+xis=(0 1 2 3)
+sreg=box
+breg=bgd
+grp=(`seq 1 6`)
+
+for i in ${xis} ;do
+for j in ${grp} ;do
+cat << EOF >! x${i}_${sreg}${j}.xcm
+data ../spec/${sreg}/x${i}_${sreg}${j}_grp.pi
+backgrnd ../spec/${sreg}/x${i}_${breg}${j}.pi
+response ../rsp/x${i}.rmf
+arf ../rsp/${sreg}/x${i}_${sreg}${j}.arf
+EOF
+done
+done
+
+
+================================================================================
+make data set of some region & some phase
+================================================================================
+xis=(0 1 2 3)
+sreg=src
+breg=bgd
+regnum=
+phase=(010_035 035_093 093_010)
+
+for i in ${xis} ;do
+for j in ${regnum} ;do
+for k in ${phase} ;do
+cat << EOF >! x${i}_${sreg}${j}.xcm
+data ../../spec/phase/x${i}_${sreg}${j}_phase${k}_grp.pi
+backgrnd ../../spec/phase/x${i}_${breg}${j}_phase${k}.pi
+response ../../rsp/xis${i}.rmf
+arf ../../rsp/src/x${i}_${sreg}${j}.arf
+EOF
+done
+done
+done
+
+
+
+================================================================================
+make int.xcm
+================================================================================
+cat << EOF >! int.xcm
+ignore **:**-1.0 12.0-**
+notice **:1.0
+notice **:12.0
+setplot command win 1
+setplot command rescale 0.9 13.0 1E-05 1E+2
+plot ldata
+EOF
+
+
+================================================================================
+Fitting
+================================================================================
+yspの"rf"オプションにより
+*_xspfit.xcmを読み込んでxspecを実行できる。
+
+model=TBabsPLGaus2EdgeConst
+
+for i in x?_.xcm ;do
+log=log/${model}/${i%.xcm}.txt
+qdp=qdpfile/${model}/${i%.xcm}.qdp
+keV2=keV2unfolded/${model}/${i%.xcm}.qdp
+cat <<EOF >! ${i%.xcm}_xspfit.xcm
+@${i}
+@int.xcm
+@${model}.xcm
+@fit.xcm
+log ${log}
+show all
+
+plot ldata delchi
+exec rm -f ${qdp}
+exec rm -f ${qdp%.qdp}.pco
+@rescal.xcm
+iplot
+we ${qdp}
+quit
+
+plot eeufspec
+exec rm -f ${keV2}
+exec rm -f ${keV2%.qdp}.pco
+@eelocation.xcm
+iplot
+we ${keV2}
+quit
+
+exit
+EOF
+done
+
+
+================================================================================
+extract Fitting parameter value 
+================================================================================
+xis=(0 1 2 3)
+phase=(`seq 1 8`)
+ld="/data09/yyoshida/data/SCF_effect/GX_14/xis/analysis/fit/phase/log_tbabs_copl_gaus2_edge"
+model=tbabs_copl_gaus2_edge
+kw1="TBabs      nH"
+kw2="1    1    1   cutoffpl   PhoIndex"
+kw3="cutoffpl   HighECut keV"
+kw4="12   11    5   edge       MaxTau"
+
+for i in ${xis} ;do
+file=x${i}_continuum.qdp
+cat << EOF >! ${file}
+READ SERR 1 2 3 4 5
+!
+EOF
+for j in ${phase} ;do
+log="${ld}/x${i}_phase${j}_${model}.txt"
+p1=`sed -n "/${kw1}/p" ${log}|awk '{print $7,$9}' ` 
+p2=`sed -n "/${kw2}/p" ${log}|awk '{print $6,$8}' `
+p3=`sed -n "/${kw3}/p" ${log}|awk '{print $7,$9}' `
+p4=`sed -n "/${kw4}/p" ${log}|awk '{print $6,$8}' `
+ph=`sed -n "${j}p" phase.txt`
+echo "${ph} ${p1} ${p2} ${p3} ${p4}" >> ${file}
+done
+cat << EOF >> ${file}
+SKIP ON
+PLOT VAR
+EOF
+done
+
+p1 : nH 
+p2 : Photon Index
+p3 : High Energy Cutoff
+p4 : MaxTau
+
+
+----------------------------------
+two phase
+----------------------------------
+phase=(`seq 1 7`)
+ld="/data09/yyoshida/data/SCF_effect/GX_14/xis+hxd/fit/new/log/TBabsCoplGaus2EdgeConst"
+kw1="1    1   cutoffpl   PhoIndex"
+kw2="2    1   cutoffpl   HighECut   keV"
+kw3="10    4   TBabs      nH         10^22"
+kw4="12    5   edge       MaxTau"
+
+file=continuum.qdp
+cat << EOF >! ${file}
+READ SERR 1 2 3 4 5
+!
+EOF
+for i in 1 2 ;do
+for j in ${phase} ;do
+log="${ld}/phase${j}.txt"
+p1=`sed -n "/${kw1}/p" ${log}|awk '{print $6,$8}' ` 
+p2=`sed -n "/${kw2}/p" ${log}|awk '{print $7,$9}' ` 
+p3=`sed -n "/${kw3}/p" ${log}|awk '{print $7,$9}' `
+p4=`sed -n "/${kw4}/p" ${log}|awk '{print $6,$8}' `
+ph=`sed -n "${j}p" ../phase${i}.txt`
+echo "${ph} ${p1} ${p2} ${p3} ${p4}" >> ${file}
+done
+done
+cat << EOF >> ${file}
+SKIP ON
+PLOT VAR
+EOF
+
+
+================================================================================
+marshal Fitting Result
+================================================================================
+m=TBabsBBr2CoplGaus2EdgeConst
+ffd=/data09/yyoshida/Data/Suzaku/SCF_effect/GX_14/Works/Report/Figure/fitting
+
+for i in 13 ;do
+qdpenv qdpfile/${m}/phase${i}_pin_factor_fix.qdp
+qdp2ps -e qdpfile/${m}/phase${i}_pin_factor_fix.qdp
+mv -f qdpfile/${m}/phase${i}_pin_factor_fix.eps ${ffd}/${m}/
+fitpap log/${m}/phase${i}_pin_factor_fix.txt ${ffd}/${m}/phase${i}_pin_factor_fix.eps report/${m}/phase${i}_pin_factor_fix.tex
+done
+
+
+================================================================================
+marshal Fitting Result NEW !!
+================================================================================
+for i in phase13.xcm phase?.xcm;do
+m=TBabsCPL2Gaus3EdgeConst
+int=${i%.xcm}
+qdpenv qdpfile/${m}/${int}.qdp
+qdp2ps -e qdpfile/${m}/${int}.qdp
+mv -f qdpfile/${m}/${int}.eps report/${m}/fig
+fitpap log/${m}/${int}_ql.txt report/${m}/fig/${int}.eps report/${m}/${int}.tex
+fitpaq -i report/${m}/${int}.tex `seq 20 37` `seq 39 56` `seq 58 75` `seq 77 94`
+ssp -n 2 report/${m}/${int}.ps -o ${int}_out.ps
+done
+
+
+================================================================================
+Fitting plus alpha
+================================================================================
+m=TBabsBBrCoplGaus2EdgeConst
+
+for i in phase13.xcm phase?.xcm ;do
+log=log/${m}/${i%.xcm}_flux_err_eqwidth.txt
+cat <<EOF >! ${i%.xcm}_xspfit.xcm
+@${i}
+@int.xcm
+@${m}.xcm
+renorm 
+fit 100
+show all
+error 1 2 3 4 5 6 7 8 9 12 14 30 45 60
+show all
+set fileID [open ${log} w]
+EOF
+
+for j in 1 2 3 4 5 6 7 8 9 12 14 30 45 60 ;do
+cat << EOF >> ${i%.xcm}_xspfit.xcm
+set par${j} [lindex [tcloutr param ${j}] 0]
+scan [tcloutr error ${j}] "%f%f" lo${j} hi${j}
+puts \$fileID "par${j} \$par${j} [expr \$hi${j}-\$par${j}] [expr \$lo${j}-\$par${j}]"
+EOF
+done
+
+cat << EOF >> ${i%.xcm}_xspfit.xcm
+close \$fileID
+
+flux 2 10 err 100 90
+set fileID [open ${log} a]
+scan [tcloutr flux 1] "%f%f%f" val1 lo1 hi1
+puts \$fileID "flux0210 \$val1 [expr \$hi1-\$val1] [expr \$lo1-\$val1]"
+close \$fileID
+
+flux 15 60 err 100 90
+set fileID [open ${log} a]
+scan [tcloutr flux 4] "%f%f%f" val4 lo4 hi4
+puts \$fileID "flux1560 \$val4 [expr \$hi4-\$val4] [expr \$lo4-\$val4]"
+close \$fileID
+
+flux 2 60 err 100 90
+set fileID [open ${log} a]
+scan [tcloutr flux 4] "%f%f%f" val4 lo4 hi4
+puts \$fileID "flux0260 \$val4 [expr \$hi4-\$val4] [expr \$lo4-\$val4]"
+close \$fileID
+
+eqwidth range 0.5 4 err 100 90
+set fileID [open ${log} a]
+scan [tcloutr eqwidth 1] "%f%f%f" val1 lo1 hi1
+puts \$fileID "ka \$val1 [expr \$hi1-\$val1] [expr \$lo1-\$val1]"
+close \$fileID
+
+eqwidth range 0.5 5 err 100 90
+set fileID [open ${log} a]
+scan [tcloutr eqwidth 1] "%f%f%f" val1 lo1 hi1
+puts \$fileID "kb \$val1 [expr \$hi1-\$val1] [expr \$lo1-\$val1]"
+close \$fileID
+
+set fileID [open ${log} a]
+set chi [lindex [tcloutr stat] 0]
+set dof [lindex [tcloutr dof] 0]
+puts \$fileID "chi dof \$chi \$dof"
+close \$fileID
+
+exit
+Y
+EOF
+done
+
+
+
+#EOF#
+

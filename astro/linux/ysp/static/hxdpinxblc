@@ -1,0 +1,103 @@
+################################################################################
+hxdpinxblc
+################################################################################
+================================================================================
+Non energy-filterd light curve
+================================================================================
+cxbrate=0.02383
+
+dir=/data09/yyoshida/Data/Suzaku/CenX-3
+id=`basename ${dir}/?????????`
+cd ${dir}/${id}/hxd/analysis
+hxdpinxblc binlc=1 cxb_rate=${cxbrate[${i}]} cxb_err_mode=phot clobber=yes synch=yes bkgsub=yes << EOF
+evt/pin_raw.evt.gz
+evt/pse.evt.gz
+evt/pin_nxb.evt.gz
+tmp_
+EOF
+mv -f tmp_hxd_pin_net.lc lc/raw/pin_nbg.lc
+mv -f tmp_hxd_pin_sr.lc lc/raw/pin_raw.lc
+mv -f tmp_hxd_pin_bg.lc lc/raw/pin_nxb.lc
+mv -f tmp_hxd_pse.lc lc/raw/hxd_pse.lc
+
+
+================================================================================
+energy-divided light curve
+================================================================================
+#PINのチャンネルとエネルギーの関係
+E=0.375*(PI_PIN+1.0)[keV]
+
+for id in 100021010 404054010 404055010 ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+cd ${dir}/${id}/hxd/analysis
+for i in raw nxb ;do
+cat << EOF >! pin_${i}_xsel.txt
+
+read event evt/pin_${i}.evt.gz
+./
+set PHANAME PI_PIN
+filter pha_cutoff 39 159 
+show filter
+extract event
+save event evt/tmp_pin_${i}_1560.evt
+no
+clear pha_cutoff
+
+set PHANAME PI_PIN
+filter pha_cutoff 39 66 
+show filter
+extract event
+save event evt/tmp_pin_${i}_1525.evt
+no
+clear pha_cutoff
+
+set PHANAME PI_PIN
+filter pha_cutoff 66 159 
+show filter
+extract event
+save event evt/tmp_pin_${i}_2560.evt
+no
+clear pha_cutoff
+
+exit
+no
+EOF
+done
+ysp -r xsl
+done
+
+
+det=pin
+id=(100021010 404054010 404055010)
+rng=(1560 1525 2560)
+cxbrate100021010=(0.017 0.013 0.0038)
+cxbrate404054010=(0.016 0.012 0.0037)
+cxbrate404055010=(0.016 0.012 0.0037)
+array(){          
+eval val='${cxbrate'$1'['$2']}'
+echo ${val}
+}
+
+for i in `seq 1 3` ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+cd ${dir}/${id[${i}]}/hxd/analysis
+for n in `seq 1 3` ;do
+srcevt=evt/tmp_${det}_raw_${rng[${n}]}.evt
+nxbevt=evt/tmp_${det}_nxb_${rng[${n}]}.evt
+rate=`array ${id[${i}]} ${n}`
+hxdpinxblc binlc=1 cxb_rate=${rate} cxb_err_mode=phot clobber=yes synch=yes bkgsub=yes << EOF
+${srcevt}
+evt/pse.evt.gz
+${nxbevt}
+auto_
+EOF
+mv -f auto_hxd_${det}_net.lc lc/energydiv/auto_${det}_nbg_${rng[${n}]}.lc
+mv -f auto_hxd_${det}_sr.lc lc/energydiv/auto_${det}_raw_${rng[${n}]}.lc
+mv -f auto_hxd_${det}_bg.lc lc/energydiv/auto_${det}_nxb_${rng[${n}]}.lc
+mv -f auto_hxd_pse.lc lc/raw
+rm -f ${srcevt} ${nxbevt}
+done
+done
+
+
+#EOF#
