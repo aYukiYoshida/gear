@@ -1,0 +1,3 @@
+[submodule "astro/linux/xisscfeffect"]
+	path = astro/linux/xisscfeffect
+	url = git@github.com:aYukiYoshida/xisscfeffect.git
