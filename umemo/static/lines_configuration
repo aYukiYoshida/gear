@@ -1,0 +1,69 @@
+Lines Configuration
+
+H-like  Ka Resonance line	   (5a) 1s-2p 2S1/2-2P3/2   (2p~^2P_{3/2} - 1s~^2S_{1/2})
+H-like							    (2s~^2S_{1/2} - 1s~^2S_{1/2})
+H-like  Ka Resonance line	   (5b) 1s-2p 2S1/2-2P1/2   (2p~^2P_{1/2} - 1s~^2S_{1/2})
+H-like  Kb				1s-3p 2S1/2-2P3/2   (3p~^2P_{3/2} - 1s~^2S_{1/2})
+H-like  Kb				1s-3p 2S1/2-2P1/2   (3p~^2P_{1/2} - 1s~^2S_{1/2})
+H-like	La				3[s,p]-2[s,p] 2[S,P][1/2,3/2]-2[S,P][1/2,3/2]
+He-like Ka Resonance line	   (w)  1s1s-1s2p 1S-1P     (1s2p~^1P_{1} - 1s^2~^1S_{0})
+He-like Ka Intercombination line   (x)  1s1s-1s2p 1S-3P2    (1s2p~^3P_{2} - 1s^2~^1S_{0})
+He-like							    (1s2s~^1S_{0} - 1s^2~^1S_{0})
+He-like Ka Intercombination line   (y)  1s1s-1s2p 1S-3P1    (1s2p~^3P_{1} - 1s^2~^1S_{0})
+He-like Ka Forbidden line	   (z)  1s1s-1s2s 1S-3S	    (1s2s~^3S_{1} - 1s^2~^1S_{0})
+He-like Kb				1s1s-1s3p 1S-1P1    (1s3p~^1P_{1} - 1s^2~^1S_{0})
+He-like	La				1s3[s,p,d]-1s2[s,p] [3,1][S,P,D][0-4]-[3,1][S,P][0-2]
+Li-like Ka Satellite line	   (a)  1s1s2p-1s2p2p 2P3/2-2P3/2
+Li-like Ka Satellite line	   (j)  1s1s2p-1s2p2p 2P3/2-2D5/2
+Li-like Ka Satellite line	   (k)  1s1s2p-1s2p2p 2P1/2-2D3/2
+Li-like Ka Satellite line	   (m)  1s1s2p-1s2p2p 2P-2S1/2
+Li-like Ka Inner-shell excltation  (q)  1s1s2s-1s2p2s 2S1/2-1P3/2
+Li-like Ka Inner-shell excltation  (r)  1s1s2s-1s2p2s 2S1/2-1P1/2
+Li-like Ka Inner-shell excltation  (t)  1s1s2s-1s2p2s 2S1/2-3P1/2
+
+抽出コマンド
+	echo "H-like  Ka" ; mman lines_energy_iron | grep "2[s,p]~" | grep "1s~"
+	echo "H-like  Kb" ; mman lines_energy_iron | grep "3[s,p]~" | grep "1s~"
+        echo "H-like  La" ; mman lines_energy_iron | grep "3[s,p]~" | grep "2[s,p]~" | grep "[1,3]/2"
+	echo "He-like Ka" ; mman lines_energy_iron | grep "1s2[s,p]" | grep "1s^2"
+	echo "He-like Kb" ; mman lines_energy_iron | grep "1s3[s,p]" | grep "1s^2"
+	echo "He-like La" ; mman lines_energy_iron | grep "1s3[s,p,d]" | grep "1s2[s,p]"
+
+量子数
+	n  : 主量子数	    (principal quantum number) 電子のエネルギー状態を指定
+	殻(Shell)      = K殻(1),L殻(2),M殻(3)
+	l  : 方位量子数	    (azimuthal quantum number) 副殻(Subshell)の指定
+	副殻(Subshell) = s(0),p(1),d(2),f(3),g(4),h(5),i(6),...,n-1
+	m  : 磁気量子数	    (magnetic quantum number)  起動(Orbital)の方向を指定
+	起動(Orbital)  = -l 〜 l
+	ms : スピン量子数   (spin quantum number)      電子の自転(Spin)の向き
+	自転(Spin)     = +1/2, -1/2
+
+表記
+	2S+1   (Parity)
+	     L
+	       J
+
+	L (Total Orbital Angular Momentum) = S(0),P(1),D(2),F(3),G(4),H(5),I(6),...
+	S (Spin Parameter)                 = 0 or 1
+	J (?)                              = L + S
+        2S+1                               = Number of m_{S} value
+	Parity				   = +1(Even," ") or -1(Oddness,"O")
+
+	The Even or Oddness of the sum_{i} and l_{i} (Since the sum of the l_{i} for
+	a closed shell is even, we may restrict the sum to incomplete shells.)
+
+        He-like ion                                 1          1
+	Resonance line        (w)          : 1s^{2}  S  - 1s2p  P
+                                                      0          1
+
+        He-like ion                                 1          3
+	Intercombination line (x,y)        : 1s^{2}  S  - 1s2p  P 
+                                                      0          2,1
+
+        He-like ion                                 1          3
+	Forbidden line        (z)          : 1s^{2}  S  - 1s2s  S   
+                                                      0          1
+
+参考文献
+	http://www-x.phys.metro-u.ac.jp/~furusho/emissionline/line.html

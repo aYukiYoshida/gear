@@ -1,0 +1,23 @@
+################################################################################
+chown
+################################################################################
+FORMAT
+
+    chown [OPTION]... [OWNER][:[GROUP]] FILE...
+
+
+EXPLAIN
+    ファイル/ディレクトリの権限の変更
+
+
+OPTION
+    -R    サブディレクトリ/内包するファイルに対しても一括して権限の変更
+    -h	  シンボルリンクの権限の変更(リンク元には影響しない)
+
+EXAMPLE
+    chown -hR matsui:gaints bigegg/	bigeggと内包するファイルの所有者をmatsui/所有グループをgaintsに指定する.
+    chown matsui: rule.txt  		rule.txtの所有者をmatsui/所有グループをmatsuiのログイングループに指定する.
+    chown :gaints nenpou.txt		nenpou.txtの所有グループをgaintsに指定する.
+
+
+#EOF#

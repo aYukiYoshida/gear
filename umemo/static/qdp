@@ -1,0 +1,317 @@
+********************************************************************************
+qdp
+********************************************************************************
+
+================================================================================
+LABEL
+================================================================================
+	
+PLT> lab 1 vie wx wy		view pointでのラベルの座標指定(0<wx<1,0<wy<1)
+PLT> lab 1 "\fNsample"	 	lab1のみNormal Font
+PLT> lab 1 "\fRsample"	 	lab1のみRoman Font
+PLT> lab 1 "\fIsample"	 	lab1のみItalic Font
+PLT> lab 1 "\fSsample"	 	lab1のみScript Font
+
+
+================================================================================
+MODEL FITTING
+================================================================================
+PLT> FIT PLOT 100		モデルのプロットをデータのプロットの間の外側にも表示
+     	      			モデルの線が滑かになって綺麗
+PLT> LAB PA OFF                 パラメータの非表示
+PLT> COL 13 ON MOD		モデルのプロットの色変更
+PLT> LS 4 ON MOD		モデルのプロットの線種変更
+
+
+
+================================================================================
+WINDOW
+================================================================================
+# WINDOW separate 全window location対応
+WIN      ?
+Vie  0.100000001 0.150000006 0.899999976 0.899999976
+
+num=3
+for n in $(seq ${num});do
+cat << EOF
+WIN ${n}
+Vie 0.100000001 0.150000006 0.899999976 0.899999976
+EOF
+done
+
+
+================================================================================
+LOCATION
+================================================================================
+#case. 2window
+
+WIN      1
+LOC  0 0.449999958 1 0.949999988
+LAB  NX OFF
+WIN      2
+LOC  0 0.0499999896 1 0.550000012
+WIN  ALL
+
+
+#case. 3window
+
+WIN      1
+LOC  0 0.599999964 1 0.933333278
+LAB  NX OFF
+WIN      2
+LOC  0 0.333333313 1 0.666666627
+LAB  NX OFF
+WIN      3
+LOC  0 0.0666666627 1 0.400000006
+WIN  ALL
+
+
+#case. 4window
+
+WIN      1
+LOC  0 0.674999952 1 0.924999952
+LAB  NX OFF
+WIN      2
+LOC  0 0.474999964 1 0.724999964
+LAB  NX OFF
+WIN      3
+LOC  0 0.274999976 1 0.524999976
+LAB  NX OFF
+WIN      4
+LOC  0 0.0749999955 1 0.324999988
+WIN  ALL
+
+
+#case. 5window
+
+WIN      1
+LOC  0 0.719999969 1 0.919999957
+LAB  NX OFF
+WIN      2
+LOC  0 0.560000002 1 0.75999999
+LAB  NX OFF
+WIN      3
+LOC  0 0.400000006 1 0.599999964
+LAB  NX OFF
+WIN      4
+LOC  0 0.239999995 1 0.439999998
+LAB  NX OFF
+WIN      5
+LOC  0 0.0799999982 1 0.280000001
+WIN  ALL
+
+
+#case. 6window
+
+WIN      1
+LOC  0 0.74999994 1 0.916666627
+LAB  NX OFF
+WIN      2
+LOC  0 0.616666615 1 0.783333302
+LAB  NX OFF
+WIN      3
+LOC  0 0.483333319 1 0.649999976
+LAB  NX OFF
+WIN      4
+LOC  0 0.349999994 1 0.516666651
+LAB  NX OFF
+WIN      5
+LOC  0 0.216666654 1 0.383333325
+LAB  NX OFF
+WIN      6
+LOC  0 0.0833333284 1 0.25
+WIN  ALL
+
+
+#case. 7window
+
+WIN      1
+LOC  0 0.771428525 1 0.91428566
+LAB  NX OFF
+WIN      2
+LOC  0 0.657142818 1 0.799999952
+LAB  NX OFF
+WIN      3
+LOC  0 0.542857111 1 0.685714245
+LAB  NX OFF
+WIN      4
+LOC  0 0.428571403 1 0.571428537
+LAB  NX OFF
+WIN      5
+LOC  0 0.314285696 1 0.45714283
+LAB  NX OFF
+WIN      6
+LOC  0 0.199999988 1 0.342857122
+LAB  NX OFF
+WIN      7
+LOC  0 0.0857142806 1 0.22857143
+WIN  ALL
+
+
+#case. 8window
+
+WIN      1
+LOC  0 0.78749996 1 0.91249996
+LAB  NX OFF
+WIN      2
+LOC  0 0.6875 1 0.8125
+LAB  NX OFF
+WIN      3
+LOC  0 0.58749998 1 0.71249998
+LAB  NX OFF
+WIN      4
+LOC  0 0.48749998 1 0.61250001
+LAB  NX OFF
+WIN      5
+LOC  0 0.38749999 1 0.51249999
+LAB  NX OFF
+WIN      6
+LOC  0 0.28749999 1 0.41249999
+LAB  NX OFF
+WIN      7
+LOC  0 0.1875 1 0.3125
+LAB  NX OFF
+WIN      8
+LOC  0 8.74999985E-2 1 0.21250001
+WIN  ALL
+
+
+#a thick window and a thin window for XSPEC
+
+WIN      1
+LOC  5.00000007E-2 0.30199999 1 0.98000002
+LAB  NX OFF
+WIN      2
+LAB  F
+LOC  5.00000007E-2 0.1 1 0.40000001
+WIN  ALL
+
+
+#a thick window and 2 thin window for XSPEC
+
+WIN     1
+LOC  5.00000007E-2 0.351000011 1 0.960000217
+LAB  NX OFF
+WIN     2
+LOC  5.00000007E-2 0.234999999 1 0.432000011
+LAB  NX OFF
+LAB  F
+WIN     3
+LOC  5.00000007E-2 7.5000003E-2 1 0.273999989
+LAB  F
+WIN  ALL
+
+
+#a thick window and 3 thin window for XSPEC
+
+WIN     1
+LOC  0 0.488000005 1 0.982499957
+LAB  NX OFF
+WIN     2
+LOC  0 0.375999987 1 0.555999994
+LAB  NX OFF
+LAB  F
+WIN     3
+LOC  0 0.231999993 1 0.412
+LAB  NX OFF
+LAB  F
+WIN     4
+LOC  0 8.74999985E-2 1 0.267500013
+LAB  F
+WIN  ALL
+
+
+#a thick window and 4 thin window for XSPEC
+
+WIN     1
+LOC  0 0.483999997 1 0.982499957
+LAB  NX OFF
+WIN     2
+LOC  0 0.412 1 0.546999991
+LAB  NX OFF
+LAB  F
+WIN     3
+LOC  0 0.30399999 1 0.43900001
+LAB  NX OFF
+LAB  F
+WIN     4
+LOC  0 0.195999995 1 0.331
+LAB  NX OFF
+LAB  F
+WIN     5
+LOC  0 8.74999985E-2 1 0.222500011
+LAB  F
+WIN  ALL
+
+
+#a thick window and 5 thin window for XSPEC
+
+WIN     1
+LOC  0 0.557500005 1 0.982499957
+LAB  NX OFF
+WIN     2
+LOC  0 0.487499982 1 0.612500012
+LAB  NX OFF
+LAB  F
+WIN     3
+LOC  0 0.387499988 1 0.512499988
+LAB  NX OFF
+LAB  F
+WIN     4
+LOC  0 0.287499994 1 0.412499994
+LAB  NX OFF
+LAB  F
+WIN     5
+LOC  0 0.1875 1 0.3125
+LAB  NX OFF
+LAB  F
+WIN     6
+LOC  0 8.74999985E-2 1 0.212500006
+LAB  F
+WIN  ALL
+
+
+#a thick window and 7 thin window for XSPEC
+WIN      1
+LOC  5.00000007E-2 0.61000001 1 0.96000022
+LAB  NX OFF
+WIN      2
+LOC  5.00000007E-2 0.55500001 1 0.65499997
+LAB  NX OFF
+LAB  F
+WIN      3
+LOC  5.00000007E-2 0.47499999 1 0.57499999
+LAB  NX OFF
+LAB  F
+WIN      4
+LOC  5.00000007E-2 0.39500001 1 0.495
+LAB  NX OFF
+LAB  F
+WIN      5
+LOC  5.00000007E-2 0.315 1 0.41499999
+LAB  NX OFF
+LAB  F
+WIN      6
+LOC  5.00000007E-2 0.235 1 0.33500001
+LAB  NX OFF
+LAB  F
+WIN      7
+LOC  5.00000007E-2 0.155 1 0.255
+LAB  NX OFF
+LAB  F
+WIN      8
+LOC  5.00000007E-2 7.5000003E-2 1 0.175
+LAB  F
+WIN  ALL
+
+
+================================================================================
+HARDCOPY
+================================================================================
+
+PLT>hard sample.ps/vps		Vertical postscript(白黒)
+PLT>hard sample.ps/vcps		Vertical postscript(カラー)
+
+
+
+#EOF#

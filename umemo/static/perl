@@ -1,0 +1,63 @@
+
+マニュアル
+	perldoc 
+	man perlfunc
+	man perldata
+	ls /usr/local/man/man1/perl*
+	less ~sakano/edu/perl/Perl5.memo
+
+検索
+find `perl -e 'print "@INC"'` -name "*.pm" -print
+
+********** perl *************
+
+manual	: % perldoc
+	  % man perlfunc
+	  % man perldata
+	  % ls /usr/local/man/man1/perl* で確認すべし
+	  % less ~sakano/edu/perl/Perl5.memo
+
+0 -- 偽、それ以外--正、-------- 正常終了 0
+
+演算子	: <= == <=> for数字   le lt eq ne cmp for文字列
+<>	: $1+$2+... or <STDIN>
+@argv	: 引数の個数
+
+◇メタ文字
+\s	: 空白一文字				\S	: 空白文字以外
+\w	: 英数字、「_」のうち一文字		\W	: それ以外
+\d	: 数字一文字				\D	: それ以外
+\0	: ヌル文字	\ddd	: ８進数表現	\xdd	: 16進数表現
+\n	: 改行		\r	: 復帰		\t	: タブ
+\f	: 改ページ	\b	: 後退
+
+◇ループ
+last(Cのbreak), redo(continue、判定を実行しない), next(Cのcontinue)
+
+◇プリント
+print <<"EOF";
+ うんたらかんたら
+EOF
+
+◇比較
+== : 数値比較			eq : 文字比較
+-e "file"	: file は、必ず"" or '' で囲むこと!!
+
+◇正規表現
+数字を完全に表す	/^([+\-]?)(\d+|\d*\.\d+|\d+\.)([Ee][+\-]?\d+)?$/
+"$"をそのまま扱う(\Q)	$_="abc\$cde";$pattern="\$cd";s/\Q$pattern//;
+
+◇perl4 と perl5
+1 [\S\s]*  : perl4 ではダメ(\S の方がなぜか解釈されない)。perl5ならOK。
+  (\s|\S)* ならどちらでもOK
+2 &sub($block);sub{local($block);$block=$_[0];}
+  がperl4では通用しない。つまり、localizeされていない。perl5 ならOK。
+
+◇連想配列
+  $option{$index, 'nanika'} は、正しく働かなかった!!
+
+◇eval
+  $dis='-e "dis.com"'; print "hen\n" if (eval($dis));
+
+◇sortについて (高速ソート)
+  ftp://ftp.digital.com/pub/plan/perl/CPAN/doc/FMTEYEWTK/sort.html

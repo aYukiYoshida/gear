@@ -1,0 +1,87 @@
+********************************************************************************
+method_of_scf_effect_correct
+********************************************************************************
+
+
+--------------------------------------------------------------------------------
+
+1, gcorphaを使って、channelをずらす。
+
+gcorpha *.pha *_gcor.pha gcor.dat
+
+
+「gcor.dat」に、
+0 100 +1
+100 200 +2
+　　・
+　　・
+のように記述しておく。(一応、~todoroki/bin/gcor.sh 100と打てば、上記した内容のgcor.datが作成される。 )
+
+→1800channnelが+16channleになるように補正される。
+
+※この方法でできた空きchannnelを埋めなくてはならない。その手順を以下に記載する。
+
+--------------------------------------------------------------------------------
+
+2, fdumpでfitsファイルの内容をASCIIコードのファイルに落とす。
+
+fdump *.pha *.dat prhead=no
+
+--------------------------------------------------------------------------------
+
+3, sed等で、データ部分(チャンネル0~4096まで)を抜き出す。
+
+--------------------------------------------------------------------------------
+
+4, 空きchannel前後のcount数の平均値を、空きchannelに入れる。
+
+awk '(NR>=5)&&(NR<=4100){print  $2, $3, $4, $5}' *.dat ]]> *_sh.dat                      / *.datの一列目を除いた。
+
+
+awk '{ch[NR]=$1} {counts[NR]=$2} {cerr[NR]=$3} {qual[NR]=$4} END {for(i=1;i<400;i++){print ch[i], counts[i], cerr[i], qual[i]} for(i=400;i<2400;i++){if((counts[i+1]-counts[i])>(counts[i+a1]-1)){counts[i]=(counts[i+1]+counts[i-1])/2}{print ch[i], counts[i], cerr[i], qual[i]}} for(i=2400;i<5000;i++){print ch[i], counts[i], cerr[i], qual[i]}} ' *_sh.dat  > *_fill_gap.dat                       / 前後のカウント数の平均値を代入
+--------------------------------------------------------------------------------
+
+
+5, fitsファイルに戻す
+
+fcreate cd.dat *fill_gap.dat headfile=head.dat *.pha extname="SPECTRUM"
+
+「cd.datの中身」
+CHANNEL I
+COUNTS J count
+SYS_ERR E
+QUALITY I
+
+
+「head.datの中身」
+TLMAX1  =                 4095 / Highest legal channel number
+TELESCOP= 'SUZAKU  '           / mission/satellite name
+INSTRUME= 'XIS0    '           / instrument/detector name
+FILTER  = 'NONE    '           / filter in use
+EXPOSURE=         7.023137E+03 / exposure (in seconds)
+AREASCAL=         1.000000E+00 / area scaling factor
+BACKFILE= 'none    '           / associated background filename
+BACKSCAL=         2.611711E-02 / background file scaling factor
+CORRFILE= 'none    '           / associated correction filename
+CORRSCAL=         1.000000E+00 / correction file scaling factor
+RESPFILE= 'none    '           / associated redistrib matrix filename
+ANCRFILE= 'none    '           / associated ancillary response filename
+PHAVERSN= '1992a   '           / obsolete
+DETCHANS=                 4096 / total number possible channels
+CHANTYPE= 'PI      '           / channel type (PHA, PI etc)
+POISSERR=                    T / Poissonian errors to be assumed
+STAT_ERR=                    0 / no statistical error specified
+GROUPING=                    0 / no grouping of the data has been defined
+HISTORY  FITS SPECTRUM extension written by WTPHA1 3.2.3
+DATE    = '2011-06-07T12:53:26' / file creation date (YYYY-MM-DDThh:mm:ss UT)
+CREATOR = 'GCORPHA 1.0.1'      /  s/w task which created this dataset
+
+
+
+/　ここに載せたカラムがあればphaファイルとして作用する。
+
+--------------------------------------------------------------------------------
+
+
+
+

@@ -1,0 +1,22 @@
+################################################################################
+patch
+################################################################################
+
+FORMAT
+	patch [OPTIONS] [APPLIED_FILE] < <PATCH_FILE>
+
+EXPLAIN
+	patch を適応する
+
+
+OPTION
+	-c	: copied context フォーマットで作成されたpatchを適応する
+	-u	: unified context フォーマットで作成されたpatchを適応する
+	-R	: patchを適応した前の状態に戻す
+
+EXAMPLE
+	patch -u after.txt < test.patch
+	patch -R after.txt < test.patch
+
+
+#EOF#

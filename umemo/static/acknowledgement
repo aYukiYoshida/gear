@@ -1,0 +1,84 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(1) Observatories
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[SUBARU]
+\altaffiltext{1}{Based on data collected at Subaru Telescope, which
+is operated by the National Astronomical Observatory of Japan.}
+
+[IRTF]
+\altaffiltext{1}{Visiting Astronomer at the Infrared Telescope
+Facility, which is operated by the University of Hawaii under
+contract from the National Aeronautics and Space Administration.}
+
+[NRAO]
+The National Radio Astronomy Observatory is a facility of the
+National Science Foundation operated under cooperative agreement by
+Associated Universities, Inc.
+
+[KPNO]
+Visiting Astronomer, Kitt Peak National Observatory, National
+Optical Astronomy Observatory, which is operated by the Association
+of Universities for Research in Astronomy, Inc. (AURA) under
+cooperative agreement with the National Science Foundation.
+
+[FLAMINGOS]
+FLAMINGOS was designed and constructed by the IR instrumentation
+group (PI: R. Elston) at the University of Florida, Department of
+Astronomy, with support from NSF grant AST97-31180 and Kitt Peak
+National Observatory"
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(2) Software
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[IRAF] 
+\footnote{IRAF is distributed by the National Optical Astronomy
+Observatories, which are operated by the Association of Universities
+for Research in Astronomy, Inc., under cooperative agreement with
+the National Science Foundation.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(3) Catalogs & Databases
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[2MASS]
+\acknowledgments
+This publication makes use of data products from the Two Micron All
+Sky Survey, which is a joint project of the University of
+Massachusetts and the Infrared Processing and Analysis
+Center/California Institute of Technology, funded by the National
+Aeronautics and Space Administration and the National Science Foundation. 
+
+[HEASARC]
+\acknowledgments
+The \textit{ASCA} data were obtained through the High Energy
+Astrophysics Science Archive Research Center Online Service provided
+by the NASA/Goddard Space Flight Center.
+
+[CXC]
+\acknowledgments
+The \textit{Chandra} data were obtained through the Chandra X-ray
+Observatory Science Center (CXC) operated for NASA by the
+Smithsonian Astrophysical Observatory.
+
+[ADS]
+This research has made use of NASA's Astrophysics Data System
+Bibliographic Services.
+
+[ADC]
+\acknowledgments
+This research has made use of the Astronomical Data Center (ADC) at
+NASA Goddard Space Flight Center.
+
+[SIMBAD]
+\acknowledgments
+This research has made use of the SIMBAD database, operated at CDS,
+Strasbourg, France
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(4) Financial Supports
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[JSPS]
+D.T. acknowledges financial supported from the Japan Society for the
+Promotion of Science.

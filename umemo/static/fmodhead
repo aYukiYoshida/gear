@@ -1,0 +1,38 @@
+********************************************************************************
+fmodhead
+********************************************************************************
+
+fits fileのヘッダーを追加/削除/変更する
+fparkeyも参照
+
+例えばsrc.piのヘッダーの一部が
+
+BACKSCAL=         2.000000E-02 / background file scaling factor
+
+のようになっていたとする。これを
+
+BACKSCAL=         3.000000E-02 / background file scaling factor
+
+のようにしたい場合
+
+fmodhead "out.fits[1]" tmp.txt
+
+とする。tmp.txtには
+
+BACKSCAL=         3.000000E-02 / background file scaling factor
+
+と書いておく。
+
+また、
+
+BACKSCAL=         3.000000E-02 / background file scaling factor
+
+を削除したい場合は、
+
+-BACKCSCAL
+
+のように、削除したいエントリーの前に"-"をつける。これを同様にtemporaryに書き込む。
+
+
+#EOF#
+

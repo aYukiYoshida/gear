@@ -1,0 +1,9 @@
+書式
+
+解説
+	FITSイメージの回転や平行移動
+
+オプション
+
+使用例
+	imrot -r 90 psfcol_image.fits

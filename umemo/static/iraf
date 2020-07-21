@@ -1,0 +1,45 @@
+irafは*.fitsという名前でないと処理がエラーになる
+
+------- iraf とそのタスク ------------
+
+*** 座標変換関連 ***
+as> galactic {STDIN,file} [in_coords = "galactic"]     ← noao.astutil> ?
+	: (RA,DEC)→(l,b)の座標変換。STDINなら、eof(^d)まで読み込む。
+	  入力は「時:分:秒 時:分:秒 2000.」の形式。時分秒でなく、123.14でもOK。
+	  分点を省略すると、1950年分点がデフォルト。
+	  上の in_coords オプションをつけると、gal→1950の変換となる
+as> precess {STDIN,file} [from] [to]    (noao.astutil> )
+	: 分点変換。
+	  入力は「時:分:秒 時:分:秒 1950 2000」の形式。123.14でもOK？(未確認)
+	  入力時の1950などを省略すると、コマンドラインのデフォルトを使用。
+
+xs> skypix	: (l,b)→pixelの座標変換。(xray.xspatial> ) mman skypix を！
+                  正しい？？？
+xs> wcscoords	: pixel→(RA,DEC)の座標変換。
+
+im> skyctran STDIN STDOUT galactic j2000 \ 
+	ilngunits="{hours,degrees}" ilatunits="{hours,degrees}" \
+	olngunits="{hours,degrees}" olatunits="{hours,degrees}" transform+
+							(immatch; OSF/1のみ)
+ > skyctran STDIN STDOUT j2000 galactic olngformat=%10.6f olatfor=%10.6f
+ > skyctran STDIN STDOUT galactic j2000 olnguni="degrees" olatunits="degrees" \
+   >>> olngformat=%10.7f olatfor=%10.7f    
+	: (RA,DEC)⇔(l,b)の座標変換。
+	  "transform+" は、新しいもののみ書き込む、という意味。
+           o{lng,lat}formatを上のように指定すると、xxx.xxxxで出力される
+                                                        (mman skyctran を！)
+
+xi> plcreate region image outfile    (xray.ximages> )
+     マスクファイルの作成
+	ex.) plcreate "CIRCLE(142,150,49.0)" "256 256" tmpg3
+
+cl> phelp	: help の less版。
+
+cl> disp g3hml_170_848_xy_im.fits[0] fi+
+	"fi+" は、"filter+" の意味
+cl> imlin g3hml_170_848_xy_im.fits[0] tmp3 90 90 1 1 
+	g3hml.. -> tmp3 への90°の回転
+cl> disp  g3hml_170_848_xy_im.fits[0] fi+ zr- zs- z1=5 z2=0  
+	z1, z2 は、min/max
+
+imshift input output 10 10	: x=10,y=10で平行移動

@@ -1,0 +1,18 @@
+書式
+
+解説
+	条件を指定して処理を繰り返し行う
+	do-doneの間の処理をinの後に指定した項目について行う
+
+オプション
+
+使用例
+	for i in 0 1 2 3 ; echo ${i}
+
+	for i in 0 1 2 3 ; do
+	    echo ${i}
+	done
+
+	for i in $(seq 0 3) ; do
+	    echo ${i}<br>
+	done

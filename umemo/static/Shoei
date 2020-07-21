@@ -1,0 +1,146 @@
+********************************************************************************
+shoei
+********************************************************************************
+
+
+しょうえいさんからの贈り物
+
+/data08/myoshida/data/suzaku/CygOB2/402030010/xis/event_cl/analysis/20091217/log
+
+###
+for i in *s.reg ;do
+mv ${i} xis0_num_${i%_*reg}_src.reg
+done
+###
+
+
+###
+for i in ../../../*cl.evt ;do
+ln -sf ${i}
+done
+###
+
+echo "ae402030010xi0_0_3x3n066a_cl.evt" > xis0.list
+echo "ae402030010xi0_0_5x5n066a_cl.evt" >> xis0.list
+echo "ae402030010xi3_0_3x3n066a_cl.evt" > xis3.list
+echo "ae402030010xi3_0_5x5n066a_cl.evt" >> xis3.list
+echo "ae402030010xi1_0_3x3n069b_cl.evt" > xis1.list
+echo "ae402030010xi1_0_5x5n069b_cl.evt" >> xis1.list
+
+
+###############################################
+For i in 0 1 3 ;do
+for j in 5 8a 9 12;do
+cat << EOF >! xis${i}_${j}_xsel.log
+
+read event xis${i}.list
+./
+set binsize 8.0
+set xybinsize 1
+filter column 
+status=0:65535 <-pixel qualityの条件付け。calmask以下のpixel qualityしか使用しない。
+
+filter region xis${i}_num_${j}_src.reg
+extract all
+save curve lc_xis${i}_${j}_src.fits
+save spec xis${i}_num_${j}_src.pha
+no
+save image xis${i}_num_${j}_src.img
+clear region
+
+filter region xis${i}_num_${j}_bkg.reg
+extract all
+save curve lc_xis${i}_${j}_bkg.fits
+save spec xis${i}_num_${j}_bkg.pha
+no
+save image xis${i}_num_${j}_bkg.img
+clear region
+
+exit
+no
+EOF
+done
+done
+for i in xis*log ;do
+xselect < ${i} |tee  ${i%.log}_tmp.log
+done
+###############################################
+
+
+###################################################################
+for i in *src_new.reg ;do
+ num=`echo ${i%_num_*_.reg}|sed 's/xis//'|awk 'BEGIN { FS = "_" } {print $1}'`
+ x=` head -1 ${i}|sed 's/circle(//'|awk 'BEGIN { FS = "," } {print $1}'`
+ y=` head -1 ${i}|sed 's/circle(//'|awk 'BEGIN { FS = "," } {print $2}'`
+cat << EOF >! ${i%.reg}_arfgen.log
+XIS${num}
+SKYXY
+$x
+$y
+1
+SKYREG
+${i}
+${i%_new.reg}.arf
+NUM_PHOTON
+400000
+${i%_new.reg}.pha
+none
+${i%_new.reg}.pha
+../../../../../auxil/ae402030010.att
+${i%_new.reg}.rmf
+medium
+EOF
+done
+
+for i in *arf*log;do
+xissimarfgen < ${i}
+done
+###################################################################
+
+
+for i in 0 1 3;do
+ for j in 5 8a 9 12 ;do
+  for k in 75 100 ;do
+  grppharev xis${i}_num_${j}_src.pha  xis${i}_num_${j}_${k}bin_src.pha ${k} 0 4095
+  done
+ done
+done
+#####################################################################
+
+
+
+for i in 5 8a 9 12 ;do
+for j in 75 100 ;do
+cat << EOF > xspec_${i}_${j}.xcm
+data 1:1 xis0_num_${i}_${j}bin_src.pha
+back 1 xis0_num_${i}_bkg.pha
+resp 1 xis0_num_${i}_src.rmf
+arf 1 xis0_num_${i}_src.arf
+
+data 2:2 xis1_num_${i}_${j}bin_src.pha
+back 2 xis1_num_${i}_bkg.pha
+resp 2 xis1_num_${i}_src.rmf
+arf 2 xis1_num_${i}_src.arf
+
+data 3:3 xis3_num_${i}_${j}bin_src.pha
+back 3 xis3_num_${i}_bkg.pha
+resp 3 xis3_num_${i}_src.rmf
+arf 3 xis3_num_${i}_src.arf
+EOF
+done
+done
+
+cat << EOF >! xspec_int.xcm
+cpd /xw
+setpl en
+ignore *:**-0.5 10.0-**
+setpl com r x 0.5 10.0
+setpl com r y 0.00002 0.8
+setpl add
+pl ld
+query yes
+EOF
+
+
+
+sed '1,3d' hr_high_middle.qdp >temp2.qdp

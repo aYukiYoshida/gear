@@ -1,0 +1,70 @@
+********************************************************************************
+mathpha
+********************************************************************************
+
+********************************************************************************
+統計を上げるために検出器ごとのスペクトルを足し合わせる(xis)
+********************************************************************************
+
+a)長時間露光、有効面積はXIS1個1個と同じとして考える場合
+
+a-1.mathphaでsrcとbgdそれぞれの検出器のスペクトルを足し合わせる。
+
+mathpha expr="xis0.pi + xis2.pi + xis3.pi" units="C" \
+ 	outfil="xis023.pi" exposure="CALC" areascal="NULL" \
+	backscal="%" ncomments="0" errmeth="Gauss" clobber="yes" \
+
+*すべてのbackscalが1%以内でそろっている場合、
+ backscal="%"
+ とする。そうでない場合は、BACKSCALはリセットされるので、
+ あとから"fmodhead"等で書き直さなければならない。
+ BACKSCALは、fkeyprintやfdumpから調べられる。
+
+a-2.rmf×arf=rspファイルの作成
+
+marfrmf xis0.rmf xis0.arf xi0.rsp \
+telescop=SUZAKU instrume=XIS0 filter=NONE DETNAM=NONE
+
+marfrmf xis2.rmf xis2.arf xis2.rsp \
+telescop=SUZAKU instrume=XIS2 filter=NONE DETNAM=NONE
+
+marfrmf xis3.rmf xis3.arf xis3.rsp \
+telescop=SUZAKU instrume=XIS3 filter=NONE DETNAM=NONE
+
+
+a-3.rspファイルの足し合わせ
+
+addrmf xi0.rsp,xi2.rsp,xi3.rsp \
+0.3333,0.3333,0.3333 rmffile="xi023.rmf" clobber="yes"
+
+
+b)大有効面積、露光時間はXIS1個1個と同じとして考える場合
+
+b-1.mathphaでsrcとbgdそれぞれの検出器のスペクトルを足し合わせる。
+
+mathpha expr="xis0.pi + xis2.pi + xis3.pi" units="C" \
+ 	outfil="xis023.pi" exposure="CALC" areascal="%" \
+	ncomments="0" errmeth="Gauss" clobber="yes" \
+
+*パラメータexposureには、足しあわせるspecのexposure timeの平均値を入れる。
+${AET}=Average of Exposure Time
+
+b-2.rmf×arf=rspファイルの作成
+
+marfrmf xis0.rmf xis0.arf xis0.rsp \
+telescop=SUZAKU instrume=XIS0 filter=NONE DETNAM=NONE
+
+marfrmf xis2.rmf xis2.arf xis2.rsp \
+telescop=SUZAKU instrume=XIS2 filter=NONE DETNAM=NONE
+
+marfrmf xis3.rmf xis3.arf xis3.rsp \
+telescop=SUZAKU instrume=XIS3 filter=NONE DETNAM=NONE
+
+
+b-3.rspファイルの足し合わせ
+
+addrmf xis0.rsp,xis2.rsp,xis3.rsp \
+1.0000,1.0000,1.0000 rmffile="xis023.rmf" clobber="yes"
+
+
+#EOF#

@@ -1,0 +1,184 @@
+書式
+
+解説
+
+オプション
+       -nw                              : 別ウィンドウでなく,ターミナルで開く
+
+使用例
+	^b				: 左
+	^p				: 上
+	^n				: 下
+	^f				: 右
+	^a				: 行頭
+	^e				: 行末
+	M-a				: 1文戻る
+	M-e				: 1文進む
+	M-h				: 1段落戻る
+	M-]				: 1段落進む
+	^v				: 次頁
+	M-v				: 前頁
+	M-<				: 全体の初め
+	M->				: 全体の終わり
+	^u 4 ^x <			: 右へ4行スクロール
+	^x >				: 同じく左へスクロール
+
+	^d				: １字消去
+	^8				: バックスペース
+	^x ^8				: 文頭までdelete
+	C-SPC (^@) (^2)			: Mark set	
+	^x ^x				: マークとポイントの交換
+	^u^SPC				: いぜんのマークへ
+	^x / A				: mark A
+	^x j A				: Go to A
+	^x x B				: region -> B
+	^x r B				: rectangle -> B
+	^x g A				: paste B
+	^k				: 行消去＋記憶
+	^w				: 領域消去＋記憶
+	M-w				: 領域記憶
+	C-M-w				: 記憶append 
+	^y				: 貼り付け
+	M-y				: 前の貼り付け
+	M-x delete-rectangle		: 矩形消去
+	M-x kill-rectangle		: 矩形消去＋記憶
+	M-x yank-rectangle		: 矩形貼り付け
+	^7 (^?) (C-x u)			: undo
+
+	^t				: その文字と前の文字の交換
+	^x ^t				: その行と前の行の交換
+	M-t, M-^t			: その単語と次の単語の交換
+					  ポインタが単語の先頭なら前の単語と交換
+	M-x hankaku[zenkaku]-sentence	: 文末まで全て半[全]角
+	M-x hankaku[zenkaku]-region	: 領域内を全て半[全]角
+	M-c				: 最初をcapitalize
+	M-u				: 単語全てをcapitalize
+	C-x u				: 領域内を全てcapitalize
+
+	^r				: 後方検索
+	^s				: 前方検索
+	M-^s				: 正規表現を用いた前方検索
+
+	## 上のすべては、最初の文字に ESC を打つと文頭からの探索に切り替わる
+
+	M-x replace-string		: 一括置換
+	M-%				: 逐次置換 (SPCでOK、BACKSPCでSKIP)
+	M-^s				: 正規逐次置換
+	M-x (query-)replace-regexp	: (問い合わせ付きの)正規表現による一括置換
+
+	^^ (^6)				: 記号入力
+	M-h				: ひらがな
+	M-k				: かたかな
+	M-s				: 全候補検索
+
+	M-#				: カーソルのある単語のスペルチェック
+	M-|				: Shell command on the region
+
+	---- macro -----------
+	
+	^x (  -> ^x q ->  ^x )		: key-board macroの設定("^x q" は、query の設定)
+	^u ^x (				: key-board macro の追加
+	^x ^k				: key-board macro の edit
+	^x e				: key-board macro の実行
+	M-x name-last-kbd-macro		: 最後のkey-board macroを名付ける(実行はM-x macroname)
+
+	---- Buffer etc. -----------
+
+	^x ^b				: Buffer List
+	^x b (^x 4 b)			: 今の（別の）Window にバッファの復元
+	^x i				: file の挿入
+	^x ^f (^x 4 f)			: 今の（別の）Window にファイル読み込み
+	^x k				: Buffer 削除
+	^x a <Buf>			: append領域
+	M-x recover-file		: file~ からの読み込み
+	^x ^q				: 編集パーミッションの切り変え
+
+	^x 2				: 上下2分割
+	^x 5				: 左右5分割
+	^x 0				: 選択Window 消去
+	^x 1				: 選択Window 以外全て消去
+	C-x ^				: 選択Window の高さを広げる
+	C-x }				: 選択Window の幅を広げる
+	C-x o				: 次のWindow を選択Window とする
+
+	^x d				: Directory の File List 表示
+
+	^x =				: いまのいち
+	M-x what-line			: なんぎょうめか?
+	M-x line-number-mode		: (Mule)今の位置を常に表示
+
+	^x n				: Narrowingせってい
+	^x w				: Narrowingやめる
+
+	---- Fortran Mode -----------
+
+	M-LFD				: 現在行を分けて継続行に
+	C-c C-r				: 桁の物差しを一時的に表示
+	C-c C-w				: Window を分割して72行に
+
+	---- LaTex Mode ---------------
+
+	C-c SPC				: block を閉じる
+	"				: 内容に従って、符合挿入   
+	LFD				: 前段落の括弧やドルのチェック
+	M-x validate-Tex-buffer		: 段落ごとにcheck
+	M-}				: 次の閉じ括弧の次へいく   
+	C-c C-f				: エラーの何か？
+	C-c C-c				: エラーの行に行く？
+
+	---- options -----------
+
+	-q				: .emacs を読まない
+	-u FILE				: .emacs ではなく"FILE"を読む
+
+	---- 変数 -----------
+
+	M-x list-options		: 設定可能な全ての変数の一覧表
+					○"s" → 変更 ; ○"x" t ⇔ nil
+
+	---- emacsclient -----------
+
+	## .emacs に、 (server-start)を書き加える。
+	## 環境変数 EDITOR を emacsclient としておく。
+	## emacsclient を使用する時は、^x # で server側に主導権を渡せる
+
+	---- Lisp -----------
+
+	(/ (/ -19 2) 3) ^x^e  ->	: "-3" を mini-buffer に返す
+
+	## 正規表現で頭に##をつける方法
+	M-x query-replace-regexp
+	^
+	## 
+	y
+
+
+その他(Written by yyoshdia)
+■ Macのcarbon emacsをdefaultのemacsにする
+   alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs'
+
+■ 文字列の一括置換
+
+   1. ESC-X replace-string 
+
+   2. "Replace string" と表示されるので置き換えたい文字列を入力してreturn.
+      ex)Replace string: hogehoge
+
+   3. "Replace string ??? with:" と表示されるので置き換える新しい文字列を入力してreturn.
+      ex)Replace string hogehoge with: ahoaho
+
+
+■ 文字列の置換
+
+   1. ESC-X query-replace 
+
+   2. "Query string" と表示されるので置き換えたい文字列を入力してreturn.
+      ex)Query replace: hogehoge
+   
+   3. "Query string ??? with:" と表示されるので置き換える新しい文字列を入力してreturn.
+      ex)Query replace hogehoge with: ahoaho
+   
+   4. 置換する文字列にカーソルが移る度に y(する) / n(しない) / q(終了) / !(残りすべて置換) で答えて置換する。
+
+
+#EOF#

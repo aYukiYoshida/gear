@@ -1,0 +1,993 @@
+書式
+
+解説
+
+オプション
+
+使用例
+
+	シェルのコマンド
+
+	$[command]
+
+	FITSファイルの色々な読み込み方
+
+	im=readfits('input.img',hdr)
+	im=readfits('input.img')
+	im=mrdfits('input.img')
+	rawevent=mrdfits('input.img',0)
+	rawimage=mrdfits('input.img',0,header)
+
+	スクリプトのコンパイル
+
+	.r imcontour.pro
+	.r ticlabels.pro
+
+	RaDec座標でイメージ書き出し
+
+	imcontour, im, hdr, TYPE=1, XDELTA=2, YDELTA=0, XTHICK=3, YTHICK=3, $
+	xtitle='RA (J2000.0)', ytitle='Dec (J2000.0)', charsize=1.8, charthick=1.5, $
+	subtitle=' ', vertical=2, nlebels=8, font=1, color=0, background=255, $
+	/aspect, /fill
+
+	imcontour, im, hdr, TYPE=1, XDELTA=2, YDELTA=0, XTHICK=3, YTHICK=3, xtitle='RA (J2000.0)', ytitle='Dec (J2000.0)', charsize=1.8, charthick=1.5, subtitle=' ', vertical=2, nlebels=8, font=1, color=0, background=255, /aspect, /fill
+
+	スムージング
+
+	sm=smooth(im,5)
+
+	Circle or Box の書き出し
+
+	tvcircle, 120, 768.5, 768.5, color=0, /data
+	tvbox, 1024, 768.5, 768.5, angle=100, color=0, /data
+
+	EPSに印刷
+
+	set_plot, 'ps'
+	device, filename='out.eps', /port, /enc, /inches, xsize=7, ysize=7
+	contour, im
+	device, /close
+	set_plot, 'x'
+
+	色の読込み？
+
+	loadct, 3
+	loadct, 26
+
+	色々な図の作成
+
+	tv, im
+	tvscl, im
+	surface, im
+	surface, im,ax=70,az=25
+	shade_surf, im
+	contour,im,nlevels=20
+	show3,im
+	live_surface,im
+	contour, im, nlevels=25, color=0, background=255, /fill
+	contour, im, nlevels=25, color=0, background=255, /cell_fill
+	xsurface, im
+	tvimage, im
+
+
+
+
+●起動と終了
+・起動
+# idl
+
+・終了
+exit
+
+・ヘルプの表示
+?
+
+
+
+ 
+●1次元データのプロットの基礎
+・プロット　その1
+x=[0,1,2,3,4,5]
+y=[0,2,4,6,8,10]
+plot,x,y
+
+・データの表示
+print,x
+
+・データ情報の表示
+help
+
+・プロット その2
+z=findgen(6)
+print,z
+plot,z,z^2
+
+※findgenはfloat形式の1次元配列を0からまでn-1まで定義する関数です。
+
+・プロットの重ね合わせ
+oplot,x,y
+
+・プロット その3
+z=findgen(101)
+plot,z,sin(2.*!pi*z/100.)
+
+※sinは正弦関数です。!piは円周率を表します。
+
+
+ 
+●1次元データのプロットの応用
+・プロットの工夫　その1
+plot,x,y,option1,option2,...
+
+optionNのところに以下を書いてみましょう。
+psym=1
+linestyle=1
+xtitle='x'
+ytitle='y'
+title='title'
+color=128
+xrange=[0,2]
+xstyle=1
+
+例
+
+plot,x,y,psym=1,xtitle='x',ytitle='y'
+
+・解説
+psym
+　プロットの記号を設定します。
+　値は0-7まであります。4(ひし型)がお勧め。
+
+linestyle
+　プロットの線の種類を設定します。
+　値は0-5まであります。1(点線),2(破線)がお勧め。
+
+color
+　プロットの色を設定します。
+
+xrange
+　軸の範囲を設定します。
+
+・プロットの工夫　その2
+plot,x(0:3),y(0:3),psym=4
+ある範囲のデータだけをプロットする
+
+plot,x(2:*),y(2:*),psym=4
+ある範囲のデータ以降をプロットする
+
+・上記オプションを調べる：マニュアルの表示
+?
+
+
+ 
+●2次元データのプロットの基礎
+・その1
+x=[0,1,2,3,4]
+y=x
+z=[[1,1,2,1,1],[2,2,3,2,2],[4,4,4,4,4],[2,3,2,2,2],[1,1,2,1,1]]
+surface,z,x,y
+shade_surf,z,x,y
+
+・その2
+contour,z,x,y
+show3,z,x,y
+xsurface,z
+
+※xsurfaceを用いると回転を自由にできます。azやaxのキーワードをメモすれば、surface等で使えます。
+
+
+ 
+●IDLを使いこなす
+・windowを分割
+!p.multi=[0,2,2]
+plot,x,y
+plot,x,-y
+plot,x,y*y
+plot,x,-y*y
+!p.multi=0
+
+・windowを作成
+window,1
+wdelete,1
+
+・色の変更
+loadct,39
+xloadct
+
+●IDLによるデータ解析の基礎
+・配列の大きさを調べる
+print,!d.n_elements(x)
+
+・最大値・最小値を調べる
+print,max(x),min(x)
+
+・最大値の位置を調べる
+print,where(x eq max(x))
+
+
+ 
+●IDL プログラムの基礎
+○programの作成
+　IDLの言語に基づき、拡張子proのファイルを作成。
+　コマンドを羅列したものでもよい(例1を参考)。
+
+○programの実行
+.r plotprog
+
+※.rはrunの意味です。
+
+○programの例
+; plotprog.pro
+x=findgen(101)
+plot,x,sin(!pi*x/20.)
+end
+
+・解説
+";"で始まる文はコメント文として解釈されます。
+findgen(n)はfloat形式の1次元配列を0からまでn-1まで定義します。
+"!pi"は円周率πです。
+"end"をプログラムの最後には書きます。
+
+
+ 
+●IDLプログラミングの基礎１
+○for文
+; forprog.pro
+for i=0,10 do begin
+ x=i^2
+ print,i,x
+endfor
+end
+
+○if文
+; ifprog.pro
+i=1
+j=2
+k=3
+;
+if (i eq 1) then print,'i=1'
+;
+if (j gt 1) then begin
+ print,'j>1'
+endif
+;
+if (k gt 4) then begin
+ print,'k>4'
+endif else begin
+ print,'k<4'
+endelse
+;
+end
+
+説明：条件判断は以下のようなものがあります
+eq：等しい
+ge：以上
+le：以下
+lt：より小
+gt：より大
+
+
+ 
+●IDLプログラミングの基礎２
+○変数のコピー、処理
+a=b
+a=b^2
+※便利なので有効利用しましょう。
+
+○配列定義
+a=dblarr(10)
+10個の要素を持つ倍精度変数の配列を定義
+
+b=fltarr(10,10)
+10x10=100個の要素を持つ単精度変数の配列を定義
+
+・解説
+intarr：整数の配列を定義
+fltarr：単精度変数の配列を定義
+dblarr：倍精度変数の配列を定義
+strarr：文字列の配列を定義
+
+○値を入れた配列を定義
+a=indgen(101)
+順に0から100までの値を持つ100個の要素の整数変数の配列を定義
+
+・解説
+indgen：整数の配列を定義
+findgen：単精度変数の配列を定義
+dindgen：倍精度変数の配列を定義
+
+
+ 
+●IDLプログラミングの応用１：asciiデータファイル読み込み
+・流れ
+配列定義→OPEN文→READF文→FREE_LUN(CLOSE)文
+
+fortranプログラムとそれに対応するidlプログラムを記します。
+
+○fortranプログラムの例
+      dimension x(0:100),y(0:100)
+      do i=0,100
+         x(i)=float(i)/100.
+         y(i)=x(i)*x(i)
+         write(6,*) x(i),y(i)
+      enddo
+      open(unit=1,file='data1.txt')
+      write(1,100) (x(i),y(i),i=0,100)
+ 100  FORMAT(2(G13.6))
+      close(unit=1)
+      end
+
+※可視化作業のデータは短精度で十分です。2行101列のデータを作成します。
+
+○対応するidlプログラムの例(低速)
+x=fltarr(101)
+y=fltarr(101)
+xs=0. & ys=0.
+openr,unit1,'data1.txt',/get_lun
+for i=0,100 do begin
+  readf,unit1,format='(2(G13.6))',xs,ys
+  x(i)=xs & y(i)=ys
+endfor
+free_lun,unit1
+
+※データを一行ずつ読み込み、作業変数xsとysに保管した後、保管したデータを配列の各要素にコピーしないといけません。同じ事が下のプログラムでも実行できます。
+
+○対応するidlプログラム(高速版)
+xy=fltarr(2,101)
+openr,unit1,'data1.txt',/get_lun
+  readf,unit1,xy
+free_lun,unit1
+xy=transpose(xy)
+x=xy(*,0)
+y=xy(*,1)
+end
+
+※一括データ読み込みのための作業配列xyを定義します。
+※transposeでデータの行列を入れかえた後、変数を各配列にコピーします。
+
+ 
+●IDLプログラミングの応用２：binaryデータファイル読み込み
+・流れ
+配列定義→OPEN文→READU文→FREE_LUN(CLOSE)文
+
+fortranプログラムとそれに対応するidlプログラムを記します。
+readfがreaduに変わっています。
+
+○binaryデータの入力
+・fortranプログラム
+      dimension x(0:100),y(0:100)
+      do i=0,100
+         x(i)=float(i)/100.
+         y(i)=x(i)*x(i)
+         write(6,*) x(i),y(i)
+      enddo
+      open(unit=1,file='data.dat',form='unformatted')
+      write(1) x
+      write(1) y
+
+      close(unit=1)
+      end
+
+※データを変数ごと出力します。
+
+・idlプログラム
+x=fltarr(101)
+y=fltarr(101)
+openr,unit1,'data2.dat',/get_lun,/f77_unformatted
+  readu,unit1,x
+  readu,unit1,y
+free_lun,unit1
+end
+
+※データを変数ごと読み込みます。
+
+
+ 
+●IDLプログラムの応用例：cans1d
+・データの読み込み
+.r rddt
+※データは2次元配列[空間, 時刻]となっています
+
+・データの情報の表示
+help
+
+x：x軸、y：y軸、z：z軸
+t:時刻
+ro：密度
+pr：圧力
+te：温度
+vx：速度（x方向）、vy：速度（y方向）、vz：速度（z方向）
+bx：磁場（x方向）、by：磁場（y方向）、bz：磁場（z方向）
+az：ベクトルポテンシャル（z成分）
+※計算によっては使用していないデータもあります。
+
+・データのプロット
+.r pldt
+
+・データのプロット　工夫
+ある時刻でのデータを個々にプロットする
+plot,x,ro(*,10)
+
+●IDLプログラムの応用例：cans2d
+・データの読み込み
+.r rddt
+※データは3次元配列[空間x方向, 空間y方向(空間z方向), 時刻]となっています
+
+・データのプロット
+.r pldt
+window size ? : 横方向と縦方向のwindowの数を入力（例、2,2と入力）
+color     ? (ro,pr,te,vx,cy): 表示したい変数を入力（例、ro）
+start step ? : 始めに表示したい時間データを入力（例、0と入力）
+
+・データのプロット　工夫
+あるy座標での、ある時刻でのデータを個々にプロットする
+plot,x,ro(*,50,10)
+
+あるx座標での、ある時刻でのデータを個々にプロットする
+plot,y,ro(50,*,10)
+
+・データのプロット　工夫
+surface,ro(*,*,10),x,y
+ 
+●IDLプログラムの応用例：図のファイルの作成
+○白黒ポストスクリプトファイル
+・ポストスクリプトファイルは印刷用のファイルで、lprコマンドで印刷できます。
+画像はTeXで読み込むことができます。直接編集するには、Adobe illustratorが必要になります。
+・ポストスクリプトファイルを作成するには、以下をプログラムやコマンドの前後に記入してください。
+
+set_plot,'ps'
+device,/portrait
+!p.font=0 & device,/helvetica
+(個々にコマンド、あるいは、プログラムを書く)
+device,/close
+set_plot,'x'
+end(プログラムを書いた場合は必要)
+
+・図の大きさについて
+デフォルトはA5に自動調節されます。以下のコマンドを!p.font...の行の前に入れると図のサイズを8cm×7.5cmに変更できます。
+device,xsize=8,ysize=7.5,xoffset=2.5,yoffset=2.5
+
+○カラーポストスクリプトファイル
+set_plot,'ps'
+device,/color,bits_per_pix=5
+device,/portrait
+!p.font=0 & device,/helvetica
+(個々にコマンド、あるいは、プログラムを書く)
+device,/close
+set_plot,'x'
+end(プログラムを書いた場合は必要)
+
+※図の色を画面と全く同じにするのはなかなか難しいです。
+
+○画像ファイル（PNG）
+・PNGはWebブラウザーで表示できる画像形式の一つです。1 pixelごとに値が入ります。
+・PNGファイルを作成するには、以下をプログラムやコマンドの前後に記入してください。
+
+xsize=640 & ysize=480
+set_plot,'Z'
+device,set_resolution=[xsize,ysize]
+(個々にコマンド、あるいは、プログラムを書く)
+tvlct,r,g,b,/get
+write_png, idl.png, tvrd(),r,g,b
+set_plot,'x'
+end(プログラムを書いた場合は必要)
+
+基本
+記号
+行末の$：次行に継続
+; :これ以下コメント
+演算子
+FORTRANとほぼ同じ書き方。ただし"."は不要。 eq ne le lt ge gt and or
+Unix command を実行したい時
+
+spawn,'COMMAND'
+※コマンドはstring型で。
+
+〜便利な使い方〜
+spawn,'ls i*.dat',filename
+
+i*.datに当たるファイル名をfilename の配列に格納。
+
+$ ls 
+
+なども可能。
+既存のプログラムを探す・調べる方法
+function / procedure について知りたいとき
+
+doc_library,'プロシージャ名'
+doc_library2,'プロシージャ名'
+
+doc_library ではあらかじめプロシージャ内に用意された説明を読める。(;+ から ;- までの間のコメント文)
+doc_library2 では、プロシージャファイル全体を読める。
+どちらにしても、最初にファイルのありかが出る。
+
+doc_library, '*map*'
+
+とすれば、mapを含むすべてのプロシージャについて探すことも可能。
+反復
+
+for i=0,n-1 do STATEMENT
+
+for i=0,n-1 do begin
+    STATEMENTS
+endfor
+
+if increment ne 0 then...
+
+for i=10,1,-1 do STATEMENT
+
+条件判定
+（CONDITION例1：i eq 10, 例2：i lt 10)
+
+if CONDITION then STATEMENT [else STATEMENT]
+
+if CONDITION then begin
+     STATEMENTS
+endif [else begin
+     STATEMENTS
+endelse]
+
+ネストする場合
+
+if C1 then S1 else $
+if C2 then S2 else $
+if ...
+if C10 then S10 else S10 
+
+C1 true -> S1 のみ実行
+C1 false,C2 true -> S2のみ実行
+など
+プログラムの書き方と実行方法
+*.pro と名付けたファイルにコマンドを並べる。ファイルの最後にend が必要。
+実行するには、test.pro なら
+
+.r  test.pro
+
+などとする。（.run でもOK）
+プログラムがエラーを返して途中で止まったとき
+
+retall
+
+main レベルまで戻す。（一階層戻すだけなら return）
+定数(constant system variables)
+
+!pi , !dpi : π。（後者はdouble精度）
+!dtor  : π/180 度⇒rad
+!radeg : 180/π rad⇒度
+
+window
+・開くとき
+
+window[,WINDOW_INDEX,retain=2]
+
+・閉じるとき
+
+wdelete[,WINDOW_INDEX]
+
+*WINDOW_INDEXはそのwindowの番号。特定の番号のwindowを開閉できる。
+
+・複数開いているときに、特定の番号のwindow に表示させたい場合
+
+wset, WINDOW_INDEX
+
+カラーテーブル
+
+loadct,3 ; 3番(赤）のカラーテーブルを選択。
+loadct ; リストが表示されるので、そこから番号を選択。
+xloadct ; GUIでカラーテーブルを選ぶ。
+
+主なカラーテーブル：
+0:白黒、1:青、3:赤、9:緑、39:虹色
+プロットいろいろ
+二次元プロット
+
+plot[,x],y[,xrange=[a,b],yrange=[c,d] ,xtitle='x',ytitle='y']
+
+error bar付きプロット(y方向のみ)
+
+plot,x,y
+errplot,x,LOW,HIGH [, width=WIDTH]
+
+width = width of bars (default = 1% of plot width)
+error bar 付きプロット（x,y両方向可。yのみも可）
+
+plot_err,x,y[,xerr=xerr],yerr=yerr,symsize=1.5,ym=2
+oplot_err,x,y[,xerr=xerr],yerr=yerr,symsize=1.5,psym=3
+
+x,y : もとのarray [array size をnとする。]　psymでそのシンボルを指定。
+yerr : 相対誤差。サイズ n の一次元配列なら、上下同じ幅のエラーバー（らしい）。
+　　　サイズ2×nの配列にすると、上下それぞれにその幅のエラーがつく。
+yerr[0,*]が下、yerr[1,*]が上。
+xerr : yerr に同じ。xerr[0,*]は左側のエラー幅。
+任意の場所に点を打ちたい時
+
+plots,x,y[,psym=1,/dev,/data,/normal]
+
+x,y の点にsymbol 番号 1の点(+)を打つ。
+座標の単位系は、（default はdev か data ...） /dev はデータの配列番号？、/data はデータの単位系？。 /normal は画面全体がx,y ともに0から1の範囲。
+任意の場所に線を引きたい時
+x軸平行直線を引く。（value:グラフの座標で指定）
+
+plots,!x.crange,[value,value]
+
+y軸平行直線を引く。（value:グラフの座標で指定）
+
+plots,[value,value],!y.crange
+
+任意の場所に文字を打つ
+
+xyouts,x,y,'string'[,/dev,/data,/normal,charsize=1.2]
+
+default charsize=1.0
+画面上でクリックした位置を知りたいとき
+
+cursor,x,y,/dev
+print,x,y
+
+２次元マップを描く SSW
+
+plot_image,array[,scale=[dx,dy],origin=[x0,y0],max=max,min=min,/nosq]
+
+arrayは二次元配列。
+scale は１目盛の値。origin は図上の原点に当たる位置の実際の値。
+max,min は配列データの表示範囲の値域。
+/nosq は、デフォルトではx,yはその量の1:1 のスケールになるため、
+たとえば、x,y軸の物理量が同じものでないときなどには必要。
+その他、plot のオプションはたいてい同様に使える。(e.g., xrange, charsize, title, etc.)
+ヒストグラムの作り方
+
+ヒストグラム用の配列作り
+
+result=histogram(array,max=max,min=min,binsize=binsize,nbins=nbins)
+
+ヒストグラムのプロット（棒グラフ状）
+
+bar_plot,result,baserange=1.0,barnames='(string array)',ytitle=ytitle,xtitle=xtitle
+
+Graphics keywords
+
+    * !p.charsize={2.0} : 全体の字のサイズ(1.0が普通)
+    * !p.thick={3.0} : 図中の線の太さ
+    * !p.psym={1-7} : データ点の種類(+,*,.,diamond,triangle,square,x)
+    * !{x|y|z}.title=string : 軸名
+    * !{x|y|z}.charsize={2.0} : 軸名の字のサイズ
+    * !{x|y|z}.range=[min,max] : 各軸の範囲
+    * linestyle={0,1,2,3,4,5} : 線種。Solid,Dotted,Dashed,DashDot,DashDotDot,LongDashes
+    * !p.background=255 : 背景を白に。（loadct,0 なら。）
+    * !p.color=0 : default の線の色を黒に。（loadct,0 なら。）
+
+線の色を変える
+
+set_line_color
+plot,x,y,color=1など
+
+color: 0-10, それぞれ、黒、白、黄、赤、緑、青、橙、紫、マゼンタ、茶色、ターコイズ
+Color bar
+
+color_bar[,array][,x1,x2,y1,y2,/normal]
+
+x1-y2 : 四隅の座標
+矢印を描く
+
+arrow,x0,y0,x1,y1[,/solid][,/data,/nomalize][,hsize=hsize,color=color,thick=thick,hthick=hthick]
+
+x0,y0 を起点とし、 x1,y1 に矢印の頭がくる形の矢印を描く。
+/solid がつくと、矢印の頭は▲になる。
+/data, /nomalize のいずれもつけないと /device扱い。
+時刻でプロット SSW
+
+utplot,x,y[,timerange=[start,end],/ylog]
+outplot,x,y
+
+二行目は上に重ねる分。
+time slice などを作る際の、時刻でプロット SSW
+
+utplot_image,image,time,yy
+
+image : 2-D array. (x 方向が時刻軸）
+time : 時刻の1-D array. (anytim で使えるスタイルなら何でもOK。例：13-sep-2005)
+yy : image のもう一方の値の関数。波長、位置など。
+postscriptへの出力
+
+set_plot,'ps'
+device[,/encapsulated],filename='filename.ps'[,bits_per_pixel=8,/color]
+==PLOT(例：plot_goes,'01-jan-2000'など)==
+device,/close
+set_plot,'x'
+
+横長A3に出したいときのやり方のヒント
+
+set_plot,'ps'
+device,file='test.ps',$
+xsize=41,ysize=28.,/portrait,xoffset=0.5,yoffset=0.3
+----plot----
+device,/close
+set_plot,'x'
+
+印刷方法： Windows 上のGhostview で File -> Print ->
+Print method 内のWindows GDI Printer のSettings -> Variable Page Sizeを選択しOK。
+プリンタの設定は、原稿・出力サイズ:A3、原稿の向き:横とする。
+ギリシャ文字等の出力(不確か)
+
+IDL Reference Guide Appendix H:Fonts参照
+sample fontの確認
+
+showfont,4,'Simplex Greek'
+
+例：
+
+print,'H!4a !3image'
+
+" Hα image "が出力される。(!3 でデフォルトに戻る)
+τ：s, μ:l, θ:hなど。（ギリシャ文字大文字とアルファベット大文字は対応）
+簡易対応表：
+
+αβγδεζηθικλμνξοπρστυΦχψω
+ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘ
+gif形式での出力
+
+tvscl,array
+write_gif,'FILENAME.gif'[,tvrd(0,0,512,512)]
+write_gif,'FILENAME.gif'[,tvrd(0,0,512,512)],/multi
+
+上：一枚作るとき
+下：gifアニメーションにするとき
+（※既に存在するファイルでないと作成されない。しかも旧ファイルは上書きされる）
+tvrd()部分は、配列を直接読み込むことも可。
+java script ムービー作成法
+
+jsmovie,htmlfile,imagefile
+
+htmlfile : ムービー表示用のhtml ファイルのファイル名。
+imagefile : gif, png, jpeg, bmp などのファイル名一覧の一次元配列。これらの順番どおりのムービーになる。
+＊imagefileを絶対パスで書くとそれごとhtmlファイルに記されるので、imageのディレクトリに移動したほうが無難か。
+カラー画像のファイル書き出し
+
+loadct,39
+tvlct,r,g,b,/get
+loadct,0
+{tvscl,imagearray} (ここでplot する)
+write_bmp,'filename.bmp',tvrd(),r,g,b
+
+write_gif などでも同じ。最初のloadct,39 は別のカラーテーブルの場合にはそれを適用させる。
+z buffer
+
+set_plot,'z'
+device,set_resolution=[512,512]
+plot,array
+a=tvrd()
+
+512*512の仮想ウィンドウにプロットしてそのプロット結果を配列に取り込んだ例。 (この場合、配列は512*512になる。)
+ファイル入出力
+テキストファイル書き出し
+
+openw,lun,filename,/get_lun
+printf,lun,ELEMENTS
+close,lun
+free_lun,lun
+
+テキストファイル読み込み SSW
+
+RESULT=rd_tfile(filename,num)
+
+num=一行の要素数。RESULT=Stringの「要素数×行数」のarray
+ファイルの情報
+
+result=file_info('test.txt')
+
+resultはstructure でかえってくる。exitsに存在の有無(1/0)、sizeにファイルサイズ、など。
+fits file 入出力 SSW
+
+writefits,'filename.ps',data
+result=readfits('filename.ps')
+
+配列の保存 SSW
+
+savegen,array1[,array2,...array15],file='savename',text='memo'
+restgen,array1[,array2,...array15],file=filename,text=text,header=header
+
+array1 などがsavename.genxに保存される。展開するときは配列名自由。
+
+restgen,file='savename',/inquire,/nodata
+
+何が入っているか確認
+ファイルを見つけ出す時には
+
+result=findfile('test*.txt')
+
+result にあてはまるファイルの名前の配列が入る。
+FORMATに関するメモ（Building guide Chap.10）
+
+[n]I[w] : integer ,[n]F[w] : decimal ,
+[n]a[w]: character , [n]X : blank
+[n] : repeating time , [w] : width control
+
+例：数字の文字列変換。（I4.4 の場合、４文字の文字列にする。I4.3 でi=200だと、最初の一文字は空白に。）
+
+stringI = string(i,format='(I4.4)')
+
+i = 0 なら、0000
+i = 10 なら、0010
+i=100なら、0100
+文字列
+切るとき（普通は空白基準で切る。RESULT2は","で切る。配列として格納）
+
+RESULT1=strsplit(STRING,/ex)
+RESULT2=strsplit(STRING,',',/ex)
+
+つなぐとき（RESULT1はarrayをそのままつなぐ。RESULT2は間に' '(空白)を入れながらつなぐ。）
+
+RESULT1=strjoin([STRINGarray])
+RESULT2=strjoin([STRINGarray],' ')
+
+切り出すとき
+
+testtxt='0123456789'
+RESULT1=strmid(testtxt,3)
+RESULT2=strmid(testtxt,3,5)
+
+RESULT1='3456789', RESULT2='34567'になる。
+（一つ目の数字が始まりの文字の番号（0が一文字目）、二つ目の数字が何文字切り出すかを指定）
+下付文字など
+
+V!DA!N[km/s]
+
+出力は、V_A(一回り小さい下付) [km/s]　（下付文字の大きさをより小さく：!E、普通と同じ大きさのまま：!A）
+!N で以降を普通に戻す。
+
+R!UM!N
+
+出力は、R^M (一回り小さい上付）（下付文字の大きさをより小さく：!I、普通と同じ大きさのまま：!B）
+
+その他reference guide のappendix H : fonts の formatting command examples 参照。
+このあたりを使うと、記号やギリシャ文字も出せる。
+その他便利そうなもの
+BOX_MESSAGE
+
+box_message
+box_message,"message"
+
+一行目：default　のメッセージが表示される。（user名、host name など）
+二行目：box で囲まれた強調された"message"が出力される。
+時間の扱い SSW
+
+例 (与えるのは、fits のindex.data_obs や map.time でもOK. indexやmap　そのものも可)
+
+result1=anytim('13-sep-05 0:00')
+result2=anytim('13-sep-05 0:00',/yoh)
+result3=anytim('13-sep-05 0:00',/hxrb)
+result4=anytim('13-sep-05 0:03',/int)
+result5=anytim('13-sep-05 1:23:45.012',/ex)
+
+結果
+
+result1=8.4257280e+08　(1979.01.01. からの秒)
+result2='13-sep-05 0:00'
+result3='05/09/13 00:00:00.000)
+
+result4.time=3000(一日の最初からのmsec)
+result4.day=9753 (1979.01.01. からの通し日) 
+※structure
+
+result5=[1, 23, 45, 12, 1,1, 2005] (integer array)
+
+太陽 観測データの取り扱い SSW
+GOES
+・GOES のsoft X-ray light curve を描く。
+
+plot_goes,'14-Jan-2000 10:00','15-Jan-2000 0;00'[,/fillnight,/fillsma]
+plot_goes,'14-Sep-2005 0:00','15-Sep-2005 0:00',/goes12[,/low,/high]
+
+Yohkoh のデータのある時期については、/fillnight, /fillsma が有用。
+/fillnight でYohkohの夜の時間帯、/fillsma でYohkohのsaas が一緒にプロットされる。
+/goes12などと指定もできる。/low, /high でlow/high energy only にすることも。
+・GOES でのイベントリストを表示。
+
+pre_gev,'14-Jan-2000 10:00','15-Jan-2000 0;00'[,above='M',outfile='goeslist.txt']
+
+outfile をつけるとそのファイルに結果を出力。何もないとコマンドライン上のみ。
+above をつけるとそれ以上のクラスのみのフレアリストになる。'C9.2' などと細かい指定も可能。
+map
+・map形式（structure）にする
+
+index2map,index,data,map
+
+・mapを図示する
+
+plot_map,map[,/log]
+
+・SOHOとYOHKOHのデータの重ね合わせをしたいときなど
+
+map2earth
+
+・map の回転
+
+rmap=rot_map(map,angle)
+
+太陽の天球上での回転角度や、衛星の状態によってついた回転角度などを補正するのに使うとよい？
+後者はangle の部分を-map.roll_angle とすればよい。
+・map のdifferential rotation
+
+map1=drot_map(map,ref_map=ref_map)
+map2=drot_map(map,time=time)
+map3 = drot_map(map,time=time,/rigid)
+map4 = drot_map(map,time=time,/rigid,/track_center)
+
+map1 : ref_map と同じ時刻までdif. rotation。
+map2 : time の時刻までdif. rotation。(形式はmapやindex でもOK)
+map3 : time の時刻までdif. rotation。/rigid をつけると剛体回転で持ってくる。
+map4 : time の時刻までdif. rotation。元の中心位置が回転後の中心になるように回転させる
+・differential rotation
+
+drot_xy,xp,yp,tstart,tend,xr,yr,roll_angle=roll_angle
+
+xp,yp はそれぞれ[x1,x2],[y1,y2]の形のarray.
+tstart,tend は時刻。時刻tstart に xp,yp であらわされる領域は、
+differential rotation により、xr,yr に移る。
+・map の切り出し
+
+sub_map,map,smap,xrange=[x1,x2],yrange=[y1,y2]
+
+[x1,x2], [y1,y2]の領域を切り出してsmap に。
+（単位はmap中の単位。map.xunits, map. yunitsを見ればよいが、たいていarcsec ）
+Yohkoh/SXT
+
+YAG (Yohkoh Analysis Guide) 参照
+・データの読み込み
+
+rd_xda,filename,-1,index,data,roadmap
+data = ass_or(data,index,subs)
+
+・フィルターは何か？
+
+filta=gt_filta(index)
+filtb=gt_filtb(index)
+
+・対話式で、必要なデータをファイルから抽出するには、yodat.pro が便利。
+
+.run yodat
+
+あとは画面の指示に従う。
+・キャリブレーション
+
+sxt_prep,index,data,index2,data2,/norm
+
+・温度・EM解析
+
+SOHO/MDI (magnetgram , continuum)
+
+rd_mdi,fitsfile,index,data
+
+fits file の読み方
+（たいていの衛星はその衛星データに特化した読み込み用プロシージャがある。それ以外用。　）
+
+mreadfits,fitsfile,index,data[,header=header]
+
+FMT(pgm形式)
+pgm形式一般の読み込み方
+
+read_pgm,'FILENAME',data
+
+FMT用。index:回転角度や中心位置、時刻データなど
+
+rd_fmt,file,index,data
+
+TRACE (.mxfファイル)
+
+read_trace,'filename.mxf',-1,index,data  ; -1 all data
+trace_prep,index,data,indexout,dataout,/normalize,/wave2point_correct
+index2map,indexout,dataout,TRACEmap
+
+データの取得方法
+SOHO/MDI の場合
+MDI Data Serach and Exportでデータ検索＆ftp で申し込む。
+データ準備完了というメールが来たら、
+
+ftp soi-ftp.stanford.edu
+(login:anonymous, password : 登録メイルアドレス）
+cd data/メイルアドレス
+(ls をすれば中身が見える。）
+mget *
+bye
+
+これで、手元の今いるディレクトリにダウンロードされる。 back to the top page

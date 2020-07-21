@@ -1,0 +1,16 @@
+書式
+
+解説
+
+オプション
+
+使用例
+
+ARFから有効面積を見積もる方法
+SRCとBKGの違いを見る場合はフラットのARFを比較すれば良い
+CCDのQEはRMFに含まれているが、領域では違わないだろうからよい
+
+for i in *.arf ; do
+    echo ${i}
+    fstatistic "${i}[ ENERG_LO >= 0.2 && ENERG_HI <= 10.0 ]" SPECRESP - | grep sum
+done

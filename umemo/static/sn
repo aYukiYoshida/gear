@@ -1,0 +1,31 @@
+ある天体を t 秒積分、n pixel で観測した場合の S/N 比(シグナル/ノイズ比)は以下のように与えられる。
+
+S/N = sg・t / √((sg+(bg+dk)n)t+n*rn2)　　　　　(1)
+
+sg：天体からの光によって生じる電子数 (e/sec)
+bg：背景光によって生じる電子数 (e/sec)
+dk：検出器の暗電流 (e/sec)
+rn：読み出しノイズ (erms)
+t ：積分時間 (sec)
+n ：天体の広がり (pixel)
+
+
+以上より、image area(面積はA pixels)全体で考えると、
+S/N = \frac{n_{sig}}{\sqrt{n_{sig}+n_{sky}・A+(σ _r^2+σ _d^2 +(σ _{dark}t)^2)・A}} 
+
+
+Ｓ／Ｎ＝（Signal×ｔ）／｛Nr^2＋（Signal＋Sky）×ｔ｝1/2
+
+わかるのは
+S+B
+
+O (Counts/picels)
+B (Counts/pixels)
+
+S/N = (Src * t) / √((Src * t) + (((BG+DK)*t) + Nr^2) * n)
+
+S/N = Source / √(Source + Background*n)
+
+
+((sg+(bg+dk)n)t+n*rn2)
+

@@ -1,0 +1,37 @@
+################################################################################
+nl
+################################################################################
+FORMAT
+
+    nl [OPTIONS] <FILE>
+
+
+EXPLAIN
+
+    ファイルの行頭に行番号を追加する
+
+
+OPTION
+
+    -b <STYLE>		:STYLEを指定して行番号を追加
+    -b a		:空行を含むすべての行に追加
+    -b t		:空行を除くすべての行に追加
+    -b n		:行番号を追加しない
+    -b p<BRE>		:BRE(basic regular expression)を含む行に追加
+    -v <NUMBER>		:任意のNUMBERから始まる行番号を追加
+    -n <FORMAT>		:FROMATを指定
+    -n ln		:左詰め
+    -n rn		:右詰め
+    -n rz		:右詰め + 0で桁埋め
+    -n <NUMBER>		:任意のNUMBERで増加分を指定
+    -w <NUMBER>		:任意のNUMBERで桁数指定
+         
+
+EXAMPLE
+
+    nl -b a hoge.log		:すべての行に追加
+    nl -v 10 hoge.log		:10からはじまる行番号を追加
+    nl -n rz -w 4 hoge.log	:右詰めでかつ4桁表示(足りない部分は0で桁埋め)
+
+
+#EOF#

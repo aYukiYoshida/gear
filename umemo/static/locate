@@ -1,0 +1,11 @@
+書式
+	locate [-Scims] [-l limit] [-d database] pattern ...
+解説
+	データベースを使ってファイルを高速に検索する
+	libファイルなどの検索に便利
+
+オプション
+
+使用例
+	locate libpaper.so.2
+	locate aho.log

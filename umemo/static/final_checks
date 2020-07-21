@@ -1,0 +1,103 @@
+# Time-stamp: <03/02/07 15:01:04 tsujimot>
+
+【文書提出前に必ずすること】
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(1) 文章に関する事項
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+□ 全ての議論を数値的に裏付ける
+□ 全ての数値に根拠（参考文献または計算過程）を記述
+□ 断定的に書く (are found to be, may be などの表現は避ける)
+□ 「科学英語論文のすべて」の注意事項を確認
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(2) 英語に関する事項
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+□ 冠詞 : the OMC, the J-band, as a function of ...
+	  the Subaru telescope
+	  in *an* integration time of ...
+□ 時制 : 現在形 ... 図表の説明、各章の導入
+□ 文長 : < 30 words/sentence
+□ 単語 : errors -> uncertainties, lightcurves -> light curves,
+	  theorical -> theoretical, grey -> gray, 
+	  sec -> s, erg -> ergs, technic -> technique
+	  obscursion -> obscuration, coronas -> coronae  
+	  kinetic -> kinematic
+□ 単複 : data are ..., emissions -> emission (UC)
+	  observation -> observations
+□ 前置詞 : a relation *for* ...
+	    observations *of* sources
+
+□ 観測 : 望遠鏡、検出器、観測モード、波長域、観測日時、積分時間、
+   視野中心、視野大きさ、(seeing) を記述
+□ 座標 : 書式に注意、Equinox を記述
+□ 数値 : 単位をつける。座標には分点、flux, luminosity には波長域が必要
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(3) 句読点、空白、ハイフンに関する事項
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+□ 単位 : 数字~単位,  数値\arcsec, 
+□ font : \textit{衛星名}, \textit{物理量}, \roman{HR}
+□ 略語 : 初出のみで定義、定義した略語は必ず使用、ソフトウェア名以外は全略語定義
+	  ACIS (Advanced CCD Imaging Spectrometer)
+□ 空白 : IRS~1, MMS~2
+□ punctuation : ;i.e., ;.e.g, et~al. \footnote{}の中は文章に。
+		 Figure. -> Figure , Table. -> Table
+□ hyphenation :
+   J-band N, broad-band, narrow-band, multi-wavelength, 88-inch, 
+   pre-main-sequence, star-forming N,
+   one-temperature N (spell out した数値の形容詞的用法)
+□ no hyphenation :
+   J band, main sequence, isochrone, photoelectron, cosmic ray
+   1 Myr N (spell out しない数値の形容詞的用法)
+□ parentheses : (J-H)/(H-K)
+□ 大文字 : Cassegrain focus, Nasmyth focus, cTTS, wTTS
+□ 二重かっこは禁止
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(4) 図表、参考文献に関する事項
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+□ 本文中では Figure 1.1、括弧内では (Fig. 1.1)
+□ 文中で必ずかつ順番通り引用されているか？
+□ シンボルは括弧内で italic
+□ シンボルの説明 … "in" は使わない。in the solid line
+□ IAU convention に準拠
+□ 図中の線幅 0.3mm(0.85pt)以上、文字の大きさ 8pt 以上（仕上がりで）
+□ キャプション
+   * キャプションを読むだけで図表が理解できるか？
+   * 全てのシンボルの説明があるか？
+   * 本文の記述と一貫しているか？
+   * 図表番号が本文に表れる順になっているか？
+□ 本文中の導出 : Fig.~\ref{fg:f1}, Table~\ref{tb:t1}, Sect.~\ref{sec3-1}, equation...
+□ イメージ
+   * 座標、グリッドを標準形式に統一
+□ グラフ
+   * 副目盛り = 0.2×主目盛り
+   * x, y ラベルは小文字。単位をつける
+   * 対数グラフは対数目盛りで
+□ 参考文献
+   * 必要かつ十分か？
+   * 順序は正しいか？(ABC順 or テキスト引用順)
+   * 指定書式に即しているか確認（本文中）
+   * 指定書式に即しているか確認（参考文献リスト）
+   * 複数ある時は発行年降順
+□ 表、図の間の一貫性
+□ データポイント（標本）の定義
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(5) 最後に
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+□ 個数の breakdowns が consistent か？
+□ 文法チェック
+□ スペルチェック
+□ 音読
+□ 査読者を想定した外部評価
+
+# egrep '\\input' *.tex | grep -v '%' | awk -F"/" '{print $3,$5}' | sed 's/}//;s/-/ /' | sort -n +0 +1 +2 | awk '($2~/^f/){printf("%s/Figures/%s/%s-%s.tex\n",$1,$3,$2,$3)};($2~/^t/){printf("%s/Tables/%s/%s-%s.tex\n",$1,$3,$2,$3)}'
+
+foreach item (`grep bibitem reference.tex | awk -F"}" '{print $1}' | sed 's/^.*bibitem{//'`)
+echo $item ; grep $item <1-10>.tex | more
+end

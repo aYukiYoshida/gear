@@ -1,0 +1,16 @@
+書式
+
+解説
+	画像形式の変換
+
+オプション
+
+使用例
+	convert input.jpg output.eps			: jpgからepsに変換する
+	convert -rotate 90 input.png output.png		: pngを90度回転する
+	convert -geometry "70%" input.eps output.jpg	: 大きさ70%にしてepsからjpg
+	convert 1.jpg 2.jpg aho.pdf			: 複数の画像をPDFにまとめる
+	convert -quality 100 aho.eps aho.jpg		: 最高の画質でJPGに変換 (1-100)
+	convert -density 128x128 aho1.eps aho2.eps	: EPS解像度の指定 (Default:72x72)
+	convert -delay 30 1.jpg 2.jpg aho.gif		: アニメーションGIFの作成
+	convert aho1.eps eps2:aho2.eps			: EPS2形式に変換

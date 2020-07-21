@@ -1,0 +1,37 @@
+書式
+
+解説
+	コンパイル方法は ...
+	cc -c aho.c
+	cc -o aho aho.o -lm
+
+ 	もしくは ...
+	gcc -o aho aho.c
+
+算術関数
+	#include <math.h>	: コンパイル時に gcc -lm
+
+宣言
+	int
+	short
+	long
+	float
+	double
+	char
+
+関数
+	int ---- flag = open ("namae.d", O_WRONLY | O_CREAT, 0644)
+	int ---- write (flag, buffer, size)
+	int ---- lseak (flag, offset, ??)     <- ファイルの中のポイントの移動
+	int ---- close (flag)
+
+	int ---- fopen,,,,fgets,feof
+
+	sprintf (buf, "Tsuru")       <- buf に"Tsuru"を入れる
+
+	char --- strcpy (buf, "Umaku ittakana.")
+	int ---- strlen (buf)
+
+記法
+	float *ip; x=0.5; ip = &x; /* ipはxのアドレス*/  y=*ip; /* yはx */
+	/* (*pp).x は、pp->x と同義。最初の括弧は必然、"."と"->"は同じ優先度。*/ 

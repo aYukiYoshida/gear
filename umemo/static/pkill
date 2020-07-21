@@ -1,0 +1,16 @@
+書式
+	kill [option] [PID]
+	pkill [option] [COMMAND]
+
+解説
+	プロセスを終了させる
+
+オプション
+
+
+使用例
+	kill 2345	   : プロセス番号で殺す
+	kill %2		   : ジョブ番号で殺す
+	kill -9 	   : ゾンビプロセスも殺す
+
+	pkill xemacs	   : コマンド名前で殺す

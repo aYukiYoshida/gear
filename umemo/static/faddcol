@@ -1,0 +1,9 @@
+USAGE
+	faddcol infile[ext#] colfile colname (colname は複数可。「,」で区切る)
+
+	colfile のあるコラムを、infile に加える。
+
+	例: 
+	% faddcol target.fits col.fits time,x,y
+	% faddcol target.fits[3] col.fits -time
+	: col.fits の time 以外のすべてのコラムを target.fits[3] に書き加える

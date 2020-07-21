@@ -1,0 +1,29 @@
+書式
+	xstar2xspec [options]
+
+解説
+	xstarをループ実行してxspecのモデルfitsを作成するスクリプト
+	パラメータをうまく設定しないと時間がめちゃくちゃかかる
+	agyoではデフォルト設定(ループ180回)で 10699 sec かかった
+	自作の xstar_wrapper システムを使用すると設定が比較的簡単
+	各パラメータに関してはxstarの説明を参照
+
+出力
+	xout_ain.fits		: atable (reflected emission spectrum)
+	xout_aout.fits		: atable (emission spectrum in transmitted direction)
+	xout_mtable.fits	: mtable (absorption spectrum in transmitted direction)
+
+オプション
+	variation_type = 0	: smaxの値で計算
+	variation_type = 1	: smaxとzeroの2通りで計算
+	variation_type = 2	: smaxからsminまでの値で計算
+	interpolation_type = 0	: smaxからsminまでの値をlinearで動かす
+	interpolation_type = 1	: smaxからsminまでの値をlogで動かす
+	number_of_steps		: smaxからsminまでの値を動かすステップ数
+
+使用例
+	パラメータ設定用ファイル xstar_wrapper.par を書き換える
+	xstar_wrapper.sh (自作ラッパー)
+	  => ~/pfiles/xstinitable.par に xstar_wrapper.par の設定が反映
+	xstar2xspec
+	  => 質問には Enter を押すだけ

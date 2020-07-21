@@ -1,0 +1,157 @@
+書式
+
+解説
+
+オプション
+
+使用例
+	reset ;					  : リセット
+	alias ("list_data", "aho") ;		  :
+
+	plot_data_counts (1) ;			  :
+	open_plot ;				  :
+	rplot_counts ;				  :
+	multiplot ;				  :
+	hplot (lo,hi,data) ;			  :
+	plot_unit ("keV") ;			  :
+	plot_group(g) ;				  :
+	save_group (g,"aho.out") ;		  :
+	plot_elev (Fe,25) ;			  :
+	oplot_lines (Fe,16,g) ;			  :
+	list_elev (Fe, 16) ;			  :
+
+	load_data ("aho.pha") ;			  : スペクトル読込み
+	load_arf  ("aho.arf") ;			  :
+	load_rmf  ("aho.rmf") ;			  :
+	list_data ;				  :
+	list_arf  ;				  :
+	list_rmf  ;				  :
+	assign_arf (1,1) ;			  :
+	assign_rmf (1,1) ;			  :
+
+	xrange (0.2,10.0) ;			  :
+	ignore ([[1:8],[10:12]]) ;		  :
+	xnotice (9.0,12.0) ;			  :
+
+	plasma (aped) ;				  : Load emissivity database
+	load_model ("model.dat") ;		  : Define model parameters
+	(lo,hi)=linear_grid(1,25,3000) ;	  : Define wavelength grid
+	flux = model_spectrum(lo,hi) ;		  : Compute total flux on the chosen grid
+	d = brightest(10,where(el_ion(O,17))) ;	  : 
+
+	import("xspec") ;			  :
+	require ("xspec") ;			  :
+	eval_fun2 ("gauss",lo,hi,hist) ;	  :
+	fit_fun("tbabs(1)*bbody(1)") ;		  :
+
+	## 輝線のエネルギーを電子の配置付きでリスト化する
+
+	plasma (aped) ;
+	c_lines  = where(el_ion(C))  ; save_group (c_lines,  "lines_energy_carbon.tmp")    ;
+	n_lines  = where(el_ion(N))  ; save_group (n_lines,  "lines_energy_nitrogen.tmp")  ;
+	o_lines  = where(el_ion(O))  ; save_group (o_lines,  "lines_energy_oxygen.tmp")    ;
+	ne_lines = where(el_ion(Ne)) ; save_group (ne_lines, "lines_energy_neon.tmp")      ;
+	mg_lines = where(el_ion(Mg)) ; save_group (mg_lines, "lines_energy_magnesium.tmp") ;
+	si_lines = where(el_ion(Si)) ; save_group (si_lines, "lines_energy_silicon.tmp")   ;
+	s_lines  = where(el_ion(S))  ; save_group (s_lines,  "lines_energy_sulfur.tmp")    ;
+	ar_lines = where(el_ion(Ar)) ; save_group (ar_lines, "lines_energy_argon.tmp")     ;
+	fe_lines = where(el_ion(Fe)) ; save_group (fe_lines, "lines_energy_iron.tmp")      ;
+
+	## 出来上がったリストは以下のコマンドで Energy(keV) に変換する
+
+	for i in lines_energy_*.tmp ; do
+	    echo "# Index Ion      Lambda Energy   F(ph/cm^2/s) A(s^-1)   Upper Lower Label" >! ${i%.tmp}
+	    cat ${i} | grep -v "#" | grep -v ":" | sed 's/*//g' | awk '{printf " %6d %2s %-5s %6s %.6f %.3e    %.3e %5d %5d %s %s %s\n",$1,$2,$3,$4,12.3984428/$4,$5,$6,$7,$8,$9,$10,$11}' >> ${i%.tmp}
+	    rm -f ${i}
+	done
+
+	## それぞれの輝線は以下の方法で抽出可能
+
+	echo "H-like  Ka" ; cat lines_energy_iron | grep " 2[s,p]\~" | grep "1s~"
+	echo "H-like  Kb" ; cat lines_energy_iron | grep " 3[s,p]\~" | grep "1s~"
+	echo "He-like Ka" ; cat lines_energy_iron | grep "1s2[s,p]" | grep "1s^2"
+	echo "He-like Kb" ; cat lines_energy_iron | grep "1s3[s,p]" | grep "1s^2"
+
+	## 輝線のラベルをプロットするには
+
+	style = line_label_default_style () ;
+	style.label_type = 1 ;
+	bin_lo = [1.0:20.0:0.01] ;
+	bin_hi = [1.0:20.0:0.01] ;
+	plot (bin_lo, bin_hi) ;
+	plot_group (lines, white, style) ;
+
+	## エネルギー範囲やイオンを制限するには以下のようにしておく
+
+	keV = 12.3984428 ;
+	lines = where(el_ion(Fe,[25,26]) and wl(keV/8.0,keV/6.0)) ;
+
+	## XSPECのモデルを入れる (失敗)
+
+	variable e, s, n, lo, hi, t ;
+	require ("xspec") ;
+	e = 10.0~[-1:1:0.005] ;
+	s = _mekal (5.0,e) ;
+	n = length (s) ;
+
+	evalfile("apec_d.sl");
+
+	## スペクトルをプロットする
+
+	plasma (aped) ;
+	state = default_plasma_state () ;
+	state.metal_abund = 1.0 ;
+	state.temperature = 1.0*1.1605e7 ;
+	state.elem = [Fe,Ne] ;
+	state.elem_abund = [0.1,3.0] ;
+	define_model ([state]) ;
+	bin_lo = [1:20:0.01] ;
+	bin_hi = bin_lo + 0.01 ;
+	spectrum = model_spectrum (bin_lo,bin_hi) ;
+	plot_unit ("keV") ;
+	plot (bin_lo, spectrum) ;
+
+	## 自動でラインを同定してガウスフィット (失敗)
+
+	load_data ("aho.pha") ;
+	load_rmf  ("aho.rsp") ;
+	assign_rmf (1,1) ;
+	load .scan.sl ;
+	plot_data_counts(1) ;
+	(flam,fbin) = find_lines(1,7) ;
+	n = length(flam) ;
+	d = get_data_counts(1) ;
+	for (i=0; i<n; i++){
+	    xylabel(flam[i]/12.3984428, d.value[fbin[i]],string(i));
+	}
+
+	## Plot
+
+	plasma (aped) ;
+	state             = default_plasma_state () ;
+	state.norm        = 1.0 ;
+        state.temperature = 1.1605e7 ;  
+	state.density     = 1.0 ;
+        state.metal_abund = 1.0 ; 
+	state.elem        = NULL ; 
+	state.elem_abund  = NULL ;
+	state.vturb       = 0.0 ;
+	state.redshift    = 0.0 ;
+	define_model (state) ;
+	list_model ;
+
+        bin_lo = [1.0:60.0:0.01] ; 
+        bin_hi = bin_lo + 0.01 ; 
+        c_lines  = where(el_ion(C))  ; c_flux  = model_spectrum (bin_lo, bin_hi, MODEL_LINES, c_lines) ;
+        n_lines  = where(el_ion(N))  ; n_flux  = model_spectrum (bin_lo, bin_hi, MODEL_LINES, n_lines) ;
+        o_lines  = where(el_ion(O))  ; o_flux  = model_spectrum (bin_lo, bin_hi, MODEL_LINES, o_lines) ;
+        ne_lines = where(el_ion(Ne)) ; ne_flux = model_spectrum (bin_lo, bin_hi, MODEL_LINES, ne_lines) ;
+        mg_lines = where(el_ion(Mg)) ; mg_flux = model_spectrum (bin_lo, bin_hi, MODEL_LINES, mg_lines) ;
+        si_lines = where(el_ion(Si)) ; si_flux = model_spectrum (bin_lo, bin_hi, MODEL_LINES, si_lines) ;
+        s_lines  = where(el_ion(S))  ; s_flux  = model_spectrum (bin_lo, bin_hi, MODEL_LINES, s_lines) ;
+        ar_lines = where(el_ion(Ar)) ; ar_flux = model_spectrum (bin_lo, bin_hi, MODEL_LINES, ar_lines) ;
+        fe_lines = where(el_ion(Fe)) ; fe_flux = model_spectrum (bin_lo, bin_hi, MODEL_LINES, fe_lines) ;
+	hplot (bin_lo, bin_hi, fe_flux) ;
+
+	fe_lines_flux = where(wl(1.0,60.0)) ;
+	page_group(fe_lines_flux);

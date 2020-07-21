@@ -1,0 +1,289 @@
+################################################################################
+XSPEC
+################################################################################
+
+書式
+
+	xspec or xspec11
+
+解説
+
+	かなり優秀なスペクトル解析ツール
+
+	~/.xspec/Xspec.init を編集して PLOTDEVICE: /null => PLOTDEVICE: /xw
+	とすると xspec の起動と同時に pgplot ウィンドウが立ち上がる
+	起動スクリプトは ~/.xspec/xspec.rc により設定できる
+
+	xspec11では出力ファイルなどの名前が長すぎるとエラーが出る
+	出力形式はxspec12よりxspec11の方が明らかに綺麗だ
+	xspec12以降だとモデルごとにARFを変更できる
+	2つの天体を考慮したモデルなどを入れたい場合はxspec12が必須だ
+	xspec11の方が使い方は簡単で、多くのスクリプトが使える
+	xcmファイルでバッチ化する時にはコマンドを省略してはいけない
+	Fitする時にパラメータのDelta値を調整するのがうまく合わせるコツ
+	Null Hypothesis Probability が小さいほどモデルは正しくない事を示す
+	パラメータ同士の計算はXSPEC12でしか出来ない
+	File observed count rateのパーセント値くらいは見ておくと良い
+	Xspec11は Ctrl-C が効かないので強制終了するには Ctrl-\ を押す
+	GainコマンドはRMFは動くがARFに対しては効かない
+
+コマンド
+
+	data 1 aho.pha		: スペクトル指定 (パラメータは全データで同じ)
+	data 1:1 aho.pha	: スペクトル指定 (パラメータを独立に変更可能)
+	data a.pha b.pha	: 複数スペクトル指定
+	data none  		: 読み込んだdataを消す
+	data 3 none/		: 読み込んだdata 3を消す
+	data 3 none		: 読み込んだdata 3降降を消す
+	backgrnd 1 back.pha	: Background指定 (コマンド上なら back でもOK)
+	response 1 aho.rmf	: RMF指定        (コマンド上なら resp でもOK)
+	arf 1 aho.arf		: ARF指定
+	corfile 1 back.pha	: 補正スペクトル指定 (CXBやエラー見積りに便利)
+				  ソースカウントが補正され、エラー値は変更なし
+	cornorm 1 1.00		: 補正スペクトルをそのまま(100%)引き算する
+	cornorm 1 -0.03		: 補正スペクトルの3%をソースカウントに加える
+
+	plot data		: データをリニアスケールでプロットする
+	plot ldata		: データをログスケールでプロットする
+	plot chisq		: データとモデルの残渣をプロットする
+	plot delchi		: データとモデルの残渣とエラーをプロットする
+	plot ld delchi		: Chi2統計を使用する場合はこのプロットが良い
+	plot ld chi		: Cash統計を使用する場合はこのプロットが良い
+	plot model		: モデルをプロットする (レスポンスに依存)
+	plot efficien		: 有効面積をプロットする (ARFの確認が可能)
+	plot eufspec		: モデルメインのスペクトルをプロットする
+
+	setplot chan		: 横軸をチャンネルにする
+	setplot energy		: 横軸をエネルギーにする (RMFが必要)
+	setplot wave		: 横軸を波長にする (RMFが必要)
+	setplot rebin 10 5	: ビンまとめする (表示するだけでFitに影響なし)
+	setplot rebin 3,5,1	: 3-Sigma以上か5bin以下で1グループを表示する
+				  MaxBin値がめちゃ大きいとSigma値だけが効く
+				  Sigma値がめちゃ大きいとMaxBin値が効く
+				  統計の良い所はSigma、悪い所はMaxBinが効く
+	setplot rebin ,,,sqrt   : 誤差は quad,sqrt,poiss-[1-3] から計算可能
+	setplot add 1-3		: Group 1-3 を足して表示する (fitは独立に行う)
+	setplot id 1		: 温度1keVのAPECの輝線を表示する (XSPEC12のみ)
+	setplot command [com]	: PLT(qdp)のコマンドを反映させる
+
+	ignore bad		: 使用できないチャンネルを抜く
+	ignore 1-84 849-**	: 使用しないチャンネル (整数で指定)
+	ignore **-0.1 2.0-**	: 使用しないエネルギー (実数で指定)
+	ignore 1:**-1.0 10.0-** : 対象をdata set 1だけにして使用できない範囲を指定
+	ignore **:**-1.0 10.0-**: 全部のデータセットに対して適応する場合(ver.12) 
+	notice 60-84		: ignoreしたチャンネルの復活 (整数で指定)
+	notice **-1.0		: ignoreしたエネルギーの復活 (実数で指定)
+
+	show all		: 全ステータスの表示
+	show free		: フリーパラメータのモデルだけ表示 (超便利!!)
+	show abund		: 現在使用している組成比の表示
+	show xsect		: 現在使用している断面積の表示
+
+	model (wabs*power)	: モデルの指定
+	model atable{aho.fits}	: atable形式によるモデルの指定
+	model 2:name power	: XSPEC12の場合は勝手にモデルが分離されない
+				  データ毎にモデルの名前を指定する必要あり
+	add 1 gaussian		: 1番目に gaussian モデルを追加
+	delcomp 3		: 3番目のモデルを削除
+	editmod			: モデルを再編集する
+
+	abund <option>		: 参照するabundance tableを変更する
+	      			  吸収モデルによっては使用できないtableもあるので注意
+				  where <option> is angr, aspl, feld, aneb, grsa, wilm, lodd, filename
+	xsect <option>		: 参照する光電吸収断面積tableを変更する
+	      			  where <oprion> is bcmc, obcm, vern
+				  wabsモデルだと使用できない
+	
+	mdef <EXPR>:[add|mul]	: 簡単なモデルを定義できる
+	     			  [add|mul]を選択してadd/mulモデルとして定義する
+				  ex) mdef curve (E/4.1E-9)**(0.5*a*log((E/4.1E-9)**0.5)):mul
+				      
+	newpar <ParameterNum> <Value>,<Delta>,<HardMin>,<SoftMin>,<SoftMax>,<HardMax> 
+	newpar 2 3.0		: Par.2を3.0に設定する
+	newpar 5 = 4		: Par.5をパラメータ4にリンク
+	newpar 5 = 4*2.0	: Par.5をパラメータ4の2倍にリンク
+	newpar 3 5,0.1,0,1,1,10	: Par.3をfit時に動かす量も含めて設定
+				  Value,Delta,HardMin,SoftMin,SoftMax,HardMax
+				  Fit時にHardMinやHardMaxより外側には行かない
+				  SoftMin,SoftMaxはHardMin,HardMaxに合せればよい
+	
+	new name:1 1.0		: XSPEC12の場合はモデルの名前とParを指定する
+	freeze 3		: Parameter 3 を固定値にする
+	thaw 3			: Parameter 3 をFree値にする
+	renorm			: Renormalizetion
+				  あまりにもNormが違うときに使用する
+	query yes/no		: 常に"yes/no"と答える (外す場合は"query on")
+	fit			: フィッティング
+	fit 10			: 10回フィッティング
+	gain fit		: ゲインを変更する
+	systematic 0.01		: 系統誤差1%をデータに加える
+	xset delta 0.01		: パラメータのDelta値を0.01*parValにする(Default)
+	xset delta 0.0		: パラメータのDelta値を絶対値にする
+	xset neivers 2.0	: 最新のNEIモデルを使用する時に必要
+	method leven		: BevingtonのCURFIT方式でフィットする(Default)
+	method migrad		: MINUITのMIGRAD方式でフィットする
+				  誤差行列でカイ二乗勾配が最大方向に値を動かす
+				  値は収束しにくいが高精度でおそらく最良の方法
+	method simplex		: MINUITのSIMPLEX方式でフィットする
+				  値は収束しやすいが誤差評価が出来ず処理も遅い
+	method monte		: MINUITのSEEK方式でフィットする
+				  乱数によるパラメータの変化から最小値を探す
+				  値はとても収束しやすいが結果はとても荒い
+	method minim		: MINUITのMINIMIZE方式でフィットする
+				  MIGRADでFitしてダメならSIMPLEXに切替える
+	method anneal		: help method にて詳細確認可能
+	method genetic		: help method にて詳細確認可能
+	statistic chi		: Chi-Square 方式でFitする (Default)
+	  			  Gauss分布を仮定するのでカウントが少ないとダメ
+				  Linearでfitするのでカウントの多い部分が効く
+	statistic cstat		: Cash Statistic 方式でFitする
+	  			  ポアソン分布が基本なのでいつでも問題ない
+				  式にlnが入っているので計算に時間がかかる
+				  カウント数が25以下の時はこれを使用すると良い
+				  Logでfitするので低いカウント構造も考慮する？
+				  出てくるC値はChi値とはまったく意味が異なる
+				  しかし自由度とC値が同じになればまあ良く合う
+				  モデル具合を見積もるには goodness を使用する
+				  Backgroundは引かないでモデルに足し合わせる
+				  普通に指定すればXSPECがちゃんとやってくれる
+				  chiでプロットすれば残渣の様な物が表示できる
+				  setplot rebinで表示だけ変更するのが良さそう
+	goodness 10000 sim	: BootStrap法によりモデルの具合を見積もる
+				  結果が0%になれば完璧にモデルとデータは同じ
+				  結果が100%ならばモデルは全然あっていない
+		       		  結果が50%以下なら良いらしい (マニュアルより)
+
+	parallel		: parallel processes確認
+	parallel leven 4	: fitコマンドを4coreで実行
+	parallel error 4	: errorコマンドを4coreで実行
+	parallel steppar 4	: stepparコマンドを4coreで実行
+
+	exec [Shell Command]	: シェルのコマンドを実行する
+
+	pl d del		: データ(Linear)と残差を表示
+	pl ld del		: データ(Log)と残差を表示
+	pl uf			: 縦軸を Photon 数スケールでデータ表示
+	pl euf			: 縦軸を keV スケールでデータ表示
+	pl mo			: モデルを表示
+
+	error 1 2		: Par.1,2の90% Errorを求める
+	error MAX 4.0 1 2	: Par.1,2の90% Errorを求める(Red-Chiは4.0まで)
+	error 3.0 1		: 3 sigma error for param 1
+	flux 0.7 10.0		: 0.7 keV 〜 10.0 keV のモデルフラックス
+	flux 2 5 err 1000 90	: フラックスの90%エラーを1000回計算して求める
+				  しかしエラーはNormの値を変えて求める方が良い
+	lumin			: モデルのLuminosityを計算する
+	addline			: 自動的にモデルにラインを入れる(XSPEC12)
+	identify		: 可能性のあるラインを表示する(XSPEC12)
+	modid			: 自動的にラインを見積もる(XSPEC12)
+	fakeit (none)		: RMFからモデルの疑似スペクトルを作成する
+				  プロポーザルの時には必要不可欠
+				  おまじないのnoneを付けるといきなり実行出来る
+	dummyrsp low hi	bin	: モデルフラックスの最大レンジを広げる
+
+	ftest <chi2> <dof2> <chi1> <dof1> (where chi2 < chi1)
+		     		: 2つのモデル間のF検定をする.
+				  additive componentを加えた場合でしか使えない.
+				  multiplicative componet加えた場合は使用不可.
+
+	eqwidth range <RANGE> <COMPONENT> error <NUMBER> <LEVEL>
+	eqwidth 0.05(default) 1 error 1000 90
+	eqwidth 1		: 1番モデルの Equivalent Width を見積もる
+	eqwidth 1 err 1000 90	: Eq.Wの90%エラーを1000回計算して求める
+		      	   	  パラメータのDelta値が小さすぎると値が出ない
+				  特にGaussの中心エネルギーのDelta値に要注意
+				  fitした時に全ての値が動いているかも要確認
+
+	log [file]		: ログをファイルに保存する
+	log none		: ログの記録を終了
+	cpd /xw			: pgplot表示 (color)
+	cpd /xs			: pgplot表示 (color,persistent)
+	cpd /xt			: Tek表示 (mono)
+
+	cpd aho.ps/ps		: aho.psに出力  (PostScript, Landscape)
+	cpd aho.ps/vps		: aho.psに出力  (PostScript, Portrait)
+	cpd aho.eps/cps		: aho.epsに出力 (Color PostScript, Landscape)
+	cpd aho.eps/vcps	: aho.epsに出力 (Color PostScript, Portrait)
+
+	save all aho.xcm	: 現状の設定を復元ファイルに保存する
+	iplot data		: qdpになる (コマンド上なら ip でもOK)
+	@[xcmfile]		: xcmファイルの読み込み
+
+	help			: ヘルプを見る
+	help Models bbody	: 黒体輻射モデルのヘルプ
+	help abund		: 太陽組成比のテーブルを表示
+	
+	## エラーをかなり正確に見積もりたい時は以下でコントアを作る
+	## current = Fit時にFreeパラメータを動かしつつ処理する (Default)
+	## best	   = Fit時にFreeパラメータを毎回Best値に戻しつつ処理する
+	## nolog   = ([max]-[min])/[step]を足し算しながら処理する (Default)
+	## log	   = power(([max]/[min]),1/[step])をかけ算しながら処理する
+	## Current,Bestの両方ともグリッドの各点でfitしながら計算する
+	## 処理する際には他のFreeパラメータもちゃんと設定しておく必要あり
+	## パラメータを1つにすればカイと値のコントアを作成する事も可能
+	## モデルのパラメータが複雑すぎる場合にめちゃんこ重宝するだろう
+
+	steppar [current,best] [nolog,log] par01 min01 max01 steps01 par02 ...
+	steppar best nolog 2 0.1 0.5 10 nolog 3 3e-02 6e-02 10
+	steppar current nolog 2 0.1 0.5 10 nolog 3 3e-02 6e-02 10
+
+	## 作成したコントアをプロットする場合は以下のコマンドを使用する
+	## コントアの minimum に何も指定しない場合は勝手に下限値が入る
+	## 以下のコマンドは 1-Sigma(68.3%),90%,99% の信頼区間を書く事になる
+
+	plot cont,minimum,steps,level01,level02,...,levelNN
+	plot cont,,3,2.2957,4.6052,9.2103
+
+	## 京都大学ローカルコマンド
+
+	@hard			: Hard CoPy (スペクトルを印刷)
+	@chcp			: Chou Hard CoPy (図とパラメータを印刷)
+	@ehcp			: Error Hard CoPy (図とエラー結果を印刷)
+	@cchcp			: Chou Chou Hard CoPy (不明)
+
+	## 模擬スペクトルを作成する時は、先にBGを読み込んでfakeすれば良い
+
+	data aho_bkg.pha
+	back aho_bkg.pha
+	resp aho.rmf
+	arf aho.arf
+	@model.xcm
+	fakeit
+	y
+	aho
+	aho.fak
+	100000
+	back aho_bkg.pha
+	corfile aho_bkg.pha
+	cornorm 1-2 0.0
+
+	##fakeitによる擬似スペクトルの作成
+
+	xspec11
+	@tbabs_apec.xcm                  #model
+	fakeit none
+	../../resp/xis3_sci_off.rmf 
+	../../resp/abox/xis3_abox9.arf 
+	<return> (y)
+	<return> (max 12 chars)
+	xis3_abox9_tbabs_apec5
+	1000000, 1
+	quit
+	y
+
+
+	## XSPEC12でZero Levelを示す線を黒に変える
+
+	setplot command label 2 color 1
+
+便利なモデル
+
+	pegpwrlw		: 通常のPower-Lawと違いNormがFlux表示される
+				  エネルギー範囲は Par.1 と Par.2 で指定可能
+				  Fluxの単位は 10^{-12} erg cm^{-2} s^{-1}
+	bbodyrad		: 通常のbbodyと違いNormが放射半径で表示される
+
+
+
+
+#EOF#

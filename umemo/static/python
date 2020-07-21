@@ -1,0 +1,21 @@
+################################################################################
+python
+################################################################################
+FORMAT
+
+
+
+EXPLAIN
+
+
+
+OPTION
+
+
+
+EXAMPLE
+    python3 -m http.server 8000         localserver起動
+    python -m SimpleHTTPServer 8888     localserver起動
+    
+
+#EOF#

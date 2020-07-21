@@ -1,0 +1,16 @@
+書式
+	fcarith [infile] [constant] [outfile] [options]
+
+解説
+	Fitsファイル同士の演算が行える
+	主にイメージ解析などで使用する事が多い
+
+オプション
+        ADD, +           : infile1 + infile2
+        SUB, -           : infile1 - infile2
+        MUL, *           : infile1 * infile2
+        DIV, /           : infile1 / infile2
+
+使用例
+	fcarith src.img 10.0 div.img /
+        fcarith src.img 2.0 add.img ADD

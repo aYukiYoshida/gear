@@ -1,0 +1,23 @@
+********************************************************************************
+Region(xis)
+********************************************************************************
+
+1.source region
+　作成したimage(xybinsize=1)からsource領域を指定する。
+
+  regfileのformat:ds9
+  regfileの座標系:WCS(J2000=fk5)
+　
+2.background region
+  作成したimage(xybinsize=1)からbackground領域を指定する。
+  この際に、楕円の中心をsource領域の中心に合わせたりする。
+
+  regfileのformat:ds9
+  regfileの座標系:WCS(J2000=fk5)
+　
+
+*region番号順にregion分けされていく！！
+ 特に領域の外側・内側を多数指定している場合は要注意！！！
+
+
+#EOF#

@@ -1,0 +1,396 @@
+################################################################################
+hxdreprocessv3
+################################################################################
+
+********************************************************************************
+1.HXD event file reprocess(OBS ID;404054010 404055010)
+********************************************************************************
+NXBのevent fileは20150513.txtにてdownload済み
+
+================================================================================
+Contents
+================================================================================
+1-1.link files
+1-2.make hk file list
+1-3.hxdtime & hxdpi & hdgrade
+1-4.prepare to extract events
+1-5.extract events
+1-6.keyward "DETNAM" の書き換え
+1-7.keyward "TIMEDEL" の書き換え
+1-8.zip wel_rp eventfile
+
+
+================================================================================
+1-1.link files
+================================================================================
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp
+ln -sf ${dir}/${id}/auxil/ae${id}.ehk.gz
+ln -sf ${dir}/${id}/auxil/ae${id}.tim.gz
+ln -sf ${dir}/${id}/auxil/ae${id}.orb.gz
+ln -sf ${dir}/${id}/hxd/hk/ae${id}hxd_0.hk.gz
+ln -sf ${dir}/${id}/hxd/event_uf/ae${id}hxd_1_wel_uf.evt.gz
+ln -sf ${dir}/${id}/hxd/event_uf/ae${id}hxd_2_wel_uf.evt.gz
+done
+
+
+================================================================================
+1-2.make hk file list
+================================================================================
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp
+cat << EOF >! hk_file.lis
+ae${id}hxd_0.hk.gz
+ae${id}.ehk.gz
+EOF
+done
+
+
+================================================================================
+1-3.hxdtime & hxdpi & hxdgrade
+================================================================================
+hxdtime_com="hxdtime read_iomode=create time_change=n pi_pmt_change=n pi_pin_change=n gtimode=y gti_time=S_TIME time_convert_mode=4 use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+hxdpi_com="hxdpi read_iomode=overwrite time_change=n grade_change=n pi_pmt_change=y pi_pin_change=y gtimode=n gti_time=S_TIME rand_seed=7 rand_skip=0 use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+hxdgrade_com="hxdgrade hxdgrade_psdsel_criteria=2 read_iomode=overwrite time_change=n grade_change=y pi_pmt_change=n pi_pin_change=n gtimode=n gti_time=S_TIME use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp
+for j in 1 2 ;do
+${hxdtime_com} << EOF |tee HXDTIMELog/ae${id}hxd_${j}_wel_rp_hxdtime.txt
+ae${id}hxd_${j}_wel_uf.evt.gz
+ae${id}hxd_${j}_wel_rp.evt
+CALDB
+@hk_file.lis
+ae${id}.tim.gz
+EOF
+
+${hxdpi_com} << EOF |tee HXDPILog/ae${id}hxd_${j}_wel_rp_hxdpi.txt
+ae${id}hxd_${j}_wel_rp.evt
+CALDB
+@hk_file.lis
+CALDB
+CALDB
+CALDB
+CALDB
+ae${id}.orb.gz
+EOF
+
+${hxdgrade_com} << EOF |tee HXDGRADELog/ae${id}hxd_${j}_wel_rp_hxdgrade.txt
+ae${id}hxd_${j}_wel_rp.evt
+CALDB
+CALDB
+CALDB
+EOF
+
+done
+done
+
+
+================================================================================
+1-4.prepare to extract events
+================================================================================
+--------------------------------------------------------------------------------
+1-4-1.copy and link files
+--------------------------------------------------------------------------------
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp
+cp ${dir}/${id}/auxil/ae${id}.mkf.gz .
+gunzip ae${id}.mkf.gz
+ln -sf ${dir}/${id}/hxd/hk/ae${id}hxd_1_tel_uf.gti.gz
+ln -sf ${dir}/${id}/hxd/hk/ae${id}hxd_2_tel_uf.gti.gz
+wget http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/pin_mkf.sel
+wget http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/gso_mkf.sel
+done
+
+
+--------------------------------------------------------------------------------
+1-4-2.mgtime of telemetry GTI
+--------------------------------------------------------------------------------
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp
+
+mgtime << EOF |tee GTIMargeLog/ae${id}hxd_0_tel_uf_merge.txt
+ae${id}hxd_1_tel_uf.gti.gz ae${id}hxd_2_tel_uf.gti.gz 
+ae${id}hxd_0_tel_uf.gti 
+OR
+EOF
+gzip ae${id}hxd_0_tel_uf.gti
+done
+
+
+--------------------------------------------------------------------------------
+1-4-3.make event list
+--------------------------------------------------------------------------------
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp
+ls ${dir}/${id}/hxd/event_rp/ae${id}hxd_?_wel_rp.evt >! ae${id}hxd_0_wel_rp.lis
+done
+
+
+================================================================================
+1-5.extract events
+================================================================================
+det=(pin gso)
+DETTYPE=(1:1 0:0)
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp 
+for i in 1 2 ;do
+cat << EOF >! ae${id}hxd_0_${det[${i}]}_rp_xsel.txt
+
+read event ae${id}hxd_0_wel_rp.lis
+./
+select mkf @${det[${i}]}_mkf.sel
+./
+filter column "DET_TYPE=${DETTYPE[${i}]}"
+filter time file ae${id}hxd_0_tel_uf.gti.gz
+extract event 
+save event ae${id}hxd_0_${det[${i}]}no_rp.evt
+yes
+exit
+no
+EOF
+done
+ysp -rx
+done
+
+
+================================================================================
+1-6.keyward "DETNAM" の書き換え
+================================================================================
+det=(pin gso)
+DET=(PIN GSO)
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp 
+for i in 1 2 ;do
+for j in 0 1 ;do
+fparkey comm="detector name" add=no << EOF
+WELL_${DET[${i}]}
+ae${id}hxd_0_${det[${i}]}no_rp.evt[${j}]
+DETNAM
+EOF
+done
+done
+done
+
+書き換えできたか確認
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp 
+for det in pin gso ;do
+fkeyprint ae${id}hxd_0_${det}no_rp.evt DETNAM
+done
+done
+
+以下出力結果
+# FILE: ae404054010hxd_0_pinno_rp.evt
+# EXTENSION:0 DETNAM  = 'WELL_PIN'           / detector name
+# EXTENSION:1 DETNAM  = 'WELL_PIN'           / detector name
+# EXTENSION:2  
+
+# FILE: ae404054010hxd_0_gsono_rp.evt
+# EXTENSION:0 DETNAM  = 'WELL_GSO'           / detector name
+# EXTENSION:1 DETNAM  = 'WELL_GSO'           / detector name
+# EXTENSION:2
+
+# FILE: ae404055010hxd_0_pinno_rp.evt
+# EXTENSION:0 DETNAM  = 'WELL_PIN'           / detector name
+# EXTENSION:1 DETNAM  = 'WELL_PIN'           / detector name
+# EXTENSION:2
+ 
+# FILE: ae404055010hxd_0_gsono_rp.evt
+# EXTENSION:0 DETNAM  = 'WELL_GSO'           / detector name
+# EXTENSION:1 DETNAM  = 'WELL_GSO'           / detector name
+# EXTENSION:2
+
+
+================================================================================
+1-7.keyward "TIMEDEL" の書き換え
+================================================================================
+det=(pin gso)
+DET=(PIN GSO)
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp 
+for i in 1 2 ;do
+for j in 0 1 ;do
+fparkey comm="finest time resolution" add=no << EOF
+6.1E-05
+ae${id}hxd_0_${det[${i}]}no_rp.evt[${j}]
+TIMEDEL
+EOF
+done
+done
+done
+
+書き換えできたか確認
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp 
+for det in pin gso ;do
+fkeyprint ae${id}hxd_0_${det}no_rp.evt TIMEDEL
+done
+done
+
+以下出力結果
+# FILE: ae404054010hxd_0_pinno_rp.evt
+# EXTENSION:0 TIMEDEL = 6.1E-05 / finest time resolution
+# EXTENSION:1 TIMEDEL = 6.1E-05 / finest time resolution
+# EXTENSION:2
+ 
+# FILE: ae404054010hxd_0_gsono_rp.evt
+# EXTENSION:0 TIMEDEL = 6.1E-05 / finest time resolution
+# EXTENSION:1 TIMEDEL = 6.1E-05 / finest time resolution
+# EXTENSION:2
+
+# FILE: ae404055010hxd_0_pinno_rp.evt
+# EXTENSION:0 TIMEDEL = 6.1E-05 / finest time resolution
+# EXTENSION:1 TIMEDEL = 6.1E-05 / finest time resolution
+# EXTENSION:2
+ 
+# FILE: ae404055010hxd_0_gsono_rp.evt
+# EXTENSION:0 TIMEDEL = 6.1E-05 / finest time resolution
+# EXTENSION:1 TIMEDEL = 6.1E-05 / finest time resolution
+# EXTENSION:2
+
+
+================================================================================
+1-8.zip reprocess wel_eventfile
+================================================================================
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+for id in 404054010 404055010 ;do
+cd ${dir}/${id}/hxd/event_rp
+for i in 1 2 ;do
+gzip ae${id}hxd_${i}_wel_rp.evt
+done
+done
+
+
+********************************************************************************
+2.PSE cleaned eventの検出器由来のsignalの除去(OBS ID;404054010 404055010)
+********************************************************************************
+for id in 404054010 404055010 ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+cd ${dir}/${id}/hxd/event_rp
+ln -sf ${dir}/${id}/hxd/event_cl/ae${id}hxd_0_pse_cl.evt.gz
+input="ae${id}hxd_0_pse_cl.evt.gz+1"
+output="ae${id}hxd_0_pse_pure.evt"
+fselect infile=${input} outfile=${output} expr="GRADE_HITPAT<=1 && GRADE_QUALTY==0" histkw=yes
+gzip ae${id}hxd_0_pse_pure.evt
+done
+
+
+********************************************************************************
+3.Barycentric Correct event files(OBS ID;404054010 404055010)
+********************************************************************************
+================================================================================
+Contents
+================================================================================
+3-1.Reprocessed event files
+3-2.NXB event file files
+3-3.PSE event file files
+
+
+================================================================================
+3-1.Reprocessed event files
+================================================================================
+for id in 404054010 404055010 ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+orbit=${dir}/${id}/auxil/ae${id}.orb.gz
+RA=`fkeyprint ${orbit}+0 RA_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+DEC=`fkeyprint ${orbit}+0 DEC_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+
+cd ${dir}/${id}/hxd/event_rp
+
+for dt in pinno gsono ;do
+evt=ae${id}hxd_0_${dt}_rp.evt
+aebarycen << EOF |tee BarycenLog/${evt%.evt}_barycen.txt
+${evt}
+${orbit}
+${RA}
+${DEC}
+EOF
+gzip ${evt}
+done
+done
+
+
+================================================================================
+3-2.NXB event file files
+================================================================================
+--------------------------------------------------------------------------------
+3-2-1.Add parameter needed to Barycentric Correct with fparkey 
+--------------------------------------------------------------------------------
+for id in 404054010 404055010 ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+orbit=${dir}/${id}/auxil/ae${id}.orb.gz
+RA=`fkeyprint ${orbit}+0 RA_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+DEC=`fkeyprint ${orbit}+0 DEC_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+cd ${dir}/${id}/hxd/event_rp
+for dt in pin gso ;do
+evt=ae${id}_hxd_${dt}bgd.evt.gz
+gunzip ${evt}
+for key in TIMEREF TIMESYS TELESCOP TIMEUNIT RADECSYS TSTART TSTOP ;do
+evtorg=ae${id}_hxd_${dt}bgd.evt.gz.org
+val=`fkeyprint ${evtorg}+0 ${key}|sed -n "s/=//p"|sed "s/'//g"|awk '{print $2}'`
+com=`fkeyprint ${evtorg}+0 ${key}|sed -n "s/[=]//p"|sed "s/[\/']//g"|sed "s/${key}//g"|sed "s/${val}//g"`
+fparkey ${val} "${evt%.gz}+2" ${key} add=yes comm="${com}"
+done
+done
+done
+
+
+--------------------------------------------------------------------------------
+3-2-2.aebarycen
+--------------------------------------------------------------------------------
+for id in 404054010 404055010 ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+orbit=${dir}/${id}/auxil/ae${id}.orb.gz
+RA=`fkeyprint ${orbit}+0 RA_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+DEC=`fkeyprint ${orbit}+0 DEC_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+
+cd ${dir}/${id}/hxd/event_rp
+
+for dt in pin gso ;do
+evt=ae${id}_hxd_${dt}bgd.evt
+aebarycen << EOF |tee BarycenLog/${evt%.evt}_barycen.txt
+${evt%.gz}
+${orbit}
+${RA}
+${DEC}
+EOF
+gzip ${evt}
+done
+done
+
+
+================================================================================
+3-3.PSE event file files
+================================================================================
+for id in 404054010 404055010 ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+orbit=${dir}/${id}/auxil/ae${id}.orb.gz
+RA=`fkeyprint ${orbit}+0 RA_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+DEC=`fkeyprint ${orbit}+0 DEC_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+
+cd ${dir}/${id}/hxd/event_rp
+evt=ae${id}hxd_0_pse_pure.evt.gz
+gunzip ${evt}
+aebarycen << EOF |tee BarycenLog/${evt%.evt.gz}_barycen.txt
+${evt%.gz}
+${orbit}
+${RA}
+${DEC}
+EOF
+gzip ${evt%.gz}
+done
+
+
+#EOF#

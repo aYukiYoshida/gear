@@ -1,0 +1,61 @@
+################################################################################
+tar
+################################################################################
+
+書式
+
+解説
+	ファイルの書庫化
+
+オプション
+
+使用例
+	tar xvfj aho.tar.bz2		: tar.bz2 解凍
+	tar cvfj aho.tar.bz2 ./aho/	: tar.bz2 圧縮
+
+	tar cf - -C ~/ .
+
+
+	~/をディレクトリ構成そのままで/data/ahoにコピーする
+	tar cf - -C ~/ . | tar xpf - -C /data/aho
+
+	展開する
+	tar xf foo.tar
+	tar xvf foo.tar
+        tar xzf foo.tar.gz (zcat foo.tar.gz | tar xf -)
+	tar xjf foo.tar.bz2 (bzcat foo.tar.bz2 | tar xf -)
+	tar Jxf foo.tar.xz (xzcat foo.tar.xz|tar xf -)
+	tar xpf - foo.tar   : pオプションを指定すると、可能な限り元通りの許可属性を再現する。
+	tar xpf - foo.tar -C ~/	: -Cオプションを指定すると、展開先ディレクトリ
+	tar xf - foo.tar foo/README : 一部のファイルのみを取り出す
+
+	固める
+	tar cf foo.tar foo
+	tar cvf foo.tar foo
+        tar czf foo.tar.gz foo (tar cf - foo | gzip --best > foo.tar.gz)
+	tar cjf foo.tar.bz2 foo (tar cf - foo | bzip2 > foo.tar.bz2)
+	tar cJf foo.tar.xz foo 
+
+	その他
+
+    * 書庫の中身を確認する
+
+      tコマンドで書庫ファイルの中身を確認できる。vオプションを追加すると ファイル名以外の詳細情報まで表示される。
+
+      % tar tvf foo.tar                 # tarファイル
+      % zcat foo.tar.gz | tar tvf -     # tar.gzファイル
+      % tar tvzf foo.tar.gz             # 同上: GNU tarなら可
+      % bzcat foo.tar.bz2 | tar tvf -   # tar.bz2ファイル
+      % tar tvjf foo.tar.bz2            # 同上: GNU tar 1.13系以降なら可
+        
+
+/usr/bin/tar cf - -C /home/root . | /usr/bin/tar xpf - -C /root > /dev/null 2>&1
+      
+    * tarから特定のファイルだけ取り出す
+	tar -tvf ???.tar         :  アーカイブ"???.tar"の内容を表示
+      	tar -xvf ???.tar xxx.xxx :  アーカイブ"???.tar"からxxx.xxxを取り出す
+
+#EOF#
+
+
+

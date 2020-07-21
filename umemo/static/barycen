@@ -1,0 +1,56 @@
+################################################################################
+barycen
+################################################################################
+X線パルサーなど周期解析や時系列解析をする天体において
+他の観測衛星の観測データと比較する際に必要なデータリダクション。
+
+event fileを読み込む。
+
+1.example
+2.example2
+
+********************************************************************************
+1.example
+********************************************************************************
+
+■ example1
+orbit=/data09/yyoshida/data/SCF_effect/GX_14/auxil/ae405077010.orb.gz
+RA=263.0092
+DEC=-24.7456
+
+for i in event_cl/*.evt.gz ;do
+gunzip ${i}
+aebarycen << EOF |tee ${i%.evt.gz}_barycen.txt
+${i%.gz}
+${orbit}
+${RA}
+${DEC}
+EOF
+gzip ${i%.gz}
+done
+
+■ example2(lman_dai)
+barycen table="pn_cl2_bary.evt:EVENTS" srcra="5h46m45s" srcdec="-71d8m54s" processgtis="no"
+
+********************************************************************************
+2.example2 (some events)
+********************************************************************************
+
+orbit=/data09/yyoshida/Data/Suzaku/A0535_262/100021010/auxil/ae100021010.orb.gz
+RA=`fkeyprint ${orbit}+0 RA_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+DEC=`fkeyprint ${orbit}+0 DEC_OBJ|sed -n '/=/p'|awk '{printf "%f\n" , $3}'`
+
+for i in ae100021010hxd_pinno_rp.evt.gz ae100021010hxd_gsono_rp.evt.gz ae100021010_hxd_pinbgd.evt.gz ae100021010_hxd_gsobgd.evt.gz ;do 
+gunzip ${i}
+aebarycen << EOF |tee BarycenLog/${i%.evt.gz}_barycen.txt
+${i%.gz}
+${orbit}
+${RA}
+${DEC}
+EOF
+gzip ${i%.gz}
+done
+
+
+
+#EOF#

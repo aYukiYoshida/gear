@@ -1,0 +1,83 @@
+********************************************************************************
+linux_setup
+********************************************************************************
+・emacsのインストール
+　sudo apt-get install emacs23
+
+
+・ログイン時に-Xを省略できるようにする/学外からのagyoのログインを楽にする
+
+　ローカルの.sshフォルダの中にconfigを作る(emacs/gedit等)
+
+　configの中身
+
+　*********************
+　ForwardX11 yes
+　Host agyo
+　HostName agyo.rikkyo.ac.jp
+　User yyoshida
+　Host ungyo
+　HostName ungyo.rikkyo.ac.jp
+　User yyoshida
+　*********************
+
+・xraysetup suzakuを省略
+  
+ /automount/home/agyo/yyoshida/.zshrcに"xraysetup suzaku"と書き込む。
+
+
+・localeの追加
+　
+ % grep ja /usr/share/i18n/SUPPORTED  # サポートされているロケールの確認
+ % sudo locale-gen ja_JP.EUC-JP       # localeを追加
+
+
+・homeディレクトリを英語表記に変換
+ 
+ % LANG=C xdg-user-dirs-gtk-update
+
+ 
+・grubのタイムアウトをなくす。
+
+　% sudo gedit /etc/default/grub
+  
+  開いたファイルのGRUB TIMEOUTを
+　GRUB TIMEOUT=-1
+  にする。変更反映のために
+　　
+　% sudo update-grub
+
+  を実行する。
+
+
+・sshの接続時のタイムアウトをなくす。
+
+  "Write failed: Broken pipe"と表示されてタイムアウトに対する対応
+  ~/.ssh/configに以下の内容を記述
+  
+   ServerAliveInterval 15
+   ServerAliveCountMax 10
+
+  この設定で15秒ごとに10回応答確認をサーバに送り、
+  それでも応答がない場合にタイムアウトとなる
+
+
+・プリンタの設定 
+　システム管理>印刷>追加>ネットワークプリンタ>各プリンタのIPを入力	
+  OKI_C5900( IP : 150.93.145.176 )
+  DocuPrintC3200( IP : 150.93.144.52 ) (前)
+  DocuPrintC3200( IP : 150.93.145.216 )(奥)
+
+
+
+
+・boot画面のOSを表示させなくする。←以下の作業ではうまくいかなかった。(効果なし)
+
+  /boot/grub/menu.lstの中身を変更する。
+
+
+  $ sudo gedit menu.lst
+  として、表示させなくしたいOSのtitleを"#"でコメントアウトする。
+
+
+

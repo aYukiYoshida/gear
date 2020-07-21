@@ -1,0 +1,22 @@
+################################################################################
+fextract
+################################################################################
+FORMAT
+
+   fextract infile[ext#] outfile[ext#]
+
+
+EXPLAIN
+
+
+
+OPTION
+
+
+
+EXAMPLE
+
+   fextract xis0_nxb.pi[3] xis0_nxb_skyimg.img
+
+
+#EOF#

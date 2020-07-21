@@ -1,0 +1,28 @@
+################################################################################
+jobs
+################################################################################
+FORMAT
+	
+
+
+
+EXPLAIN
+
+	実行中のプロセスの確認
+	Ctrl-Zとかでsuspendedさせたプロセスの復活させる.
+	コマンドライン実行時に, "&" を付加してバックグラウンドで
+	実行しているプロセスをフォアグラウンドに戻す.
+
+OPTION
+
+
+
+EXAMPLE
+	yyoshida@aka) jobs
+	[1]  + suspended  xsp < phase13_factor_subph2_xspfit.xcm
+	
+	yyoshida@aka) fg %1
+	[1]  + 21155 continued  xsp < phase13_factor_subph2_xspfit.xcm
+
+
+#EOF#

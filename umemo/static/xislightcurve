@@ -1,0 +1,63 @@
+********************************************************************************
+light curve(xis)
+********************************************************************************
+
+1.source
+　xselectでsource regionのfilterをかけて、lcを抽出する。
+　この際、regionが xybinsize=1 で作成されているので、
+　xybinsize=1にする必要がある。
+　ここで、binまとめしておくといい。←バックグラウンドとbinsizeを統一する。
+　*すざくファーストステップガイドP.50参照のこと。
+
+2.background
+　source領域同様、xselectでbackground regionのfilterをかけて、lcを抽出する。
+　この際、regionが xybinsize=1 で作成されているので、
+　xybinsize=1にする必要がある。
+　ここで、binまとめしておくといい。←ソースとbinsizeを統一する。
+　*すざくファーストステップガイドP.50参照のこと。
+
+3.source lcからbackground lcを引く
+　fkeyprintでbackscaleを確認する。
+
+　fkeyprint src(bgd).pi
+　→パラメータを聞かれるので BACKSCAL と答えると
+　
+##################################################################
+# FILE: src(bgd).pi
+# KEYNAME: BACKSCAL
+ 
+# EXTENSION:    0
+ 
+# EXTENSION:    1
+BACKSCAL=         2.071050E-01 / background file scaling factor
+ 
+# EXTENSION:    2
+ 
+# EXTENSION:    3
+##################################################################
+
+ のように出力される。この値は、全領域を1にしたとき、
+ regionがどのくらいの大きさかを表している。
+ なので、単純にregionの大きさと考えられる。
+
+ ソースとバックグラウンドのregionの大きさの比を求める。
+ この比の値は、以下の lcmath の作業の際に用いる。
+
+ ソース領域の大きさとバックグラウンド領域の大きさを等しくするために、
+ lcmathでは、ファクターをかけることで、調節する。
+ ソース領域をそのままの大きさで使う場合、
+ ソース領域のファクターを1とする。
+ このとき、バックグラウンド領域のファクターが
+ いくらになるかを考えると、
+
+ ${bgd_factor}=(src領域の大きさ)/(bgd領域の大きさ)
+
+ となる。この値を使ってsrc-bgdの計算を行う。
+
+ lcmath src.lc bgd.lc nbg.lc 1 ${bgdfactor}
+ Add instead of subract?[no] no            #引き算の代りに足し算を使う場合は"YES"
+ lcurveでできたnbg.lcを読み込んで、出力する。
+ *すざくファーストステップガイドP.60参照
+
+
+#EOF#

@@ -1,0 +1,467 @@
+################################################################################
+kyotocrfaq
+################################################################################
+http://www-cr.scphys.kyoto-u.ac.jp/local/asca/xraysoft_FAQ/answers.html
+cr.xray.soft local FAQ
+Part of Answers
+
+FRF がどのCDに入っているか知りたい 
+
+/usr/local/astrod/mt2frf/frfcdlist を参照して下さい。
+
+αでMKFILTERを走らせると、なぜか浮動小数点エラーが出てこけます 
+
+なぜかは良くわかりませんが、αで走らせるとこけたものが、 Ultrixで走らせるとうまくいく、ということがしばしばあるようです。
+(こまったもんです。。。)
+
+SAA から出た後の一定の時間のデータを切りたい (T_SAA) 
+`select MKF' において、表現 
+　　　「(T_SAA < 0) || (T_SAA > 60)」
+などを使って下さい。「初めての表街道」には推奨値として、
+　　　「T_SAA > 60 (sec)」
+が載っていますが、これだと最初の SAA に入るまでのデータが捨てられてしまいます。
+
+(∵) 
+　MKFILTERに含まれているT_SAA(SAAからの経過時間)というキーワードには、 観測が始まって最初のSAAに入るまでは負の値 (-99?) が入っています。(by 海老沢) 
+衛星の日照⇔日陰の変化直後のデータを切りたい (T_DY_NT) 
+
+`select MKF' において、表現 
+　　　「(T_DY_NT < 0) || (T_DY_NT > 100)」
+などを使って下さい。「初めての表街道」には推奨値として、
+　　　「T_DY_NT > 100 (sec)」
+が載っていますが、これだと最初の日照⇔日陰の変化までのデータが 捨てられてしまいます。 理由は、T_SAAの場合と同じです。 
+region file の座標系を拡大、縮小したいんだけど。
+
+尾崎氏作のフィルタースクリプト
+~ozaki/scripts/asca/magreg があります。 以下、cr.xray.soft 96/06/06 #981 From:ozaki の記事から転載。
+
+MAGnify REGion の意。使い方は、
+
+    magreg  拡大率  [入力ファイル]
+
+です。拡大率は、例えば 4bin まとめイメージで作った region file を
+binning 無し用に変換する時は、4、を指定します。
+入力ファイルを省略すると、標準入力から読みます。出力は、いつでも
+標準出力へ出ます。
+
+
+"filter time file" で読み込ませるファイルの中の単位は何ですか?
+
+ASCATIME 
+
+`ximage' で描いた図の上に丸とか直線で図形を書き込みたい
+
+`ximage'の"circle"コマンド、または、"box"コマンドを使う
+"circle"コマンドや、"box"コマンドにより、saoimageのファイル を読み込ませる。ただしこの時、saoimageで表示される領域とは、 0.5pixelか 1pixelかずれるので、注意が必要である。
+線画としてセーブ後、xfig で取り込んで、加工
+線画として、Mac に取り込んで、加工 (cr.comp FAQ の記事)
+gif 形式で取り込んで加工
+まず、＊SUN＊の ximage で、gif 形式でイメージをセーブする。 方法は、cpd とだけうったらデバイス名が出てくるはずだから、 それらしき物を選ぶ。
+どの機械でもいい、ximage で画像を表示したら、xv の grab コマンドを使って gif ファイルとして取り込む。
+次に、＊Alpha＊の /usr/local/X11/games/bin/xpaint を使って 絵を加工する。
+最後に、xv を使って gif 形式の絵を PostScript に直す。
+
+
+`ximage' のコントアマップのグリッドがプリントアウトされません！
+
+ximage で、プロットデバイスを /PS あるいは /cps と指定してポストスクリプトファイルを作った時、グリッドがかすれたり、見えなかったりします。 これは、ximage の中でポストスクリプトに落とす時、画面の色そのまま落とそうとするからです。つまり、白いグリッドは、白い紙の上に白く表示されます。 (＝何もプリントされない)
+コントアマップの時は、上野さん作のコマンド 'cont' を使って、
+
+cont | lpr
+とすることにより、グリッドが黒くくっきりと表示されます。
+あるいは、
+grid/color=4
+contour/color=1
+などと色を変えてやると(上が黒、下が青)、しっかり印刷されるでしょう。デフォルトは何と白です！ ただ、ximage で作ったイメージは、iraf などで作ったイメージほど美しくないので、 論文などに投稿する画像は、ximage では作らない方がいいかもしれません。 
+
+`XRONOS' のデフォルトの時間軸の単位って何？ 
+
+ascahelp に尋ねたところ、
+
+  The time on the xaxis is TJD (Truncated Julian Days TJD= JD-2440000.5)
+だそうです。ちなみに、
+        MJD (Modified Julian Days) = JD-2400000.5 [day])
+だから、
+        TJD = MJD - 40000 [day]
+です。よって、ASCA TIME は、
+        (ASCA TIME) = MJD - 48988.0 = TJD - 8988.0
+となります。 
+
+`XRONOS' でPSDは、どういうアルゴリズムで計算しているのでしょう? 
+
+PSDは次の順番で計算されます。データにgapを持つ場合やdataをrejectした人は 気をつけて下さい。誤ったPSDを出すことがあります。
+
+dataの平均値を求め、dataから平均値を差し引く。
+gapやrejectによりデータが抜けた場合は、抜けた箇所に0を入れる。
+FFTをかける。
+
+
+`XRONOS' のPSDの結果のNormalizationの単位は何? 
+
+(manualのP43 normalizationの頁を見て下さい。)
+
+default(=1)では、PSDはWHITE NOISEでnormalizeされた形(=1)で出力されます。 つまり
+
+1/WN~2/Hz
+です。他の人のデータと比較した時は注意して下さい。 もし、normalized PSDを出したい時は、parameterの値を2に変更して下さい。 こうすると、
+(rms)^2/(avg)^2/Hz
+となります。 また、WHITE NOISEの成分を差し引きたい時は、-1, -2というように-の値で指定 してください。 normalizationに関するパラメータの変更は、xronosの上で$cpf[RET]でできます。 PSDのnormalizationに関するパラメータは#11なので、そこで-2～2のいづれかの 値を入れて下さい。 
+
+xspecからプロッティング（印刷）するためのスクリプトを教えて下さい
+
+@hard
+単に、スペクトルを印刷。
+@chcp ("超Hard CoPy" by Ueno)
+CRのスタンダード。上側にスペクトル、下側にshow allの結果を載せた プリントアウトが出ます。show all の結果が長い時は、次の紙に出てくる というすぐれものです。 マニュアルも御覧下さい。
+姉妹版の @cchcp では、スペクトルがカラーで出ます。
+いずれも、dw、dwcには出力されないので、ご注意!!
+@ehcp ("Error Hard CoPy" by Sakano)
+エラー他もプリントアウトしたい時。スペクトルは、カラーで出ます。
+@ehcp MAX 3.0 1-3 5-**
+というように使います。 マニュアルも御覧下さい。
+dw、dwcには出力されないので、ご注意!!
+@ehcp_new ("Error Hard CoPy" by Sakano?)
+もっと便利になったはずだが。
+@nmhcp (by Ueno)
+詳しい使い方を筆者は知りません (_o_)
+
+スペクトルファイルからその視野立体角が知りたい
+
+pha ファイルの BACKSCAL フィールドから視野立体角を求める 尾崎氏作のスクリプトがあります。
+~ozaki/scripts/asca/pha2area
+
+です。以下、cr.xray.soft 96/06/24 #1013 From:ozaki の記事から 引用します。 
+> 引数として pha ファイル名 (複数可) を与えると、視野立体角を
+> 出力します。引数を与えなければ標準入力から読みます。
+
+補足。BACKSCAL は、当然ながら xselect (の中の、extractor) が書いた
+値でないといけません。勝手に BACKSCAL を書き換えてしまったら、
+デタラメな値が得られます。一応、[0, 1] に収まっていなければ計算しない
+ようにはなってますけど。
+
+『BACKSCAL には全イメージに対する抽出領域の面積比が書かれている』
+と仮定して計算しています。従って、これが実は誤解だったら出力は全く当てに
+なりません。
+
+＃ 間違ってる／正しい等の情報、お待ちしています。
+
+全イメージの大きさは、検出器名 (INSTRUME フィールド) から推定します。
+
+ヘッダ情報は、全て primary header から取得します。
+
+Background スペクトルって、どこかにあります？
+
+/xray-db/asca/bev0/bgd/ の下に、CRの先人たちが 集めたバックグラウンドがあります。使用に際しては、各ディレクトリの 下にある README fileをお読み下さい。 
+不規則的にbinningしたsourceスペクトルに対し、backgroundスペクトルもまったく 同じように binning して、カウント数をbin-to-binで比較したいんですが?
+
+次のような方法があります。
+
+grpphaでsourceスペクトル(src.pha)を読み込む。 (dmy.phaは、ダミーの出力ファイル)
+% grppha src.pha dmy.pha
+grpfile.dat というファイルに読み込んだスペクトルのbinning情報を書き込む。
+GRPPHA[] dump group grpfile.dat
+同じbinningを施したいスペクトル(bgd.pha)を読み込み、binning後の
+出力ファイル(binned_bgd.pha)も指定する。 % grppha bgd.pha binned_bgd.pha
+binningする。
+GRPPHA[] group grpfile.dat
+できあがり! 
+
+対話型'FTOOLS'を、非対話型で（バックグラウンドで）使いたい
+
+sakano@monju% grppha infile.pha outfile.pha 
+
+grppha>> group 0 1023 4 
+
+grppha>> exit 
+
+sakano@monju%
+
+などと使いたければ、
+% grppha infile.pha outfile.pha "group 0 1023 4&exit"
+などのようにするとよいです。
+あと、/usr/local/bin/expect を使えば、どんな対話型ソフトも 非対話型で動かせます。 
+'xspec'の図を Texに張り付ける時、90度回転させたい 
+xspecが作るPostScriptをTeXに張り付けるためには、 90度回転させる必要があります。そのために
+~sakano/bin/land2port
+を使うとよいでしょう(OSF/1, Ultrix, Sun いずれもOK)。 使い方はこちらです。
+このスクリプトの中では、以下のようなことを実現していますので、 詳しく知りたい方は続けて読んでみて下さい。
+
+
+%%BoundingBox: 25 18 587 774 
+を
+%%BoundingBox: 0 0 756 562 
+にします。
+この心は、
+新しいX軸 0 ～ 0+(774-18)=756
+新しいY軸 0 ～ 0+(587-25)=562 です 。
+
+8150 250 translate 90 rotate 
+を
+0 0 translate 0 rotate 
+にするか、あっさり消します。
+
+%%Orientation: Landscape 
+を
+%%Orientation: Portrait
+これで、TeXでepsfを使った場合とghostviewを使った場合も望み通りの 方向で絵が出力できます。ghostview は、EPSF コメントをきちんと 解釈して領域の切り出しや回転等まで面倒を見てくれるのです。 gs ではチョン切れたようにでますが、gs 起動時に -g オプションで表示 サイズを変える事で対処できるのかもしれません。gs -help でなにやら ヘルプが出ます。しかし、この場合はghostviewを使えばよいので問題なし。 
+
+QL用の 1CCD Nominal の arfってなーい？
+
+/usr/local/xbldrsp/rsp/s0c1g0234p40e1_512_1av0_8i.rsp 
+です (S0C1+S1C3)。
+
+各検出器のチャンネルとエネルギーとの対応を教えて下さい。
+
+GIS についてはこちらを参照。以下 SIS。
+Path: news-cr.scphys.kyoto-u.ac.jp!tsuru
+From: tsuru@cr.scphys.kyoto-u.ac.jp (Takeshi Go Tsuru)
+Newsgroups: cr.xray.soft
+Subject: Re: Energy - Channel
+Date: 25 Feb 1996 08:41:05 GMT
+Organization: Cosmic Ray Group, Dept. of Physics, Kyoto Univ., Japan
+Lines: 94
+Message-ID: <4gp7b1$qvv@miroku.scphys.kyoto-u.ac.jp>
+References: <4gmfhf$ugt@miroku.scphys.kyoto-u.ac.jp>
+NNTP-Posting-Host: monju.scphys.kyoto-u.ac.jp
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-2022-JP
+X-Newsreader: mnews [version 1.17] 1994-01/27(Thu)
+
+鶴 剛＠ＣＲです。
+
+<4gmeo4$2mh@miroku.scphys.kyoto-u.ac.jp>の記事において
+tsuru@cr.scphys.kyoto-u.ac.jpさんは書きました。
+>> 実に基本的なことですが、GISのEnergy Ch (PI)と実際エネルギーの関係を
+>> 教えて頂けないでしょうか？
+さっき松本君に教えて貰いましたが、SISってややこしいですね。。。
+
+流れとしては、下のようですね。
+
+テレメトリ
+		Bright				Faint
+		0 - 2047ch			0 - 4095
+
+		0 ～ 1023ch:			El(ch) = 3.65[eV] * ch
+		El(ch) = 3.65[eV] * ch			～
+			～ 3.65[eV] * (ch + 1)		3.65[eV] * (ch + 1)
+		1024 ～ 1535ch:
+		El(ch) = 3.65[eV] * 1024
+			+ 3.65*2[eV] * (ch-1024)
+				～
+			3.65[eV] * 1024
+			+ 3.65*2[eV] * (ch-1024 + 1)
+
+		1536 ～ 2047ch:
+		El(ch) = 3.65[eV] * 1024
+			+ 3.65*2[eV] * (1536-1024)
+			+ 3.65*4[eV] * (ch-1536)
+				～
+			3.65[eV] * 1024
+			+ 3.65*2[eV] * (1536-1024)
+			+ 3.65*4[eV] * (ch-1536 + 1)
+
+
+
+f2b(Heian)を通した後及びxselectの中
+		Bright (テレメトリのBright	Bright2(テレメトリの
+			もしくは		Faintから作られる)
+			Faintから作られる)
+		0 - 2047ch			0 - 4095
+
+		0 ～ 1023ch:			El(ch) = 3.65[eV] * ch
+		El(ch) = 3.65[eV] * ch			～
+			～ 3.65[eV] * (ch + 1)		3.65[eV] * (ch + 1)
+		1024 ～ 1535ch:
+		El(ch) = 3.65[eV] * 1024
+			+ 3.65*2[eV] * (ch-1024)
+				～
+			3.65[eV] * 1024
+			+ 3.65*2[eV] * (ch-1024 + 1)
+
+		1536 ～ 2047ch:
+		El(ch) = 3.65[eV] * 1024
+			+ 3.65*2[eV] * (1536-1024)
+			+ 3.65*4[eV] * (ch-1536)
+				～
+			3.65[eV] * 1024
+			+ 3.65*2[eV] * (1536-1024)
+			+ 3.65*4[eV] * (ch-1536 + 1)
+
+
+xselectでスペクトルをセーブした後のスペクトルファイル。
+(rbinphaを使って物理的に書き換えられる)
+
+		1 - 512ch にビンまとめした場合
+
+		El(ch) = 3.65 * 8[eV] * (ch - 1)
+			～
+			3.65 * 8[eV] * ch
+
+		1 - 1024ch にビンまとめした場合
+
+		El(ch) = 3.65 * 4[eV] * (ch - 1)
+			～
+			3.65 * 4[eV] * ch
+
+	ただし、f2b後のBright から作られたスペクトルにはecho補正がされて
+	いないので、レスポンスの方でechoの効果を入れておかなければならない。
+		s0c2g0234p40e1_1024v0_6.rmf のように「e1」が付いたものを使う。
+
+	一方、Bright2はスペクトルの方で既にecho補正がされているので、
+	レスポンスはechoの効果が入っていないものを使う。
+		s0c2g0234p20e0_1024v0_6.rmf のように「e0」が付いたものを使う。
+
+
+＃ ちなみにXISはテレメトリは全て10bit 0～4095chで、Faintと同じ。
+   後も出来るだけ簡単にしたいなぁ。
+
+ --
+ TGT@CR == Takeshi Go Tsuru: Cosmic Ray Group, Dept. of Physics, Kyoto Univ.
+  Address: Kitashirakawa-Oiwake-Cho, Sakyo, Kyoto 606-01, Japan
+  e-mail : tsuru@cr.scphys.kyoto-u.ac.jp
+  WWW    : http://www-cr.scphys.kyoto-u.ac.jp/member/tsuru/index.html
+  TEL    : JAPAN(81)-75-753-3843 (Voice,Direct), JAPAN(81)-75-701-5377 (FAX)
+Path: news-cr.scphys.kyoto-u.ac.jp!tsuru
+From: tsuru@cr.scphys.kyoto-u.ac.jp (Takeshi Go Tsuru)
+Newsgroups: cr.xray.soft
+Subject: Re: Energy - Channel
+Date: 25 Feb 1996 10:34:03 GMT
+Organization: Cosmic Ray Group, Dept. of Physics, Kyoto Univ., Japan
+Lines: 13
+Message-ID: <4gpdur$b0o@miroku.scphys.kyoto-u.ac.jp>
+References: <4gmfhf$ugt@miroku.scphys.kyoto-u.ac.jp>
+	<4gp7b1$qvv@miroku.scphys.kyoto-u.ac.jp>
+NNTP-Posting-Host: monju.scphys.kyoto-u.ac.jp
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-2022-JP
+X-Newsreader: mnews [version 1.17] 1994-01/27(Thu)
+
+鶴 剛＠ＣＲです。
+
+<4gp7b1$qvv@miroku.scphys.kyoto-u.ac.jp>の記事において
+tsuru@cr.scphys.kyoto-u.ac.jpさんは書きました。
+>> xselectでスペクトルをセーブした後のスペクトルファイル。
+>> (rbinphaを使って物理的に書き換えられる)
+どうも物理的には書き換えられる訳ではなく、フラグを立てているだけのようです。
+ --
+ TGT@CR == Takeshi Go Tsuru: Cosmic Ray Group, Dept. of Physics, Kyoto Univ.
+  Address: Kitashirakawa-Oiwake-Cho, Sakyo, Kyoto 606-01, Japan
+  e-mail : tsuru@cr.scphys.kyoto-u.ac.jp
+  WWW    : http://www-cr.scphys.kyoto-u.ac.jp/member/tsuru/index.html
+  TEL    : JAPAN(81)-75-753-3843 (Voice,Direct), JAPAN(81)-75-701-5377 (FAX)
+Path: news-cr.scphys.kyoto-u.ac.jp!matumoto
+From: matumoto@cr.scphys.kyoto-u.ac.jp (Hironori Matsumoto)
+Newsgroups: cr.xray.soft
+Subject: Re: Energy - Channel
+Date: 25 Feb 1996 11:21:11 GMT
+Organization: Cosmic Ray Group, Dept. of Physics, Kyoto Univ., Japan
+Lines: 23
+Message-ID: <4gpgn7$mpf@miroku.scphys.kyoto-u.ac.jp>
+References: <4gmfhf$ugt@miroku.scphys.kyoto-u.ac.jp>
+	<4gp7b1$qvv@miroku.scphys.kyoto-u.ac.jp>
+	<4gpdur$b0o@miroku.scphys.kyoto-u.ac.jp>
+NNTP-Posting-Host: monju.scphys.kyoto-u.ac.jp
+X-Newsreader: mnews [version 1.17] 1994-01/27(Thu)
+
+<4gpdur$b0o@miroku.scphys.kyoto-u.ac.jp>の記事において
+つるさんは書きました。
+
+>> 鶴 剛＠ＣＲです。
+>> 
+>> <4gp7b1$qvv@miroku.scphys.kyoto-u.ac.jp>の記事において
+>> tsuru@cr.scphys.kyoto-u.ac.jpさんは書きました。
+>> >> xselectでスペクトルをセーブした後のスペクトルファイル。
+>> >> (rbinphaを使って物理的に書き換えられる)
+>> どうも物理的には書き換えられる訳ではなく、フラグを立てているだけのようです。
+
+GIS のときはそうだけど、SIS BRIGHT のときは本当に BRIGHT2LINEAR で
+物理的に例えば 512 ch にしてしまっていると思いますよ。
+ちがいましたっけ？
+
+★★★★★★★★★★★★★★★★★★★★★
+松本 浩典 (Matsumoto Hironori)
+京都大学理学研究科物理学第二教室宇宙線物理
+address: 〒606-01 京都市左京区北白川追分町
+e-mail : matumoto@cr.scphys.kyoto-u.ac.jp
+Room   : 225
+TEL    : 075-753-3869 
+FAX    : 075-701-5377
+
+
+FITS 形式の mask image を作りたい 
+
+
+arf を作る時など、ある領域が１で埋まったファイルとかを作りたくなる時があります。 いろいろな方法があるでしょうが、ここでは、(おそらく最も簡単な)iraf を使う方法を紹介します。
+まず、
+% cl
+で、iraf に入ります。ついで、
+cl> dataio 
+da> rfits 
+FITS data source (mta): ../s1/s1f_src_3.img
+IRAF filename: s1f_src3
+File: s1f_src3  DEFAULT               Size = 1280 x 1280
+da>
+とFITSファイルを読み込みます。
+da> xray
+xr> ximages
+パッケージに入ります。
+さて、(439, 400)を中心として半径 3分(SIS -- 111pixel)の円内を 1 にしたいとします。
+xi> plcreate 
+region descriptor: "CIRCLE 439 400 111"
+reference image file or 2 dims for mask: s1f_src3
+output mask data file (root.pl): mask3.pl
+.....(INPUT ここまで； 後略).......
+HELPは、こちら（ plcreate、pllist、 region）
+最後に FITS形式でセーブします。
+xi> dataio
+da> wfits 
+FITS data source (mta): mask3.pl
+IRAF filename: mask_src3.fits   
+File 1: mask3rev.pl -> mask_src3.fits                       Size = 1280 x 1280
+.....(後略).......
+saoimage などで確認してみて下さい。
+（注意！！）
+この iraf による領域設定は、xselect と同じ領域が得られます。 つまり、ピクセルが少しでも指定した範囲内に入っていればそのピクセルは 選ばれたことになります。 一方、jbldarf は、ピクセルの中心が境界を含む範囲に入っているかどうかで領域を決めます。つまり、1pixelを争う場合は＜注意＞が必要です。 
+
+
+ある X,Y 座標に対応する DETX, DETY座標が知りたい 
+
+
+(X,Y)=(107, 148)の時、それに対応する (DETX,DETY) が知りたいとします。 これらの bin event したファイルが、g2_mid.evt[1]だったとすると、
+fdump page=no pagewidth=256 outfile=STDOUT columns=X,Y,DETX,DETY rows=- prhead=no 'g2_mid.evt[1]' | gawk '$2==107 && $3==148{print}'
+とすると、画面に５コラムの数字が流れます。 この第４コラム、第５コラムがそれぞれ対応する DETX, DETY です （ちなみに、第２コラム、第３コラムは X, Y に対応）。 これらの最頻値を取ればいいでしょう。
+＜注意＞
+上の方法は、その場所にたくさんのカウントがある場合に有効です。 カウントが少ないと、1pixel程度の誤差が生じえます。 
+
+opticalのimageにASCA GIS, SISの視野を重ねたい
+
+
+大体で良ければ、次の手順が簡単。
+
+ascaexpoでexposure mapを作成します。
+wipでoptical image (gray scale)とexposuremap(contour)を重ねる。
+WIPでイメージを重ね合わせるための補助マクロとして、尾崎氏作の
+~ozaki/lib/wip/overlay.wip
+があります。利用方法はその中に書いてあります。 
+
+イメージに回転／並行移動を施したい。
+
+
+IRAF のimages.rotateが便利です。
+FITS file の読み書きには rfits/wfits を使います。
+Header情報が失われてもいいなら、dis45x (userlib)の中のコマンド "image"が使えます。
+単に座標情報を書き換えたいだけなら、 fparkeyや fmodhead がいいでしょう。 
+
+dummyでいいから、ROSATのスペクトルとレスポンスが欲しい
+
+
+/xray-db/asca/bev1/ngc7320/ROSAT/に、
+
+スペクトル ngc7320_r125.pi レスポンス pspcb_gain2_256.rsp
+があります。また、
+/xray-db/rosat/rosat_rsp/PSPC/
+に様々なROSATのレスポンスがあります。 
+
+
+
+#EOF#

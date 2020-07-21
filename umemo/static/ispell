@@ -1,0 +1,12 @@
+書式
+
+解説
+	スペルチェック
+	"Space"を押すと単語を一時的に容認、"I"を押すと単語を辞書に登録する
+	辞書は ~/.ispell_english にABC順で記述される
+
+オプション
+
+使用例
+	ispell input.txt		: input.txtのスペルチェックを行う
+	ispell -d british input.txt	: 英国英語にする

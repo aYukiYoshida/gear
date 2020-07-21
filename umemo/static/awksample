@@ -1,0 +1,135 @@
+################################################################################
+awksample
+################################################################################
+********************************************************************************
+exmaple1
+********************************************************************************
+ref)/data09/yyoshida/interferometer/coherent/new_chamber/Tools/newchamber.sh
+
+calc="/data09/yyoshida/interferometer/coherent/new_chamber/Tools/newchamber.awk"
+Lvalue=$1
+output=$2
+
+for lvalue in `seq 0.01 0.001 5` ;do
+${calc} --assign l="${lvalue}" --assign L="${Lvalue}" >> ${output}
+done
+
+
+********************************************************************************
+example2
+********************************************************************************
+ref)/data09/yyoshida/interferometer/coherent/new_chamber/Tools/newchamber.awk
+
+
+#!/usr/bin/awk -f
+
+BEGIN{
+    R=1.8e-4;d=20e-6;Io=9.82e18;PI=3.14159265;dr=1e-7;
+    for(r=0;r<=R;r+=dr){
+        Rccd=(l+L+d)*(R+d/2)/(l+d)-R;
+        c=Rccd+d/2-((d+L)*(r-d/2)/l);
+        cd=Rccd+d/2-((d+L)*(r+dr-d/2)/l);
+        ll=l*l;
+        dd=d*d/4;
+        ld=l*d;
+        rootA=sqrt(ll+(r-d/2)^2);
+        rootAd=sqrt(ll+(r+dr-d/2)^2);
+        rootB=sqrt((l+d)^2+(r+d/2)^2);
+        rootBd=sqrt((l+d)^2+(r+dr+d/2)^2);
+        Cos=((rootA*rootB+ll+ld-r^2+dd)/(2*rootA*rootB))^1.5;
+        Cosd=((rootAd*rootBd+ll+ld-(r+dr)^2+dd)/(2*rootAd*rootBd))^1.5;
+        front=c^2*Cos;
+        back=cd^2*Cosd;
+        integral=integral+(front+back)*dr*0.5;
+}
+    intensity=2*Io*PI*PI*integral/(4*(l+L+d)^2);
+    #print l,2*Io*PI*PI*integral/(4*(l+L+d)^2)/square(PI*Rccd^2)/1000000
+    print l,intensity*square(PI*Rccd^2)
+}
+function square(area){
+    ccd=7.4612736e-5;
+    pixel=(12e-6)^2;
+    fullpixel=518144
+    if (area <= ccd){
+        return (area/pixel)^-1
+    }
+    else{
+        return ccd/(area*fullpixel)
+    }
+}
+
+
+********************************************************************************
+example3
+********************************************************************************
+重み付き平均
+
+file=pin_nbg_2560_eflc_cps_128bin.qdp
+st=0.95
+ed=1.05
+sed '1,/!/d' ${file}|sed '/NO/d'|awk 'BEGIN{s=0;a=0;ds=0;da=0;st='${st}';ed='${ed}'}{if($1>=st&&$1<ed){s+=($3/($4*$4));ds+=1/($4*$4);print $1,$2,$3,$4}}END{print "average",s/ds,"+/-",sqrt(1/ds)}' 
+
+
+file=phase2DIVphase13_ratio.qdp
+en=25.0
+sed '1,/!/d' ${file}|sed '/NO/d'|awk 'BEGIN{s=0;a=0;ds=0;da=0;en='${en}'}{if($1>=en){s+=($3/($4*$4));ds+=1/($4*$4);print $1,$2,$3,$4}}END{print "average",s/ds,"+/-",sqrt(1/ds)}' 
+
+
+
+********************************************************************************
+example4
+********************************************************************************
+小数点以下四捨五入
+
+awk '{print $1,$2,round($3)}
+function round(num) {
+    if (num > 0) {
+        return int(num + 0.5);
+    } else {
+        return int(num - 0.5);
+    }
+}' sample.dat
+
+
+********************************************************************************
+example5
+********************************************************************************
+小数点以下選択して四捨五入
+
+function round(num, digit_num){
+    if (num >=0){
+	return int(num*10^digit_num+0.5)/(10^digit_num)
+    }
+    else{
+	return int(num*10^digit_num-0.5)/(10^digit_num)
+    }
+}
+
+
+********************************************************************************
+example6
+********************************************************************************
+絶対値
+
+awk 'function abs(x){return (x>0)? x:-x}'
+
+
+********************************************************************************
+example7
+********************************************************************************
+trig function
+
+function cosd(x, pi)	{ pi=atan2(0,-1) ; return cos(x*pi/180.)} \
+function sind(x, pi)	{ pi=atan2(0,-1) ; return sin(x*pi/180.)} \
+function log10(x)	{ return log(x)/log(10) } \
+function abs(x)		{ if(x>=0){ return x } else { return -x }} \
+function asin(x)	{ return atan2(x,(1.-x^2)^0.5) } \
+function acos(x)	{ return atan2((1.-x^2)^0.5,x) } \
+function atan(x)	{ return atan2(x,1) } \
+function asind(x, pi,rad){ pi=atan2(0,-1) ; rad=atan2(x,(1.-x^2)^0.5) ; return rad*180./pi} \
+function acosd(x, pi,rad){ pi=atan2(0,-1) ; rad=atan2((1.-x^2)^0.5,x) ; return rad*180./pi} \
+function atan2d(x,y, pi,rad){ pi=atan2(0,-1) ; rad=atan2(x,y) ; return rad*180./pi} \
+function nint(x, y,sign){ if (x==0) {return 0} ; y=abs(x) ; sign=x/y ; return sign*int(y+0.5) }"
+
+
+#EOF#

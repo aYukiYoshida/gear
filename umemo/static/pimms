@@ -1,0 +1,34 @@
+
+pimms
+
+## Mission Check
+
+DIRECTORY
+
+## Model Settings
+
+MODEL BREMSSTRAHLUNG 10.0 1.0E21
+MODEL POWERLAW 2.0 1.0E21
+MODEL BLACKBODY 1.0 1E21
+MODEL PLASMA 1.0 1.0 1E21
+
+## Plasma Code Change
+
+PLASMA
+APEC/mekal/RS
+
+## Source
+
+FROM FLUX ergs 0.2-12.0
+FROM CHANDRA ACIS-S
+FROM SUZAKU XIS FI 0.2-12.0
+
+## Output Count Rates
+
+INSTRUMENT SUZAKU XIS FI
+INSTRUMENT SUZAKU XIS BI
+
+## Inout Count Rate
+
+go 1.00
+

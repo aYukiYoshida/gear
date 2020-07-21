@@ -1,0 +1,104 @@
+################################################################################
+nustar_analysis
+################################################################################
+
+ぬーすたーメモ5。
+■ここから解析ログ
+
+まずはNuSTAR の解析dir を作成する。
+$mkdir /nfs/home/tyamamot/NuSTAR/
+$mkdir /nfs/home/tyamamot/NuSTAR/GS0834-430/
+
+ぬーすたーメモ6。
+heasac のBrows(メモ3)とかを使ってデータをダウンロードする。
+wget スクリプトを作って持ってきた方が無難。
+cd /nfs/home/tyamamot/NuSTAR/GS0834-430/
+
+ぬーすたーメモ7。
+6の続き。
+$wget -q -nH --cut-dirs=6 -r -l0 -c -N -np -R 'index*' -erobots=off --retr-symlinks
+
+
+ぬーすたーメモ8。
+heasoft のnupipeline を走らせる。
+event_cl を使っても良いが、reprocess した方が良いかと。
+
+
+ぬーすたーメモ9。
+メモ8続
+$nupipeline indir=/nfs/home/tyamamot/NuSTAR/GS0834-430/10002018001/ steminputs=nu10002017001 outdir=./testout
+
+
+ぬーすたーメモ10。
+image を見ながらsrc/bgd region を切り出す。
+xselect でnu10002017001A01_cl.evt 等を読み込みimage を見ながらregion を作成する。Suzaku/XIS と同じ。
+
+ぬーすたーメモ11。
+heasoft のnuproducts を走らせる
+nuproducts を走らせてスペクトル等を作成する。
+※ObsID/hk の中身をgunzip しておかないとうまくいかないかもしれない。
+
+ぬーすたーメモ12。
+$nuproducts srcregionfile=FPMA_src.reg bkgregionfile=FPMA_bgd.reg indir=../testout/ (続く)
+
+ぬーすたーメモ13。
+(続き)infile=../testout/nu10002018001A01_cl.evt outdir=./FPMA_out bkgextract=yes
+>FPMA
+>nu10002018001
+
+
+ぬーすたーメモ14。
+メモ12 とメモ 13 で指定したregion のスペクトルとライトカーブ(defult=10 sec) ができる。 
+
+ぬーすたーメモ15。
+energy band 別のライトカーブを作成したい場合は、nuproducts のオプションに
+pilow=34 pihigh=210 binsize=1.0 lcenergy=5　
+とか入れる。
+
+ぬーすたーメモ16。
+pilow(34 ch = 3 keV)、pihigh(210 ch = 10 keV)、binsize(1.0 sec)、lcenergy(vignetting corrections が5 keV)
+
+ぬーすたーメモ17。
+※The source light-curve, not background subtracted, is corrected for the livetime (続く)
+
+ぬーすたーメモ18。
+(続き)and the PSF and vignetting corrections are applied at energy 5 keV.らしい。
+
+もうちょっとちゃんとメモれ過去の私よ。
+
+ぬーすたーメモ19。
+pulse phase resolved はSuzaku と同じ流れ。
+xselect -> filter phase -> filter phase したevent file 保存
+各phase ごとにnuproducts
+
+ぬーすたーメモ20。
+■自分用メモ(と、メモに書いてある)
+・だいたいSuzaku と一緒。
+・とりあえず(A/B)01 だけ使えば良い。他のはSAA とかEarth とか。
+・ObsID/hk の中身はgunzip する。
+
+ぬーすたーメモ21。
+■自分用メモ続き
+・event_cl の中身も(使って解析するなら)gunzip する。
+・0-4095 ch なのでbinning はとりあえずXIS と同じでやってみるか。
+
+ぬーすたーメモ22。
+■自分用メモ続き
+・nupipeline でstage2 まで作って、nuproducts でstage3 を作るのが良さそうだ。
+・観測するならSwift ToO を申し込むみ、同時fit して広帯域観測をすべき。
+
+ぬーすたーメモ23。
+3-5 keV = 34-85 ch
+5-7 keV = 86-135 ch
+7-10 keV = 136-210 ch
+10-20 keV = 211-460 ch
+20-30 keV = 461-710 ch
+
+ぬーすたーメモ24。
+30-50 keV = 711-1210 ch
+50-75 keV = 1211-1835 ch
+
+
+
+
+#EOF#

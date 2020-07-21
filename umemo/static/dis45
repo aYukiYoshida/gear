@@ -1,0 +1,148 @@
+書式
+
+解説
+
+オプション
+
+使用例
+	export DISPLAY_DEVICE="0"	: 立ち上げ時に描画領域を出さない
+	export DISPLAY_DEVICE="1"	: 立ち上げ時に描画領域を出す
+
+	@(command.log			: ログをとる
+	fetfits aho.fits		: Fitsファイルを読み込む
+					  Extensionごとにデータセット番号が割り振られる
+
+	i				: 現在読み込まれている情報を表示する
+	h 100				: 100番のデータセットに移動する
+	n				: 1つ上のデータセットに移動する
+	b				: 1つ下のデータセットに移動する
+
+	splot [option]			: 2次元(以上)のヒストグラムを描画する
+	t				: 1次元のプロットを描画する
+	ts				: 1次元のプロットを重ね書きする
+	cmap GRAY			: 描画の色を変更する
+	blow X-From X-To Y-From Y-To	: X軸とY軸を範囲指定で切り出して次のセットに保存
+	prox/proy			: 全体からX/Y軸に射影したプロファイルを作成
+	banx/bany			: 指定した領域からX/Y軸に射影したプロファイルを作成
+	pror XCen YCen Rin Rout Nbin	: Radialプロファイルを作る?
+
+
+	er				: エラーをつけて表示する
+	table [option] [option]		: プロットテーブルを表示する
+	table > tmp.dat			: プロットテーブルをファイルにダンプする
+
+	lalo -2 2			: RaDecを表示する
+
+	ps eps on			: その後の描画をEPSにダンプする (画面分割ができない w 2 2)
+	ps off				: PSにダンプする処理を一時停止する
+	ps close			: PSを閉じる
+
+	## MINUITモード
+	min95				: MINUITモードに以降する (Fittingが可能)
+					  CHOICE,RESI,MODELというセットが自動で出来る
+	model [option]			: Modelを定義する (FORMULAで式による指定)
+	f(x,y)=x			: Constantの式
+	show par			: パラメータを見る
+	para				: パラメータを見る
+	thaw a				: Fitting時にパラメータ(a)を変化させる
+	newpar a 4			: パラメータ(a)を変更する
+	simpl				: 軽くFitする
+	migrad				: 真剣にFitする
+
+	## Others
+	scale				: Factorをかける
+	region x<100 0			: X軸で100以下を0にする (それ自体を変更)
+	imsmo gauss 3			: 3ピクセルでスムージングする
+					  Sigmaの値はX軸の値ではなく実際のピクセルになる
+					  chbin 1 4 なら X軸 / 4 となる
+	minmax				: 最大、最小値を出す
+	pd				: 積分値などを出す
+	v				: その場所の値を知る
+	dist				: 分布図作成 (Z vs. ピクセル数)
+	surf				: Theta,Phiを入力して１次元図を作成
+	opt logx(linz)			: X軸をLog(linear)スケールで表示する
+	log(logx),lin			: X(Y)軸をログ(linear)スケールで表示
+	chedge				: X/Y軸の上限・下限を設定。ヒストグラムには何の変更もなし
+	axis x+100 y-50			: X軸の値に+100する、等
+	image shift x-20 y+30 method	: 並行移動
+
+	axtitle 3 <xname> [CR] <yname>	: X軸とY軸の名前 (表示するIDにhした後)
+		  <"x-name"> <y-name>	: 1行に書くならX軸のみ""で囲む
+		  set asiz 0.4		: X/Y軸名の大きさ
+		  title [x-coord] [y-coord] [options] Title-string	: 表示した後で
+		  (top|left|right|bottom) [options] Title-string
+		  -d: use data coord.,  -a: angle,  -(l|c|r): align,  -s,-f: size,font
+	gt				: タイトル（画面上）
+	set csize 0.4			: lalo の文字を大きくする
+	opt nstat			: 画面のごちゃごちゃを消す
+	opt (n)grid			: グリッドを入れる（消す）
+	opt (h|u)tit			: histogram タイトルを使うか、否か
+	chwin 2(1,3)			: ウインドウを変える
+	inc				: アスキーファイルを読み込む (6が2次元Tipple?)
+					  XYならX軸は通常通り昇順にしていなければならない
+	proj1, proj2			: 上の Tipple 形式のファイルをX軸、Y軸に投影
+	cht nantoka [(x,y)=(16,0)]	: とかとやって、PSに落としたら、ギリシャ文字が出た！
+	@blowregion=(12 34 56 78)	: 数字列として認識される("..."は、文字列)
+	@test3dayo=`echo "256.5-(1*$test2dayo )" | sed "s/^+//g" | bc -l`
+	echo $test3dayo
+	@@ file -> ?でHELP(c:残り一気に)
+
+	## Size Etc.
+	set ygti 0.0001			: GTitle の位置
+	set tsiz 0.0001			: (Histgram) Title の大きさ
+	set vsiz 0.0001			: chの文字の大きさ
+	set xtic 0.0001			: X軸のTick Mark
+	set ytic 0.0001
+	set cfon 1			: Gridのフォント(Roman)
+	set csiz 0.5			:   〃  文字の大きさ
+	set xmgl 2.99			: 図の左側offset
+	set xmgr 0.01			:  〃 右側  〃
+	set lwid 4			: contourの太さ
+	setcli lalo.ra.loutside 1	: laloのRAを図の外に書く
+	setcli lalo.de.loutside 1
+	setcli lalo.de.lright 1		: laloのDECを図の右側には書かない
+	setcli lalo.de.lstop 1		: laloのDECをStop位置(図の左側)に書く
+	sp cont2 0 $(minmax.zma) 10	: 実線でcontourを書く
+
+	## Font Etc.
+	set cfon -30
+	draw text 100 100 "[b]"		: とやるとベータが出る。[l]ならラムダ
+
+	## Draw Etc.
+	PLCI で色 (0:白, 1:黒, 2:赤, 3:緑, 4:青, 5:黄, 6:紫, 7:水)
+	LTYP で線種 (1:直,2:破,3:点,4:1点鎖,12:太破,13:1点鎖,14:広点,15:中点)
+	FAIS で塗りつぶし方法 (0:Hollow, 1:Solid, 2:Pattern, 3:Hatched)
+	FASI でハッチのパターン; FACI で塗りつぶしの色
+	MTYP でマーカーの種類  (1:・, 2:＋, 3:＊, 4:○, 5:×, 
+	  31:※,30:☆,29:★,28:＃,27:◇,26:△,25:□,24:○,23:▼,22:▲,21:■,20:●)
+	MSCF でマーカーのサイズ; PMCI でマーカーの色 (PLCIを参照)
+	CFON で文字のフォント
+	  ( -130:Times-Roman, -10:Times-Italic, -20:Times-Bold, -30:Times-BoldItalic
+	     -40:Helvetica, -50:Helvetica-Oblique,
+	     -60:Helvetica-Bold, -70:Helvetica-BoldOblique
+	     -80:Courier -90:Courier-Oblique, -100:Courier-Bold, -110:Courier-BoldOblique
+	     -120:Symbol, -140:ZapfDingbats )
+	TXAL でアライメント (0:left/bottom, 2:center/top, 3:right/center)
+
+	## PS -> EPS
+
+	%!PS-Adobe-2.0 EPSF-2.0
+	%%BoundingBox: 35 140 560 705 
+
+	draw text 100 100 "[b]"		: とやるとベータが出る。[l]ならラムダ
+
+	chtit				: titleを変える
+	cmap				: splo colでsaoimageみたいな絵を書ける
+	set csiz			: 字の大きさを変える。0.4くらいが見やすい
+	tsiz				: titleの大きさを変える。0.001くらいで0
+	vsiz				: 縦横軸の目盛の数字の大きさを変える。0.001で0
+	xtic				: 目盛の大きさを変える。0.001くらいにすると、0
+
+	## Patchwork
+	xfetc				: .hbkを読んでくれる。（大文字O.K.）
+	lalo -2				: laloをしてくれる。
+					  (patchwork_dis.logの中のset cfon 1 以下の@を全部した後
+	select				: key or cursoleでregion指定が出来る (region書くのにも便利)
+	image rotate 角度 中心X座標 中心Y座標 乱数 : 回転してくれる
+
+	axis				: x軸の書き換え

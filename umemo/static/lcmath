@@ -1,0 +1,18 @@
+書式
+	lcmath [infile] [backfile] [outfile] [infactor] [backfactor] [no/yes]
+
+解説
+	BGを定数倍してコンスタントを足す時はエラーの計算に Method 2 を使用する
+	Source-BGにはBACKSCALかEXPMAPで換算した比率を割合として入れる必要がある
+	引数で addsubr="no" なら引き算(Default)、addsubr="yes" なら足し算になる
+	HEADAS_6.4.1時点ではSRC=(DEADC*COUNTS)に対してBKG=(COUNTS)で計算するバグあり
+	この場合はlcmathの前にDEADCを1.0に変更してから処理して、最後に戻せばOKか？
+	HEADAS_6.5.1時点では docor="no" にしても DEADC に T が入るというバグあり
+	この場合はlcmathで計算した後にfparkeyで DEADC を F に変更してやれば良い
+	VIGNETやDEADCがあると勝手に反映されるが、ここでは反映させない方が良いだろう
+	これは気がつかないし、間違えるので、十分に注意しておく必要がある
+
+オプション
+
+
+使用例

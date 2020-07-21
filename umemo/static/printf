@@ -1,0 +1,50 @@
+書式
+
+解説
+	http://www.geocities.jp/cbc_vbnet/vc/cstile.html
+オプション
+
+使用例
+	printf(書式文字列,変数1,変数2, ...);
+
+	\a  	ベルを鳴らす
+	\n 	改行
+	\x 	16進数
+
+	%c  	文字
+	%d 	整数（10進形式）
+	%o 	整数（８進形式）
+	%x 	整数（１６進形式小文字）
+	%X 	整数（１６進形式大文字）
+	%ld 	long int 型
+	%f 	浮動小数点数
+	%p 	ポインタ
+	%s 	文字列
+
+	printf("8進数出力        　:%o\n",dt);
+	printf("10進数出力         :%d\n",dt);
+	printf("16進数出力         :%x\n",dt);
+	printf("16進数出力         :%X\n",dt);
+	printf("Long int           :%ld\n",ldt);
+     
+        printf("固定少数点形式	   :%f\n",dd);
+        printf("科学表記形式	   :%e\n",dd);
+        printf("一般形式	   :%g\n",dd);
+
+        printf("文字列		   :%s\n",ss);
+        printf("ポインタ           :%p\n",&dt);
+	printf("10進数出力8桁右寄  :%8d\n",dt);
+        printf("10進数出力8桁右寄  :%08d\n",dt);
+        printf("10進数出力8桁左寄  :%-8d\n",dt);
+
+        printf("文字列 8桁右寄	   :%8s\n",ss);
+        printf("文字列 8桁左寄	   :%-8s\n",ss);
+        
+        printf("固定小数点形式     :%10f\n",dd);
+        printf("固定小数点形式	   :%10.4f\n",dd);
+
+        printf("科学表記形式1      :%e\n",dd);
+        printf("科学表記形式2	   :%10.5E\n",dd);
+        printf("一般形式	   :%g\n",dd);
+
+        printf("符号付き	   :%+d\n",dd);

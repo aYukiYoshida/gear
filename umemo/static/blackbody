@@ -1,0 +1,15 @@
+Blackbody
+
+Bolometric Lx = Norm(xspec.bb) * ((Distance[kpc]/10)^2) * (10^39) [erg s-1]
+Radius = sqrt ( Lx / ( 4 * pi() * Stefan-Boltzman * T(K)^4 ) )
+
+Stefan-Boltzman constant<br>
+= 5.670400*10^-5 [erg s-1 cm^-2 K^-4]<br>
+= 5.670400*10^-1 [erg s-1 m^-2 K^-4]<br>
+= 5.670400*10^-8 [J s-1 m^-2 K^-4]<br>
+= 5.670400*10^-8 [W m^-2 K^-4]<br>
+
+1 keV = 1.1605e7 K
+1eV = 11604.5077
+
+calc "(sqrt(1.6E39/(4.0*pi()*(5.670400E-5)*((58*11604.5077)^(4)))))/100000"

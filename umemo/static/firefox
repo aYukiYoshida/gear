@@ -1,0 +1,12 @@
+書式
+
+解説
+
+オプション
+
+使用例
+
+about:configで設定
+
+ssh経由で向こうのブラウザを立ち上げたい時には
+firefox -no-remote

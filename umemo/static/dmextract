@@ -1,0 +1,15 @@
+書式
+
+解説
+
+オプション
+
+使用例
+	dmextract "input.fits[sky=circle(4095.0,4096.0,43.0)][bin pha=1:3000:10]" output.pha clobber=yes verbose=2
+	dmextract "input.fits[sky=annulus(4095.0,4096.0,60.0,100.0)][bin pi=::100]" output.pha clobber=yes verbose=1
+	dmextract "input.fits[sky=annulus(4095.0,4096.0,60.0,100.0)][bin pi=::100]" output.pha wmap="det=8"
+	dmextract "input.fits[sky=annulus(4095.0,4096.0,60.0,100.0)][bin pi=::100]" output.pha wmap="[energy=500:2000][bin det=8]"
+	dmextract "input.fits[sky=annulus(4095.0,4096.0,60.0,100.0)][bin pi]" output.pha clobber=yes verbose=1 defaults=cxo.mdb
+
+	イベントを無作為に取り出す方法
+	

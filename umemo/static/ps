@@ -1,0 +1,109 @@
+書式
+
+解説
+	(Encupseled) Post Script
+	ヘッダーを書き換えれば変更出来る
+	TIFFプレビューがある場合はヘッダーの先頭に「ナミモニ」が入る
+	イラストレーターで処理する場合は保存時にプレビューを入れてはダメ！
+	イラストレーターなら中の画像だけ「ラスタライズ」で画質を落とせる
+
+オプション
+
+記述例
+
+	%!PS-Adobe-3.0 EPSF-3.0			: 1行目の合言葉
+	%%Title: PGPLOT PostScript plot		: タイトル
+	%%Creator: PGPLOT			: 作成したプログラム
+	%%CreationDate: 31-Jan-2008 03:53	: 日付
+	%%BoundingBox: (atend)			: BBを最後に記述する = (atend)
+	%%Orientation: Portrait			: Landscape or Portrait
+	%%Pages: (atend)			: Pagesを最後に記述する = (atend)
+	%%EndComments				: コメント最後
+	%%BeginProlog				: 図の開始
+
+	...					: ここも手書き出来る人がいるらしい...
+	%%Page					: ページ番号
+
+	PGPLOT restore showpage			: プリントアウトに必要
+	%%PageTrailer				: 追加情報
+
+	%%Trailer				: 追加情報
+	%%BoundingBox: 36 44 583 793		: 左下X 左下Y 右上X 右上Y
+	%%DocumentFonts:			: フォント
+	%%Pages: 1				: ページ数
+	%%EOF					: 終わりの合言葉
+
+図の回転
+
+	texなどに入れる際に回転したい場合は、epsを書き換えれば良い
+	gvで表示しながら編集すると随時更新されるので作業がしやすい
+	変更箇所は以下の2点
+
+	変更点 1 : BoundingBoxの数値を逆にする
+
+	%%BoundingBox: 79 16 588 701
+	%%BoundingBox: 16 79 701 588
+
+	変更点 2 : 収まりきらない事があるのでBoxの左右X軸を2ほど広くする
+
+	%%BoundingBox: 16 79 701 588
+	%%BoundingBox: 14 79 703 588
+
+	変更点 3 : translateの値を図が全て入るように変える ( rotateは0にする )
+		   特にQDP図を変更する場合は、1番目の値は294で良さそうだ
+
+	% 8149 250 translate 90 rotate
+	294 1123 translate 0 rotate
+	294 1396 translate 0 rotate
+
+	もっと良い方法は無いのか...？
+
+
+	xoffset yoffset translate
+	CTM で表される座標系で x = xoffset, y = yoffset で 表される位置に、
+	座標系の原点を移動します。 ある図形の記述の直前にこの命令を挿入すると、
+	図形を (+xoffset, +yoffset) だけ平行移動する効果があります。
+
+	angle rotate
+	各座標軸を、 CTM の原点のまわりに angle 度だけ回転します。 
+	回転方向は、通常 angle が正の場合左回り、 負の場合右回りですが、あく
+	まで CTM で表される座標系の内部での角度 及び回転方向であって、 CTM の値
+	によっては、 default user coordinates では逆向きになることがあります。
+	CTM が初期値の場合、この命令を図形の記述の直前に挿入すると、 図形は
+	左回りに angle 度回転します。 
+
+	xscale yscale scale
+	座標を表す時に用いる長さの単位 (unit size) を x 軸方向の方向に xscale 倍に、
+	y 軸方向に yscale 倍に拡大します。 数値が1より小さい場合は縮小となります。
+	この命令を図形の記述の直前に挿入すると、図形は、その時の CTM で 表される系
+	の原点を中心に、 x, y 方向にそれぞれ xscale 倍、 yscale 倍に拡大（縮小）さ
+	れます。 xscale, yscale の一方に負の値を指定することにより、 図形を左右また
+	は上下に反転することもできます。
+
+
+	qdpのたて型の場合は以下の通り
+	変更点 1 : BoundingBoxの数値を逆にする
+	%%%BoundingBox: 0 0 671 518
+	%%BoundingBox: 0 0 518 671
+
+	変更点 2 : HighResolutionBoundingBoxの数値を逆にする
+	%%%HiResBoundingBox: 0 0 669 516.5
+	%%HiResBoundingBox: 0 0 516.5 669
+	
+	変更点 3 : translateの値を図が全て入るように変える ( rotateは0にする )
+	       	  もともと書いてあるtranslate等は"%"にてコメントアウト
+	-15 -30 translate 0 rotate
+	
+
+図の抽出
+
+	psファイルがあればそこから元の画像を取り出すのは簡単
+	pdfファイルしかなければpdf2psでpsにして、イラストレーターで切り出すのが良い
+
+図の変換
+
+	dvipdfmでバウンディングボックスを間違えると図が切れる
+	psにしてからやればいけるらしい
+	%%HiResBoundingBox: 8 9 483 315
+	の値に小数点がある時に切れるので、消してやればよい、繰り上げ
+	photoshopの時は大きすぎると切れるA4に入る範囲で

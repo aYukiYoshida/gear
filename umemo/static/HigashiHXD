@@ -1,0 +1,235 @@
+cd /data08/higashi/data/crab/suzaku/1E1740.7-2942/2008OUT/503016010/hxd/event_cl/test_1
+
+２つバージョン
+
+21 2008 GSO 503016010 ok
+
+emacs hit234a.log
+xraysetup heasoft69
+xraysetup heasoft69
+ln -s ../../event_uf/ae503016010hxd_1_wel_uf.evt.gz .
+ln -s ../../event_uf/ae503016010hxd_2_wel_uf.evt.gz .
+ln -s ../../hk/ae503016010hxd_0.hk.gz .
+ln -s ../../../auxil/ae503016010.ehk.gz .
+ln -s ../../../auxil/ae503016010.tim.gz .
+
+emacs hit234b.log &
+xraysetup heasoft69
+hxdtime
+ae503016010hxd_1_wel_uf.evt.gz
+ae503016010hxd_1_wel_uf2.evt
+CALDB
+ae503016010hxd_0.hk.gz
+ae503016010.tim.gz
+
+xraysetup heasoft69
+cat > hk_file.list << EOF
+../../hk/ae503016010hxd_0.hk.gz
+../../../auxil/ae503016010.ehk.gz
+EOF
+
+cp ../../../auxil/ae503016010.orb.gz .
+gzip -d ae503016010.orb.gz
+
+xraysetup heasoft69
+hxdpi 
+ae503016010hxd_1_wel_uf2.evt
+ae503016010hxd_1_wel_uf3.evt
+CALDB
+@hk_file.list
+CALDB
+CALDB
+CALDB
+CALDB
+ae503016010.orb
+
+xraysetup heasoft69
+hxdgrade
+ae503016010hxd_1_wel_uf3.evt
+CALDB
+CALDB
+CALDB
+
+cp ../../../auxil/ae503016010.mkf.gz .
+gunzip ae503016010.mkf.gz
+ln -s ../../hk/ae503016010hxd_1_tel_uf.gti.gz .
+ln -s ../../hk/ae503016010hxd_2_tel_uf.gti.gz .
+
+wget http://suzaku.gsfc.nasa.gov/docs/suzaku/analysis/gso_mkf.sel
+
+xraysetup heasoft69
+xselect
+
+no
+read event
+./
+ae503016010hxd_1_wel_uf3.evt
+select mkf @gso_mkf.sel
+./
+filter time file ae503016010hxd_1_tel_uf.gti.gz
+filter column
+"GRADE_QUALTY=0:0 GRADE_PMTTRG=0:0 GRADE_PSDSEL=-100:2.1 GRADE_HITPAT=2:4"
+show filter
+extract event
+save event
+ae503016010hxd_1_gsono_cl2.evt
+yes
+exit
+no
+
+xraysetup heasoft69
+fparkey
+WELL_GSO
+ae503016010hxd_1_gsono_cl2.evt+0
+DETNAM
+fparkey
+WELL_GSO
+ae503016010hxd_1_gsono_cl2.evt+1
+DETNAM
+fparkey
+6.1E-05
+ae503016010hxd_1_gsono_cl2.evt+0
+TIMEDEL
+fparkey
+6.1E-05
+ae503016010hxd_1_gsono_cl2.evt+1
+TIMEDEL
+fkeyprint
+ae503016010hxd_1_gsono_cl2.evt
+DETNAM
+fkeyprint
+ae503016010hxd_1_gsono_cl2.evt
+TIMEDEL
+
+
+xraysetup heasoft69
+hxdtime
+ae503016010hxd_2_wel_uf.evt.gz
+ae503016010hxd_2_wel_uf2.evt
+CALDB
+ae503016010hxd_0.hk.gz
+ae503016010.tim.gz
+
+xraysetup heasoft69
+hxdpi 
+ae503016010hxd_2_wel_uf2.evt
+ae503016010hxd_2_wel_uf3.evt
+CALDB
+@hk_file.list
+CALDB
+CALDB
+CALDB
+CALDB
+ae503016010.orb
+
+xraysetup heasoft69
+hxdgrade
+ae503016010hxd_2_wel_uf2.evt
+CALDB
+CALDB
+CALDB
+
+xraysetup heasoft69
+xselect
+
+no
+read event
+./
+ae503016010hxd_2_wel_uf3.evt
+select mkf @gso_mkf.sel
+./
+filter time file ae503016010hxd_2_tel_uf.gti.gz
+filter column
+"GRADE_QUALTY=0:0 GRADE_PMTTRG=0:0 GRADE_PSDSEL=-100:2.1 GRADE_HITPAT=2:4"
+show filter
+extract event
+save event
+ae503016010hxd_2_gsono_cl2.evt
+yes
+exit
+no
+
+xraysetup heasoft69
+fparkey
+WELL_GSO
+ae503016010hxd_2_gsono_cl2.evt+0
+DETNAM
+fparkey
+WELL_GSO
+ae503016010hxd_2_gsono_cl2.evt+1
+DETNAM
+fparkey
+6.1E-05
+ae503016010hxd_2_gsono_cl2.evt+0
+TIMEDEL
+fparkey
+6.1E-05
+ae503016010hxd_2_gsono_cl2.evt+1
+TIMEDEL
+fkeyprint
+ae503016010hxd_2_gsono_cl2.evt
+DETNAM
+fkeyprint
+ae503016010hxd_2_gsono_cl2.evt
+TIMEDEL
+
+xraysetup heasoft69
+mgtime
+ae503016010hxd_1_gsono_cl2.evt+2,ae503016010_hxd_gsobgd.evt.gz+2
+ae503016010hxd_wel_gso_1.gti
+AND
+
+mgtime
+ae503016010hxd_2_gsono_cl2.evt+2,ae503016010_hxd_gsobgd.evt.gz+2
+ae503016010hxd_wel_gso_2.gti
+AND
+
+mgtime
+ae503016010hxd_wel_gso_1.gti ae503016010hxd_wel_gso_2.gti
+ae503016010hxd_wel_gso.gti 
+OR
+
+
+xraysetup heasoft69
+xselect
+
+no
+read event
+./
+"ae503016010hxd_1_gsono_cl2.evt ae503016010hxd_2_gsono_cl2.evt"
+filter time file
+ae503016010hxd_wel_gso.gti
+show filter
+extract curve
+save cur
+2008_gso_503016010_curve_s
+yes
+set PHANAME PI_SLOW
+extract spec
+save spec
+2008_gso_503016010_spec_s
+yes
+exit
+no
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+xraysetup heasoft69
+emacs ae503016010_uf.list
+上記内に
+ae503016010hxd_1_wel_uf2.evt
+ae503016010hxd_2_wel_uf2.evt
+を入れる
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+xraysetup heasoft69
+cp 2008_gso_503016010_spec_s.pha 2008_gso_503016010_spec_s_dtcor.pha
+hxddtcor                                  
+@ae503016010_uf.list
+2008_gso_503016010_spec_s_dtcor.pha
+
+fkeyprint
+2008_gso_503016010_spec_s.pha
+EXPOSURE
+fkeyprint
+2008_gso_503016010_spec_s_dtcor.pha
+EXPOSURE

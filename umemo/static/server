@@ -1,0 +1,3 @@
+rsync --recursive --update --times --devices --specials --perms --verbose --links \
+--safe-links --temp-dir="/tmp" --rsh="/usr/bin/ssh" --exclude="cal/catalogues" \
+toro.astro.isas.jaxa.jp:/usr/local/xray/ /usr/local/xray/

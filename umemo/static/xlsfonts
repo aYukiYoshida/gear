@@ -1,0 +1,11 @@
+書式
+	xlsfonts [-options ...] [-fn pattern]
+
+解説
+	自分のXサーバーで利用できるフォントの一覧
+
+オプション
+
+使用例
+	xlsfonts | egrep -i jisx0208	: 日本語フォントに何があるか？
+	xlsfonts | egrep -i ksc5601	: 韓国語フォントに何があるか？

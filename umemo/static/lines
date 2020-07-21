@@ -1,0 +1,46 @@
+等価幅 (Equivalent Width)
+
+書式
+
+	低階電離 6.4 keV
+	He-Like	 6.7 keV
+	H-Like	 6.9 keV
+
+	K-alpha : L殻からK殻
+	K-beta	: M殻からK殻
+
+	Kalpha1	: L3からK
+	Kalpha2	: L2からK
+	K-beta1	: M3
+	K-beta3	: M2
+
+	L-alpha	: M殻からL殻
+
+再結合線 (Recombination Lines)
+
+	密度が薄いと衝突しない
+	サーマルプラズマからの放射はこれ
+	He-Likeは以下のような微細構造にわかれる
+	H-likeは本質的に1本の輝線といってよい
+	スピンによる
+
+	禁制線 (forbidden line)
+	特殊な条件の元では遷移して放射されるスペクトル線
+
+	Intercombination Lines
+
+	共鳴線 (Resonance line)
+	原子が励起する時に同じ波長の光を放出して基底状態に戻る
+	放出光を他の原始が吸収して同じ事を繰り返すので共鳴線と呼ぶ
+	起源が高温プラズマ=衝突による励起なら共鳴線は禁制線より強いだろう
+	起源が電荷交換なら逆に禁制線の方が強く出るだろう
+	強度比によってKalphaの中心エネルギーに違いが出る
+
+	鉄(He-like)の輝線 6.7 keV line の微細構造
+	Resonance line		(r)	1s2 1S0 - 1s2p 1P1	6700.5
+	Intercombination line	(x)	1s2 1S0 - 1s2p 3P2	6682.4
+	Intercombination line	(y)	1s2 1S0 - 1s2p 3P0,1	6667.6
+	Forbidden line		(f)	1s2 1S0 - 1s2s 3S1	6636.7
+
+蛍光輝線 (Fluorescence Lines)
+

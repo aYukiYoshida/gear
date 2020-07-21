@@ -1,0 +1,90 @@
+XMM-Newton 解析マニュアル
+
+EPIC Spec
+
+        1 channel               = ? eV
+        1 pixels MOS            = 40 microm = 1.1 arcsec
+        1 pixels PN             = 150 microm = 4.1 arcsec
+        Energy Range            = 0.3 - 10.0 keV
+        Time Resolution MOS     = ?.5 sec
+        Time Resolution PN      = ?.7 msec
+        PSF PN (orbit/ground)   = 12.5/6.6 arcsec at 1.5 keV (FWHM) on-axis
+	PSF MOS1 (orbit/ground) = 4.3/6.0 arcsec  at 1.5 keV (FWHM) on-axis
+        PSF MOS2 (orbit/ground) = 4.4/4.5 arcsec at 1.5 keV (FWHM) on-axis
+	PSF PN 90%              = 40 arcsec = 10 pixel
+	PSF MOS 90%             = 55 arcsec = 50 pixel
+
+EPIC
+
+バックグラウンドの輝線は非一様な分布をしているので注意
+
+
+
+
+
+キャリブレーションファイルは <a href="http://xmm.vilspa.esa.es/external/xmm_sw_cal/calib/ccf.shtml">XMM-Newton Current Calibration Files</a> を参考にしてダウンロードする
+上記サイトでも推奨している様に、以下のコマンドでフォルダごと持ってくれば良い
+
+# rsync -v -a --delete --delete-after --force --include='*.CCF' --exclude='*/' xmm.esac.esa.int::XMM_CCF /ccf/
+
+安全の為に普通のCCFフォルダを持ってくる (普通のCCFフォルダは約1.8GBで、CCF_REDフォルダは約700MBの容量)
+<font color="yellow">Agyoでは Socket IO のエラーが出てrsync出来ないので、自機によりダウンロードする</font>
+
+
+
+3. データ概要
+
+XMMにはX線CCDカメラMOS1,MOS2,PN、X線分光器RGS1,RGS2、可視光モニターOMという検出器がある
+XMMのデータはファイルが多いのでわかりにくいが、上記の名前の一部がそれぞれファイル名に含まれている
+ODFが生データなのでこれを主に使用、PPSはQLデータで実際に解析するには使えないと思っておけば良い
+ODFデータをsasでプロセスしてftoolsなどで解析という方法が一般的な解析手順となる
+解析方法はそれぞれ詳しく XMM-Newton Threads にまとめられていて、マニュアルを見るより手っ取り早い
+
+4. RGSデータ解析
+
+点源の場合はrgsprocを実行すれば三次までのスペクトルが自動で生成される
+1st rgsproc => 太陽フレアなどの確認 => 2nd rgsproc という流れが一般的な解析手順
+詳しくは解析ログを参照
+
+5. MOS,PNデータ解析
+
+MOSはemchain/emproc、PNはepchain/epprocというコマンドでプロセス出来る
+(今はどちらでもよい)
+
+chain系列はperlスクリプトでproc系列はC++が使用されている
+どうやら昔はBadPixelsの選別方法が違ったらしい
+SAS6.5からはproc系列がchain系列の選別方法を使用する様になったので、ど
+ちらを使用しても同じ
+<a href="http://arxiv.org/abs/astro-ph/0511395">http://arxiv.org/abs/astro-ph/0511395</a>
+むしろ現在ではC++の方が処理が早いのでprocの使用が推奨されている
+
+emprocはemevent,emenergy,attcalcなどでまったく同じプロセスをしても違う
+結果を吐き出す
+XMMチームの人に聞いたら2回もプロセスするやつは初めてだとビックリしてい
+たけどこれっていいのか？
+
+解析はそれなりにめんどい、詳しくは解析ログを参照
+
+EPICのライトカーブ全てをlcmathで足しあわせるには、時刻をあわせておく必要がある
+以下の手順で行わないと、出来上がったライトカーブはかなり汚くなるので注意
+<a href="http://xmm.esac.esa.int/xmmhelp/SASv7.0?id=25450;page=5;user=guest">http://xmm.esac.esa.int/xmmhelp/SASv7.0?id=25450;page=5;user=guest</a>
+<a href="http://xmm.esac.esa.int/sas/7.0.0/watchout/7.0/timeseries_startend.shtml">http://xmm.esac.esa.int/sas/7.0.0/watchout/7.0/timeseries_startend.shtml</a>
+
+6. OMデータ解析
+
+OMは観測条件によりプロセス方法が若干異なる (omichain,omgchainなど)
+詳しくは解析ログを参照
+
+ex1. スクリプト
+
+<a href="/~dai/contents/tools/tools.html">いろいろ</a>
+
+ex2. Proposals
+
+毎年だいたい10月頃
+
+
+BGをセレクションで落とすのはCCDからバックグラウンドは引くので
+単にS/Nを上げるだけである
+Matteoさんの話
+

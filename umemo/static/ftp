@@ -1,0 +1,43 @@
+******** 'ftp' セッションのコマンド (from SunOS manual)********
+
+＜書式＞
+	ftp [-dgintv] [ IP address or HOSTNAME ]
+
+＜コマンド＞ ( remote- を R- で、local- を L- で、表すとする )
+prompt		: 対話モードにするか否か
+help [command]	: コマンドのヘルプ（コマンドの一覧）
+status		: ftp の現在の状態を表示
+binary <-> ascii
+
+(リモート ⇔ ローカル)
+close		: 接続を終了
+(m)dir [R-directory] [L-file]	: リモートディレクトリ(複数)の内容を
+				  ローカルファイルに出力
+get R-file [L-file]	: リモートファイルをローカルマシンにコピー
+open R-host		: リモートホストとの接続
+proxy ftp-commande	: 複数のサーバと接続（詳しくはman参照）
+put L-file [R-file]	: ローカルファイルをリモートファイルにコピー
+
+(リモート)
+cd R-directory	: リモートマシン上のディレクトリの変更
+cdup		: リモートマシン上で  "cd ../"
+(m)delete [R-file]		: リモートマシンのファイルを削除
+(m)ls [R-directory] [L-file]	: リモートマシン上での 'ls'(file に出力可)
+mkdir [R-directory]	: リモートマシン上での 'mkdir'
+pwd			: リモートマシン上での 'pwd'
+remotehelp [command]	: リモートマシン上でのヘルプ
+rename from to		: リモート上での 'mv'
+rmdir R-directory	: リモート上での 'rmdir'
+
+(ローカル)
+! [command]		: ローカルマシン上で、シェルコマンドを実行
+lcd [L-directory]	: ローカルマシン上での 'cd'
+
+******** 'anonymous ftp' ログイン の方法 **************
+
+＜書式＞
+        ftp [ IP address ]
+Name(---) : ← 'anonymous' と入力
+Password:   ← 自分の e-mail address を書くのが礼儀
+ftp>
+後は、普通に ftp session を行なう

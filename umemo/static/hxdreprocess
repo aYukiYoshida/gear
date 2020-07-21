@@ -1,0 +1,141 @@
+********************************************************************************
+GSO unscreened eventの再プロセス(from 20120711.txt)
+********************************************************************************
+参照
+http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/hxd_repro.html
+
+--------------------------------------------------------------------
+1.必要なファイルのリンクづけ
+--------------------------------------------------------------------
+mkdir event_rp ;cd event_rp
+dir="/data09/yyoshida/data/SCF_effect/GX_14"
+ln -sf ${dir}/hxd/event_uf/ae405077010hxd_1_wel_uf.evt.gz
+ln -sf ${dir}/hxd/event_uf/ae405077010hxd_2_wel_uf.evt.gz
+ln -sf ${dir}/hxd/hk/ae405077010hxd_0.hk.gz
+ln -sf ${dir}/auxil/ae405077010.ehk.gz
+ln -sf ${dir}/auxil/ae405077010.tim.gz
+
+ae405077010hxd_?_wel_uf.evt.gz ?=1,2とあるがそれぞれ再プロセスを行う。
+
+
+--------------------------------------------------------------------
+2.hk file listの作成
+--------------------------------------------------------------------
+cat << EOF >! hk_file.list 
+ae405077010hxd_0.hk.gz
+ae405077010.ehk.gz
+EOF
+
+
+--------------------------------------------------------------------
+3.時刻づけ
+--------------------------------------------------------------------
+hxdtime_com="hxdtime read_iomode=create time_change=n pi_pmt_change=n pi_pin_change=n gtimode=y gti_time=S_TIME time_convert_mode=4 use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+
+for i in ae405077010hxd_1_wel_uf.evt.gz ae405077010hxd_2_wel_uf.evt.gz ;do
+${hxdtime_com} << EOF
+${i}
+${i%.evt.gz}2.evt
+CALDB
+@hk_file.list
+ae405077010.tim.gz
+EOF
+done
+
+
+--------------------------------------------------------------------
+4.PIづけ
+--------------------------------------------------------------------
+hxdpi_com="hxdpi read_iomode=overwrite time_change=n grade_change=n pi_pmt_change=y pi_pin_change=y gtimode=n gti_time=S_TIME rand_seed=7 rand_skip=0 use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+
+for i in 1 2 ;do
+${hxdpi_com} create_name=hxdpi_${i}.out << EOF
+ae405077010hxd_${i}_wel_uf2.evt
+@hk_file.list
+CALDB
+CALDB
+CALDB
+CALDB
+EOF
+done
+
+
+--------------------------------------------------------------------
+5.イベント選別用のカラム GRADE , DET_TYPE をうめる
+--------------------------------------------------------------------
+hxdgrade_com="hxdgrade hxdgrade_psdsel_criteria=2 read_iomode=overwrite time_change=n grade_change=y pi_pmt_change=n pi_pin_change=n gtimode=n gti_time=S_TIME use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+
+for i in 1 2 ;do
+${hxdgrade_com} create_name=hxdgrade_${i}.out << EOF
+ae405077010hxd_${i}_wel_uf2.evt
+CALDB
+CALDB
+CALDB
+EOF
+done
+
+
+--------------------------------------------------------------------
+6.イベント抽出の準備
+--------------------------------------------------------------------
+yyoshida@ungyo) pwd                                
+/data09/yyoshida/data/SCF_effect/GX_14/hxd/event_rp
+
+cp ../../auxil/ae405077010.mkf.gz .
+gunzip ae405077010.mkf.gz 
+ln -sf /data09/yyoshida/data/SCF_effect/GX_14/hxd/hk/ae405077010hxd_1_tel_uf.gti.gz
+ln -sf /data09/yyoshida/data/SCF_effect/GX_14/hxd/hk/ae405077010hxd_2_tel_uf.gti.gz
+
+#HXDの標準的な条件のmkfファイルのdownload
+wget http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/pin_mkf.sel
+wget http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/gso_mkf.sel
+
+
+--------------------------------------------------------------------
+7.イベント抽出
+--------------------------------------------------------------------
+for i in 1 2 ;do
+cat << EOF >! ae405077010hxd_${i}_wel_uf2_xsel.txt
+
+read event ae405077010hxd_${i}_wel_uf2.evt
+./
+select mkf @gso_mkf.sel
+filter column DET_TYPE=0:0
+filter time file ae405077010hxd_${i}_tel_uf.gti.gz
+extract event ae101005040hxd_${i}_gsono_cl2.evt
+yes
+exit
+no
+EOF
+done
+
+
+--------------------------------------------------------------------
+8.keyward "DETNAM" の書き換え
+--------------------------------------------------------------------
+for i in 1 2 ;do
+for j in 0 1 ;do
+fparkey comm="detector name" add=no << EOF
+WELL_GSO
+ae101005040hxd_${i}_gsono_cl2.evt[${j}]
+DETNAM  
+EOF
+done
+done
+
+
+--------------------------------------------------------------------
+9.keyward "TIMEDEL" の書き換え
+--------------------------------------------------------------------
+for i in 1 2 ;do
+for j in 0 1 ;do
+fparkey comm="finest time resolution" add=no << EOF
+6.1E-05
+ae101005040hxd_${i}_gsono_cl2.evt[${j}]
+TIMEDEL
+EOF
+done
+done
+
+
+#EOF#

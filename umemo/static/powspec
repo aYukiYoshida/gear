@@ -1,0 +1,52 @@
+********************************************************************************
+power spectrum
+********************************************************************************
+
+yyoshida@ungyo) powspec
+Ser. 1 filename +options (or @file of filenames +options)[x0_nbg.lc]x0_nbg.lc
+Name of the window file ('-' for default window)[-]-
+Newbin Time or negative rebinning[8] #検出器の時間分解能
+
+##  Default Newbins per Interval are:        8192
+##  (giving       3 Intervals of         8192 Newbins each)
+##  Type INDEF to accept the default value
+##  と表示されたので
+ 
+Number of Newbins/Interval[8192]8192
+
+##  とした。8192なら3枚分のライトカーブができる。
+
+Number of Newbins/Interval[8192]
+##  1枚(Interval)あたりのビン数を入力
+
+Number of Intervals/Frame[1]3
+##  Intervalごとのパワーの計算を何枚づつ重ねて描画するかを決める。
+##  3frameすべてを重ねたいので、3を指定。
+
+Rebin results? (>1 const rebin, <-1 geom. rebin, 0 none)[0] ## default
+Name of output file[default] ## default
+Do you want to plot your results?[yes] ## default
+Enter PGPLOT device[/XW] ## default
+
+
+##  以下は出力結果
+ 
+    4096 analysis results per interval
+ 
+ 33% completed
+ Intv    1   Start 15471  6:57:35
+     Ser.1     Avg  5.644        Chisq 0.1796E+05   Var  3.228     Newbs.   4076
+               Min-0.1787          Max  13.10    expVar 0.7323      Bins   4076
+            Interval rejected because of window(s)  in series 1 !
+ Intv    2   Start 15472  1:43:51
+     Ser.1     Avg  5.691        Chisq 0.1801E+05   Var  2.806     Newbs.   4740
+               Min 0.7500          Max  11.70    expVar 0.7388      Bins   4740
+Power spectrum ready !
+100% completed
+ Intv    3   Start 15472 19:56: 7
+     Ser.1     Avg  5.737        Chisq 0.1232E+05   Var  2.771     Newbs.   3316
+               Min  1.098          Max  12.12    expVar 0.7454      Bins   3316
+            Interval rejected because of window(s)  in series 1 !
+
+
+#EOF#

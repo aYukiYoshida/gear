@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=EUC-JP">
+    <title>Dai Takei</title>
+    <link rel="start" href="http://agyo.rikkyo.ac.jp/~dai/">
+    <link rel="stylesheet" href="/~dai/common/default.css" type="text/css">
+    <link rel="shortcut icon" type="image/jpeg" href="/~dai/common/favicon.ico" title="icon">
+    <!-- Changed by: Dai Takei, 11-Apr-2008 -->
+  </head>
+
+  <body>
+    <table>
+      <tr>
+	<td class="menu">
+          <!--#include file="./menu.html" -->
+        </td>
+        <td class="content">	  
+<!-- text start -->
+
+<u><b>Suzaku 解析マニュアル</b></u><br>
+<blockquote>
+Suzakuは特にシミュレーションが大変<br>
+</blockquote>
+<u><b>0. 情報収集</b></u><br>
+<blockquote>
+公式<br>
+<a href="http://www.astro.isas.jaxa.jp/suzaku/">すざくホームページ</a><br>
+<br>
+非公式<br>
+<br>
+</blockquote>
+<u><b>1. 解析ソフトなどのインストール</b></u><br>
+<blockquote>
+Suzakuの解析には、主に以下のソフトウェアを使用する<br>
+各ソフトウェアのインストール方法は対応のページを参照<br>
+<br>
+<table cellpadding=0>
+<tr><td>Process</td><td width=10 align=center>:</td><td><a href="tools_heasoft.html">heasoft</a></td></tr>
+<tr><td>Image</td><td width=10 align=center>:</td><td><a href="tools_ds9.html">ds9</a> , <a href="tools_idl.html">idl</a></td></tr>
+<tr><td>Spectrum</td><td width=10 align=center>:</td><td>xspec (<a href="tools_heasoft.html">heasoft</a>)</td></tr>
+<tr><td>Lightcurve</td><td width=10 align=center>:</td><td>lcurve (<a href="tools_heasoft.html">heasoft</a>)</td></tr>
+</table>
+<br>
+キャリブレーションファイルは <a href="http://www.astro.isas.jaxa.jp/suzaku/caldb/">Suzaku Calibration Files</a> よりダウンロードする<br>
+</blockquote>
+<u><b>2. 観測データのダウンロード</b></u><br>
+<blockquote>
+1. HEASARCからデータを取得する ( <a href="./xray_heasarc.html">HEASARC Data Archive の使い方</a> を参照)<br>
+2. DARSTからデータを取得する ( <a href="http://www.darts.isas.jaxa.jp/astro/suzaku/">Data ARchives and Transmission System</a> )<br>
+<br>
+DARTSの使い方 :<br>
+Suzakuの解析をする場合はDARTSからデータを持ってくるのが良い気がする<br>
+MASTERという所から適切に検索して欲しいデータを選ぶとwgetのスクリプトが落ちてくる<br>
+Observation Logなども確認可能<br>
+</blockquote>
+<u><b>3. データ概要</b></u><br>
+<blockquote>
+SuzakuにはX線CCDカメラXIS0,XIS1,XIS2,XIS3と井戸型フォスイッチカウンタHXDという検出器がある<br>
+uf_eventが生データ、cl_eventがプロセス済のデータと思っておけば良い<br>
+Suzakuでは今のところcl_eventをそのまま解析に使用しても問題ないと思われる<br>
+<br>
+agyoでSuzakuの解析をする場合は最初に以下のコマンドを実行する<br>
+agyo) . /usr/local/suzaku/caldb/caldbinit.sh<br>
+</blockquote>
+<u><b>4. XISデータ解析</b></u><br>
+<blockquote>
+理研のHP (<a href="http://cosmic.riken.jp/suzaku/help/index_j.html">すざくヘルプデスク</a>) ではSuzakuの解析マニュアルを配布中<br>
+詳しくは解析ログを参照<br>
+</blockquote>
+<u><b>5. HXDデータ解析</b></u><br>
+<blockquote>
+理研のHP (<a href="http://cosmic.riken.jp/suzaku/help/index_j.html">すざくヘルプデスク</a>) ではSuzakuの解析マニュアルを配布中<br>
+詳しくは解析ログを参照<br>
+</blockquote>
+<u><b>ex1. Proposals</b></u><br>
+<blockquote>
+毎年9月頃に概要が発表されて、締切は12月頃<br>
+プロポーザルは日本語でも英語でもOK<br>
+</blockquote>
+<u><b>ex.2 おまけ</b></u><br>
+<blockquote>
+Suzaku衛星/XIS検出器のイメージ、スペクトル、ライトカーブを載せたQLページ<br>
+<a href="/~dai/projects/SwiftQL/"><acronym title="Password required.">Suzaku XIS QL</acronym></a><br>
+</blockquote>
+
+<!-- text end -->
+        </td>
+      </tr>
+    </table>
+    <!--#include file="./bottom.html" -->
+    <!--#include file="./footer.html" -->
+  </body>
+
+</html>
+
+pha*3.65
+00200-12000eV filter pha_cutoff 55 3288
+00200-01000eV filter pha_cutoff 55 273
+01000-02000eV filter pha_cutoff 274 547
+02000-05000eV filter pha_cutoff 548 1369
+06000-07000eV filter pha_cutoff 1644 1917
+07000-12000eV filter pha_cutoff 1918 3288

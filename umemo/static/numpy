@@ -1,0 +1,32 @@
+################################################################################
+numpy
+################################################################################
+FORMAT
+
+
+
+EXPLAIN
+
+
+
+OPTION
+
+
+
+EXAMPLE
+    numpyでの小数第一位の四捨五入
+    
+    import numpy as np
+    from decimal import Decimal, ROUND_HALF_UP
+
+    np.vectorize(lambda x: 
+        int(
+            Decimal(x).quantize(
+                Decimal('0'),
+                rounding=ROUND_HALF_UP
+                )
+            )
+        )(array)
+
+
+#EOF#

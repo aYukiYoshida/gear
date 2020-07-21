@@ -1,0 +1,14 @@
+書式
+
+解説
+	psファイルのサイズを変更してA41枚に納める
+	出来上がったファイルを開くと謎のエラーが出てうまく表示されない場合
+	convert input.eps input_conv.eps
+	としてepsからepsに書き直した後にpsmultiを走らせると解決する
+
+オプション
+
+使用例
+	psmulti -o out.ps -pages 4 i01.ps i02.ps i03.ps i04.ps	: 4つのpsファイルをA4
+	psmulti -o out.ps -pages 1 input.ps			: A4に拡大もしくは縮小
+	psmulti -o out.ps -pages 2 input.ps			: A4の半分に拡大もしくは縮小

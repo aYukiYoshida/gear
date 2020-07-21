@@ -1,0 +1,15 @@
+################################################################################
+basename
+################################################################################
+使用法: basename [filename] [suffix]
+または: basename オプション
+
+filename から suffix を取り除いた部分を抽出
+指定があれば、末尾の接尾辞も取り除く
+
+command example
+yyoshida@ungyo) basename /data09/yyoshida/data/SCF_effect/GX_14
+GX_14
+
+
+#EOF#

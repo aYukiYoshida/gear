@@ -1,0 +1,11 @@
+書式
+	xset
+
+解説
+	X-Window関連のコマンド
+
+オプション
+
+使用例
+	xset q		: Font Path を見る
+	xset fp+	: Font Path の追加

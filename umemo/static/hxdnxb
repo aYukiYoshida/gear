@@ -1,0 +1,80 @@
+################################################################################
+hxdnxb
+################################################################################
+1.some PIN-NXB event file download 
+2.some GSO-NXB event file download
+3.aebarycen実行時の注意点
+
+
+********************************************************************************
+1.some PIN-NXB event file download
+********************************************************************************
+参考)http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/pinbgd.html
+------------------------------------------------------------------------------------------
+Term              |URL
+------------------------------------------------------------------------------------------
+05/09/02-12/07/31 |ftp://legacy.gsfc.nasa.gov/suzaku/data/background/pinnxb_ver2.0_tuned/
+12/08/01-         |ftp://legacy.gsfc.nasa.gov/suzaku/data/background/pinnxb_ver2.2_tuned/
+------------------------------------------------------------------------------------------
+
+for seqn in 100021010 404054010 404055010 ;do
+diraz="/data09/yyoshida/Data/Suzaku/A0535_62"
+url="ftp://legacy.gsfc.nasa.gov/suzaku/data/background/pinnxb_ver2.0_tuned"
+obsdate=`fkeyprint ${diraz}/${seqn}/auxil/ae${seqn}.hk.gz+0 DATE-OBS|sed -n '/DATE-OBS=/p'|sed -e 's/-/_/g'|awk '{print $2}'|sed 's/.//'|sed 's/.............$//'`
+cd ${diraz}/${seqn}/hxd/event_rp
+wget ${url} /${obsdate}/ae${seqn}_hxd_pinbgd.evt.gz
+done
+
+
+
+********************************************************************************
+2.some GSO-NXB event file download
+********************************************************************************
+参考)http://www.astro.isas.jaxa.jp/suzaku/analysis/hxd/gsonxb/
+------------------------------------------------------------------------------------------
+Term              |URL
+------------------------------------------------------------------------------------------
+05/08/17-11/11/03 |ftp://legacy.gsfc.nasa.gov/suzaku/data/background/gsonxb_ver2.5
+11/03/01          |ftp://legacy.gsfc.nasa.gov/suzaku/data/background/gsonxb_ver2.6
+------------------------------------------------------------------------------------------
+
+for seqn in 100021010 404054010 404055010 ;do
+url="http://www.astro.isas.jaxa.jp/suzaku/analysis/hxd/gsonxb/gsonxb_ver2.5"
+diraz="/data09/yyoshida/Data/Suzaku/A0535_262"
+obsdate=`fkeyprint ${diraz}/${seqn}/auxil/ae${seqn}.hk.gz+0 DATE-OBS|sed -n '/DATE-OBS=/p'|sed -e 's/-/_/g'|awk '{print $2}'|sed 's/.//'|sed 's/.............$//'`
+cd ${diraz}/${seqn}/hxd/event_rp
+wget ${url}/${obsdate}/ae${seqn}_hxd_gsobgd.evt.gz
+done
+
+
+********************************************************************************
+3.aebarycen実行時の注意点
+********************************************************************************
+download してきたNXB event fileに対してaebarycenを実行すると
+extension#2にaebarycenに必要なparameterがないため途中でコケていることがある。
+下記のparameterをaebarycen実行前にextension#0 or #1からfparkey等を用いて
+extension#2に追加する。
+
+#aebarycen実行時に必要なparameter
+TIMEREF TIMESYS TELESCOP TIMEUNIT RADECSYS TSTART
+
+
+#EXAMPLE
+
+for id in 404054010 404055010 ;do
+dir=/data09/yyoshida/Data/Suzaku/A0535_262
+cd ${dir}/${id}/hxd/event_rp
+for dt in pin gso ;do
+evt=ae${id}_hxd_${dt}bgd.evt
+gunzip ${evt}.gz
+for key in TIMEREF TIMESYS TELESCOP TIMEUNIT RADECSYS TSTART ;do
+val=`fkeyprint ${evt}+0 ${key}|sed -n "s/=//p"|sed "s/'//g"|awk '{print $2}'`
+fparkey ${val} "${evt}+2" ${key} add=yes
+done
+gzip ${evt}.gz
+done
+done
+
+
+
+#EOF#

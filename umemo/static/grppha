@@ -1,0 +1,60 @@
+書式
+	grppha [infile] [outfile] [command] exit
+
+解説
+	minのカウント数を大きくすると端数のビンはQUALITYで落ちるので注意
+
+オプション
+	group 0 4095 4			: 0-4059チャンネルを4binまとめ
+	group min 20			: 1binに20cts以上でbinまとめ
+	group 0 2047 4 2048 4095 8	: 変則的にbinまとめ
+	show [ALL,GROUP,etc...]		: Group情報を見る
+	exit				: ファイルをセーブして終わる
+	q, quit				: ファイルをセーブしないで終わる
+
+	bad 0-29			: 0から29チャンネルをbadにする
+
+	reset grouping			: Groupingを解除する
+
+使用例
+	最も一般的なまとめ方
+	grppha ${i} ${i%.pha}_grp20.pha "group min 20" exit
+
+	2つのphaを同じbinでまとめる
+	grppha aho1.pha dummy.pha "dump group groupfile.dat" exit
+	grppha aho2.pha binned.pha "group groupfile.dat" exit
+	
+	変則的にbinまとめ
+	grppha xi023_src.pha xi023_src_grp.pha clobber="yes"
+	group 0 255 1 256 511 32 512 1023 32 1024 2047 32 2048 4095 128
+	exit
+
+	スペクトルに関連したファイルもまとめる
+	chkey BACKFILE x0_bkg.pha
+	chkey RESPFILE x0.rmf
+	chkey ANCRFILE x0.arf
+
+
+MANDATORY KEYWORDS
+  EXTNAME   -  Name of this BINTABLE
+  TELESCOP  -  Mission/Satellite name
+  INSTRUME  -  Instrument/Detector
+  FILTER    -  Instrument filter in use
+  EXPOSURE  -  Integration time (in secs) of PHA data
+  AREASCAL  -  Area scaling factor
+  BACKSCAL  -  Background scaling factor
+  BACKFILE  - none            Associated background file
+  CORRSCAL  - 1.0000          Correlation scaling factor
+  CORRFILE  - none            Associated correlation file
+  RESPFILE  - none            Associated redistribution matrix file
+  ANCRFILE  - none            Associated ancillary response file
+  POISSERR  - TRUE            Whether Poissonian errors apply
+  CHANTYPE  - PI              Whether channels have been corrected
+  TLMIN1    - 0               First legal Detector channel
+  DETCHANS  - 4096            No. of legal detector channels
+  NCHAN     - 4096            No. of detector channels in dataset
+  PHAVERSN  - 1.2.0           OGIP FITS version number
+  STAT_ERR  - FALSE           Statistical Error
+  SYS_ERR   - FALSE           Fractional Systematic Error
+  QUALITY   - TRUE            Quality Flag
+  GROUPING  - FALSE           Grouping Flag

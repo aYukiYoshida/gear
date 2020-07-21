@@ -1,0 +1,10 @@
+書式
+
+解説
+	sshを使用して他のPCとファイルをやりとりする
+
+オプション
+
+使用例
+	scp username@agyo.rikkyo.ac.jp:/home/user/aho.txt ./
+	scp ./aho.txt username@agyo.rikkyo.ac.jp:/home/user/

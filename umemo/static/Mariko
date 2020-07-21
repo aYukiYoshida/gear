@@ -1,0 +1,457 @@
+********************************************************************************
+mariko
+********************************************************************************
+
+
+大石麻里子の卒業研究時のlogファイル
+
+author : 大石麻里子 2010
+
+mariko0726
+○最初
+cd /data08/oishi/100029010/xis/event_cl/
+xraysetup suzaku
+
+○データの取得
+set op='-nv -m --passive-ftp -nH --cut-dirs=3 -p .'
+wget ftp://ftp.darts.isas.jaxa.jp/pub/suzaku/ver2.0/100029010/xis/event_uf/ae100029010xi1_0_3x3n021z_uf.evt.gz
+
+
+
+○リンクの仕方（リンク付けしたい場所でやる場合）
+>ln -s /data08/oishi/100029010/auxil/ae100029010.orb.gz 
+
+○割算
+>/home/kenta/pl_file/agyo_file/hardness_ratio_v1.2.pl \
+xis1_3x3n_grp_100bin_1.qdp \分子
+xis1_3x3n_grp_100bin_2.qdp \分母
+xis1_3x3n_grp_100bin_1to2
+
+○規格化の仕方
+awk '{print $1, $2, ($3)/4.23033488809942, ($3/4.23033488809942)*(($4/$3)^2+(0.136561504526639/4.23033488809942)^2)^0.5}' xis3_div_0_3.qdp > xis3_stan_0_3.qdp
+
+paste 3_second.qdp 3_first.qdp | awk '{print $1, $2, $3/$7, ($3/$7)*(($4/$3)^2+($8/$7)^2)^0.5}' > 3_second_div.qdp 
+
+○psファイルを違うファイルにする場合
+>convert ???.ps ???.gif(png/pdf)
+winscpをwindowsに入れると見ることができるようになる。
+
+ps2pdf xis_1024bin.ps
+
+~XISについて~
+○サチュレイションの確認・コピーの仕方
+xisgtigen infile=ae100029010xi1_0_3x3n021z_uf.evt.gz.1 outfile=xis1_3x3n.gti segment_a=no segment_d=no
+cp /data08/oishi/100029010/xis/event_uf/xis1_3x3n.gti /data08/oishi/100029010/xis/event_cl
+r e ae100029010xi1_0_3x3n021b_cl.evt.gz
+filter time file xis1_3x3n.gti 
+ext event
+save event
+xis1_3x3n.evt
+
+○リージョンの中身の見方
+$ xemacs xis1_3x3n_1.reg &
+
+○rmfファイルの作り方
+xisrmfgen
+
+addrmf xis1_second.rsp,xis2_second.rsp,xis3_second.rsp 1,1,1 xis_second.rsp
+
+○arfファイルの作り方
+xissimarfgen clobber=yes instrume=XIS1 pointing=AUTO source_mode=J2000 source_ra=253.500583 source_dec=-39.84547 num_region=1 region_mode=SKYREG regfile1=xis1.reg arffile1=xis1_first.arf limit_mode=NUM_PHOTON num_photon=1000000 phafile=xis1_first.pha detmask=none gtifile=xis1_first.evt attitude=ae100029010.att.gz rmffile=xis1_first.rmf estepfile=sparse
+
+
+○グラフの表し方
+skip sing
+pl v
+info
+yplot off 2 4 6
+win 3
+col 5 on 3(グループ番号)
+
+
+〜HXDについて〜
+○NXBの取り方
+quickの方をクリックして、自分のデータを探し、右クリックしてデスクトップに保存。
+端末からデスクトップに行き、hxdの方にコピーする。
+>scp ae100029010hxd_pinnxb_cl.evt.gz oishi@uni:/data08/oishi/100029010/hxd/event_cl/
+>cd /usr/local/xray/caldb/data/suzaku/hxd/cpf/
+
+
+○再プロセス
+>xraysetup suzaku
+>hxdtime input_name=ae100029010hxd_0_wel_uf.evt.gz \
+create_name=ae100029010hxd_0_wel_uf_2.evt \
+tim_filename=ae100029010.tim.gz \
+hklist_name=ae100029010hxd_0.hk.gz \
+leapfile=CALDB \
+read_iomode=create time_change=y grade_change=n pi_pmt_change=n \
+pi_pin_change=n gtimode=y gti_time=S_TIME time_convert_mode=4 \
+use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes
+
+>hxdpi input_name=ae100029010hxd_0_wel_uf_2.evt \
+hklist_name=ae100029010hxd_0.hk.gz \
+hxd_gsogpt_fname=CALDB hxd_gsolin_fname=CALDB \
+hxd_pinghf_fname=CALDB hxd_pinlin_fname=CALDB \
+create_name=hxdpi.out read_iomode=overwrite \
+time_change=n grade_change=n pi_pmt_change=y pi_pin_change=y \
+gtimode=n gti_time=S_TIME rand_seed=7 rand_skip=0 use_pwh_mode=n \
+num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes 
+
+>hxdgrade input_name=ae100029010hxd_0_wel_uf_2.evt \
+hxdgrade_psdsel_fname=CALDB \
+hxdgrade_pinthres_fname=CALDB \
+leapfile=CALDB \
+hxdgrade_psdsel_criteria=2.1 \
+read_iomode=overwrite create_name=hxdgrade.out \
+time_change=n grade_change=y pi_pmt_change=n pi_pin_change=n \
+gtimode=n gti_time=S_TIME use_pwh_mode=n num_event=-1 \
+event_freq=10000 anl_verbose=-1 anl_profile=yes
+
+gunzip ae100029010.mkf.gz
+wget http://suzaku.gsfc.nasa.gov/docs/suzaku/analysis/pin_mkf.se
+wget http://suzaku.gsfc.nasa.gov/docs/suzaku/analysis/gso_mkf.sel
+
+fparkey fitsfile="ae100029010hxd_0_gsono_cl_2.evt+0" \
+value="WELL_GSO" keyword="DETNAM" \
+comm="detector name" add=no
+
+fparkey fitsfile="ae100029010hxd_0_gsono_cl_2.evt+1" \
+value="WELL_GSO" keyword="DETNAM" \
+comm="detector name" add=no
+
+fparkey fitsfile="ae100029010hxd_0_gsono_cl_2.evt+0" \
+value="6.1E-05" keyword="TIMEDEL" \
+comm="finest time resolution" add=no
+
+fparkey fitsfile="ae100029010hxd_0_gsono_cl_2.evt+1" \
+value="6.1E-05" keyword="TIMEDEL" \
+comm="finest time resolution" add=no
+
+mgtime \
+ingtis="ae100029010hxd_0_gsono_cl_2.evt+2,ae100029010_hxd_gsobgd.evt.gz+2" \
+outgti="ae100029010hxd_wel_gso.gti" merge="AND"
+
+
+less /usr/local/xray/heasoft/6.9/i686-pc-linux-gnu-libc2.7/syspfiles/hxdpi.par
+xraysetup heasoft69
+
+READ SERR 2
+@xis1_lc_bin1_1.pco
+!
+
+scp ae100029010_hxd_gsobgd.evt.gz oishi@uni:/data08/oishi/100029010/hxd/event_cl/
+
+ hxddtcor event_fname="ae100029010hxd_0_wel_uf_2.evt" \
+pi_fname="gso_evtb_dtcor.pha" \
+save_pseudo=no chatter=2
+
+fkeyprint infile="gso_evtb.pha" keynam="EXPOSURE"
+fkeyprint infile="gso_evtb_dtcor.pha" keynam="EXPOSURE"
+
+@xis@
+grppha
+group 0 2047 32 2048 3071 64 3072 4095 128
+
+@pin@
+grppha
+group 0 63 4 64 127 8 128 191 16 192 255 32
+
+@gso@
+grppha
+group 0 24 25 25 26 2 27 28 2 29 31 3 32 35 4 36 38 3
+group 39 42 4 43 46 4 47 51 5 52 56 5 57 62 6
+group 63 68 6 69 75 7 76 83 8 84 91 8 92 100 9
+group 101 110 10 111 121 11 122 134 13 135 147 13 148 162 15
+group 163 178 16 179 196 18 197 216 20 217 238 22 239 262 24
+group 263 288 26 289 317 29 318 349 32 350 384 35 385 422 38
+group 423 465 43 466 511 46
+
+ln -s /usr/local/xray/caldb/data/suzaku/hxd/cpf/ae_hxd_pinxinome1_20080129.rsp .
+
+xraysetup suzaku
+xspec11
+data 1:1 xis1_bin.pha
+back 1 xis1_back_bin.pha
+resp 1 xis1_lc.rmf
+arf 1 xis1_lc.arf
+data 2:2 xis2_bin.pha
+back 2 xis2_back_bin.pha
+resp 2 xis2_lc.rmf
+arf 2 xis2_lc.arf
+data 3:3 xis3_bin.pha
+back 3 xis3_back_bin.pha
+resp 3 xis3_lc.rmf
+arf 3 xis3_lc.arf
+data 4:4 pin_evtb_dtcor_bin.pha
+back 4 pin_bgdb_expcor_bin.pha
+resp 4 ae_hxd_pinxinom_20060814.rsp
+data 5:5 gso_evtb_dtcor_grp.pha
+back 5 gso_bgdb_dtcor_grp.pha
+resp 5 ae_hxd_gsoxinom_20060321.rsp 
+setpl en
+pl ld
+ignore 1:**-0.7 8.0-**
+ignore 1:1.7-1.9
+ignore 2:**-0.7 8.0-**
+ignore 2:1.7-1.9
+ignore 3:**-0.7 8.0-**
+ignore 3:1.7-1.9
+ignore 4:**-15 70.0-**
+ignore 5:**-100.0 300.0-**
+pl ld
+
+model constant*wabs*(diskbb+power)
+
+model constant*wabs*(diskbb+compps)
+model constant*wabs*(diskbb+compps+pexrav)
+
+model constant*wabs*(diskbb+compps+compps)
+model constant*wabs*(diskbb+compps+compps+pexrav+pexrav)
+pl ld delchi
+renorm
+query no
+fit
+
+
+new 
+set binsize 16
+filter pha_cutoff 191 1095
+ext al
+pl c
+
+set binsize 16
+filter pha_cutoff 1095 2739
+ext  al
+pl c
+
+
+
+filter time cursor
+q
+x
+save goodtime first
+filter time file first.gti
+ext al
+xpl c
+save spec first.pha
+ext event
+save event first.evt
+clear time file pin_second.gti
+
+@first@
+xspec11
+data 1:1 xis1_first_bin.pha
+back 1 xis1_first_back_bin.pha
+resp 1 xis1_first.rmf
+arf 1 xis1_first.arf
+data 2:2 xis2_first_bin.pha
+back 2 xis2_first_back_bin.pha
+resp 2 xis2_first.rmf
+arf 2 xis2_first.arf
+data 3:3 xis3_first_bin.pha
+back 3 xis3_first_back_bin.pha
+resp 3 xis3_first.rmf
+arf 3 xis3_first.arf
+data 4:4 pin_dtcor_first_bin.pha
+back 4 pin_back_expcor_first_bin.pha
+resp 4 ae_hxd_pinxinom_20060814.rsp
+data 5:5 gso_dtcor_first_bin.pha 
+back 5 gso_back_dtcor_first_bin.pha
+resp 5 ae_hxd_gsoxinom_20060321.rsp
+ignore 1:**-0.7 8.0-**
+ignore 1:1.7-1.9
+ignore 2:**-0.7 8.0-**
+ignore 2:1.7-1.9
+ignore 3:**-0.7 8.0-**
+ignore 3:1.7-1.9
+ignore 4:**-15 70.0-**
+ignore 5:**-100.0 300.0-**
+setpl en
+pl ld
+
+
+
+@second@
+xspec11
+data 1:1 xis1_second_bin.pha
+back 1 xis1_second_back_bin.pha
+resp 1 xis1_second.rmf
+arf 1 xis1_second.arf
+data 2:2 xis2_second_bin.pha
+back 2 xis2_second_back_bin.pha
+resp 2 xis2_second.rmf
+arf 2 xis2_second.arf
+data 3:3 xis3_second_bin.pha
+back 3 xis3_second_back_bin.pha
+resp 3 xis3_second.rmf
+arf 3 xis3_second.arf
+data 4:4 pin_dtcor_second_bin.pha
+back 4 pin_back_expcor_second_bin.pha
+resp 4 ae_hxd_pinxinom_20060814.rsp
+data 5:5 gso_dtcor_second_bin.pha
+back 5 gso_back_dtcor_second_bin.pha
+resp 5 ae_hxd_gsoxinom_20060321.rsp
+ignore 1:**-0.7 8.0-**
+ignore 1:1.7-1.9
+ignore 2:**-0.7 8.0-**
+ignore 2:1.7-1.9
+ignore 3:**-0.7 8.0-**
+ignore 3:1.7-1.9
+ignore 4:**-15 70.0-**
+ignore 5:**-100.0 300.0-**
+setpl en
+pl ld
+
+
+
+@third@
+xspec11
+data 1:1 xis1_third_bin.pha
+back 1 xis1_third_back_bin.pha
+resp 1 xis1_third.rmf
+arf 1 xis1_third.arf
+data 2:2 xis2_third_bin.pha
+back 2 xis2_third_back_bin.pha
+resp 2 xis2_third.rmf
+arf 2 xis2_third.arf
+data 3:3 xis3_third_bin.pha
+back 3 xis3_third_back_bin.pha
+resp 3 xis3_third.rmf
+arf 3 xis3_third.arf
+data 4:4 pin_dtcor_third_bin.pha
+back 4 pin_back_expcor_third_bin.pha
+resp 4 ae_hxd_pinxinom_20060814.rsp
+data 5:5 gso_dtcor_third_bin.pha
+back 5 gso_back_dtcor_third_bin.pha
+resp 5 ae_hxd_gsoxinom_20060321.rsp
+ignore 1:**-0.7 8.0-**
+ignore 1:1.7-1.9
+ignore 2:**-0.7 8.0-**
+ignore 2:1.7-1.9
+ignore 3:**-0.7 8.0-**
+ignore 3:1.7-1.9
+ignore 4:**-15 70.0-**
+ignore 5:**-100.0 300.0-**
+setpl en
+pl ld
+
+
+@XIS_first@
+xspec11
+data 1:1 xis_first_bin.pha
+back 1 xis_first_back_bin.pha
+resp 1 xis_first.rsp
+data 2:2 pin_dtcor_first_bin.pha
+back 2 pin_back_expcor_first_bin.pha
+resp 2 ae_hxd_pinxinome1_20080129.rsp
+data 3:3 gso_dtcor_first_bin.pha 
+back 3 gso_back_dtcor_first_bin.pha
+resp 3 ae_hxd_gsohxnom_20080129.rsp
+ignore 1:**-0.7 8.0-**
+ignore 2:**-12 45-**
+ignore 3:**-70.0 300.0-**
+setpl en
+pl ld
+
+@XIS_second@
+xspec11
+data 1:1 xis_second_bin.pha
+back 1 xis_second_back_bin.pha
+resp 1 xis_second.rsp
+data 2:2 pin_dtcor_second_bin.pha
+back 2 pin_back_expcor_second_bin.pha
+resp 2 ae_hxd_pinxinome1_20080129.rsp
+data 3:3 gso_dtcor_second_bin.pha 
+back 3 gso_back_dtcor_second_bin.pha
+resp 3 ae_hxd_gsohxnom_20080129.rsp
+ignore 1:**-0.7 8.0-**
+ignore 2:**-12 45-**
+ignore 3:**-70.0 300.0-**
+setpl en
+pl ld
+
+@XIS_third@
+xspec11
+data 1:1 xis_third_bin.pha
+back 1 xis_third_back_bin.pha
+resp 1 xis_third.rsp
+data 2:2 pin_dtcor_third_bin.pha
+back 2 pin_back_expcor_third_bin.pha
+resp 2 ae_hxd_pinxinome1_20080129.rsp
+data 3:3 gso_dtcor_third_bin.pha 
+back 3 gso_back_dtcor_third_bin.pha
+resp 3 ae_hxd_gsohxnom_20080129.rsp
+ignore 1:**-0.7 8.0-**
+ignore 2:**-12 45-**
+ignore 3:**-70.0 300.0-**
+setpl en
+pl ld
+
+
+
+model constant*wabs*(diskbb+compps+compps+pexrav)
+
+pl ld delchi
+renorm
+query no
+fit
+
+la 1 po 30000 6 line 270 4
+la 2 po 60000 14 line 270 7
+pl
+lab 4 po 1.5e4 13 "first" cs 1.5
+pl
+la t
+la op
+la f
+pl
+
+
+
+log x on 1
+log y on 1
+r y 0.5 5
+r x 0.5 10
+p
+la x "Energy(keV)"
+la 1 po 2 5 line 270 4
+la 2 po 2 1 line 0 180
+la 3 po 2 2 line 0 180
+la 4 po 2 4 line 0 180
+p
+la 5 po 0.8 0.9 "0'-0'.5/2'-3'" cs 1.5
+la 6 po 0.8 02 "0'.5-1'/2'-3'" cs 1.5
+la 7 po 0.8 4 "1'-2'/2'-3'" cs 1.5
+
+
+la 1 po 90 0.008 "on-source data" col 1
+la 2 po 90 0.006 "background-subtracted data" col 2
+la 3 po 90 0.004 "background data" col 3
+
+
+
+
+0.7keV=191PI
+4keV=1095PI
+10keV=2739PI
+
+12keV=31PI
+40keV=105PI
+70keV=185PI
+
+70keV=34PI
+150keV=74PI
+300keV=149PI
+
+1 0.06
+2 0.154
+3 0.248
+4 0.342
+5 0.436
+6 0.53
+7 0.624
+8 0.718
+9 0.906
+10 1
+
+cat T_DY_xis_1[1-6]_26.ps |gs -dBATCH -dNOPAUSE -q -sDEVICE=pswrite -sPAPERSIZE=a4 -dNOPLATFONTS -sOutputFile=%stdout% - | psnup -6 > tmp4.ps

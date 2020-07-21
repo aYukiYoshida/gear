@@ -1,0 +1,29 @@
+################################################################################
+AA
+################################################################################
+FORMAT
+
+
+
+EXPLAIN
+   Let' enjoy Ascii Art !!
+
+
+OPTION
+
+
+
+EXAMPLE
+   sl                                     : SL runs
+   banner "Hello World"                   : make a message
+   figlet "Hello World"                   : make a message
+   toilet "Hello World"                   : make a message
+   cowsay "Hello World"                   : make a message
+   cowsay -f tux "Hello World"            : make a message
+   cowsay -f ghostbusters "Hello World"   : make a message
+   ponysay "Hello World"                  : make a message	     
+   telnet towel.blinkenlights.nl          : watch the STAR WARS
+   cmatrix                                : like the Matrix
+
+
+#EOF#

@@ -1,0 +1,10 @@
+書式
+	portinstall [packages]
+
+解説
+	パッケージを名前からインストールする
+
+オプション
+
+使用例
+	portinstall libpaper-1.1.21_3

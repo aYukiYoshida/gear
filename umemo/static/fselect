@@ -1,0 +1,10 @@
+書式
+
+解説
+
+オプション
+
+使用例
+
+	イベントファイルからイベントを1/4に間引く
+	fselect "input.evt[EVENTS]" output.evt "(#row%4) == 1"

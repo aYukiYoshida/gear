@@ -1,0 +1,55 @@
+################################################################################
+xispi
+################################################################################
+HEADASのCALDB管理をきちんとやっているならそれにのっとってやる.
+やっていない場合は上記を解凍してできたdirのsoftware/toolsの下にある
+caldbinit.sh(or .csh)を編集して環境変数CALDBを解凍して出来たdirに書換える.
+以下のコマンド実行.
+
+% source caldbinit.sh
+
+3)xispiの実行
+CALDBに従ってCTI補正やエネルギー較正する.
+!!Heasoftを使える状態にしておくことは大前提.
+!!SCI-onデータを処理するにはHeasoft 6.3以降が必須.
+!!出来れば最新版にすることをおすすめ.
+
+USAGE
+% xispi <uf_event_FILE> <OUTPUT> <XISHK_FILE>
+
+XISHKファイルは(OBSID)/xis/hkの下のaeNNNNNNNxiN_0.hk.gzを各センサーごとに指示.
+XISHKにはA/D変換回路の温度の情報とかが入っている.
+(OBSID)/hkに入っている衛星のhkを使ってしまうのがみんながハマる罠...
+CALDBの設定がうまくいっていれば,
+MAKEPIFILE '(CALDBのdir)/.../ae_xiN_makepi_20080825.fits' (CALDB)
+と表示される.日付が重要...
+
+4)イベントをcleaningします。どんな基準でscreeningしているのかは
+(OBSID)/log/aeNNNNN_index.html
+とか見て下さい。
+ふたたび普段自分が使っているスクリプト（を修正したもの)を添付
+します。上記run_xispi.bashを走らせた後、
+(OBSID)/xis/event_cl_reprocessed
+を作って、そのディレクトリで
+bash makecleaned.bash
+として下さい。各センサー毎に
+xisN_cl.evt
+というものができている筈です。3x3と5x5はマージ済み。
+
+!!間違っていないとは思うけど、自己責任でお願いします・・・。
+!!念のため、cleaningの条件一覧。
+grade=0:0 2:4 6:6 ;グレード判定
+status=0:524287 ;Bad pixel除去
+AOCU_HK_CNT3_NML_P.eq.1 ;マヌーバ中時間を除去
+Sn_DTRATE < 3 ;Date rate lowを除去・・・確か。
+SAA_HXD.eq.0 && T_SAA_HXD > 436 && ANG_DIST<1.5 ;SAAとその直後の時間を
+カット。衛星が姿勢が大きく揺れている時間をカット。
+ELV > 5 && DYE_ELV > 20 ;エレヴェーションでカット。
+(cleansis) ;フリッカリングピクセルの除去。
+(xisgtigen) ;テレメトリサチュレーション中の時間の除去
+
+
+
+
+
+#EOF#

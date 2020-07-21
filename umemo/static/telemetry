@@ -1,0 +1,26 @@
+********************************************************************************
+テレメトリ飽和の除去(xis)
+********************************************************************************
+
+
+xisgtigen \
+infile=ae100029010xi1_0_3x3n021z_uf.evt.gz.1 outfile=xis1_3x3n.gti \
+segment_a=no 
+segment_d=no
+
+xselect
+<return>
+r e ae100029010xi1_0_3x3n021b_cl.evt.gz
+filter time file xis1_3x3n.gti 
+ext event
+save event
+xis1_3x3n.evt
+
+
+
+見つけたイベント数と処理したイベント数の数を比較してテレメトリ飽和を調べる。
+hk
+
+
+
+#EOF#

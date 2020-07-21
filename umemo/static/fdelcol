@@ -1,0 +1,31 @@
+################################################################################
+fdelcol
+################################################################################
+FORMAT
+
+   fdelcol infile[ext#] colname confirm proceed
+
+
+EXPLAIN
+
+   FITSファイルの特定のcolumnの削除
+
+
+OPTION
+
+
+PARAMETERS
+
+   infile    削除したいcolumnを含むFITSファイル
+   colname   columnの名称
+   confirm   [boolean]指定したColumnを含むEXTENSION, EXTNAMEの情報表示 (default = yes)
+   proceed   [boolean]yesにするとcolumnの削除を実行する
+
+
+EXAMPLE
+
+   fdelcol test.fits+1 TIME no yes   TIME columnの削除
+   fdelcol test.fits+1 TIME yes no   TIME columnを含むEXTENSIONの情報表示
+
+
+#EOF#

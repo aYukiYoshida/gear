@@ -1,0 +1,83 @@
+================================================================================
+Response
+================================================================================
+
+#########################################
+xisのrmfファイルの作成
+#########################################
+
+usage   : xisrmfgen <PIFILE> <OUTPUT>
+
+example : xisrmfgen xis0.pi xis0.rmf
+
+*rmfファイルは各検出器に対して1個あれば良い。
+ 生の(何のfilterもかけていない)PIfileからつくるのが一番手っ取り早い。
+
+
+#########################################
+xisの打ち上げ直後のレスポンスの作成
+#########################################
+
+PI or IMAGE fileをNONEで答えると聞かれるパラメータが増える。
+Date of observationのパラメータを打ち上げ直後の観測の日付にすればよい。
+
+#EXAMPLE
+yyoshida@ungyo) xisrmfgen 
+xisrmfgen version 2007-05-14
+Name of input PI or IMAGE file or NONE[] NONE
+Name of output RMF[rsp/xis3.rmf] test.rmf
+Instrument Name (XIS0,XIS1,XIS2,XIS3)[XIS3] 
+Date of observation (yyyy-mm-ddThh:mm:ss.sss or Suzaku time)[]2005-08-11T07:24:27 
+CCD clock mode (normal,burst,psum)[normal] 
+Edit mode of telemetry (5x5,3x3,2x2,timing)[3x3] 
+Window option (0:off 1:1/4 2:1/8 3:1/16).[1] 
+Charge Injection (0:none 1:diagn 2:SCI-54 3:SCI-108)[2] 
+
+
+
+#########################################
+CALDBからHXDのresponseのdownload
+#########################################
+
+-----------------------------------------
+観測時期に合わせたレスポンス
+-----------------------------------------
+http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/pinepochs.html
+Observation Date	Response Files
+2010.4.3 -- 2010.11.30	ae_hxd_pinXXXXXe9_20100731.rsp
+(XXXXX=xinom,hxnom,flat)
+
+-----------------------------------------
+DATA BASE
+-----------------------------------------
+http://heasarc.gsfc.nasa.gov/docs/heasarc/caldb/data/suzaku/hxd/
+PIN,GSOの両方のレスポンスが置かれている
+
+-----------------------------------------
+wget
+-----------------------------------------
+
+%PIN
+
+yyoshida@ungyo) pwd
+/data09/yyoshida/data/SCF_effect/GX_14/hxd/analysis/rsp
+
+url=ftp://legacy.gsfc.nasa.gov/caldb/data/suzaku/hxd/cpf
+wget ${url}/ae_hxd_pinxinome9_20100731.rsp
+wget ${url}/ae_hxd_pinhxnome9_20100731.rsp
+wget ${url}/ae_hxd_pinflate9_20100731.rsp
+
+
+%GSO
+
+yyoshida@ungyo) pwd
+/data09/yyoshida/data/SCF_effect/GX_14/hxd/analysis/rsp
+
+url=ftp://legacy.gsfc.nasa.gov/caldb/data/suzaku/hxd/cpf
+wget ${url}/ae_hxd_gsohxnom_20080129.rsp
+wget ${url}/ae_hxd_gsohxnom_20100524.rsp
+
+
+
+
+#EOF#

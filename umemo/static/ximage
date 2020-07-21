@@ -1,0 +1,83 @@
+書式
+
+解説
+
+オプション
+
+使用例
+
+	cpd /xtk	なんか色々オプション付で表示
+
+	background/opt	かってにboxのサイズを決める
+
+	ximage
+	read Nova_Vul2007_0.2-5.0keV.img
+	disp
+	slice/xslice/start_pixel=568.5/end_pixel=968.5/outfile=src01_x01.cut
+
+	grid    : /color=1 -- 黒、4なら青 (黒は /xw では見えない！)
+		  grid/color=4 0.25 0.2 でGIS、2000年分点なら割といい図。
+		  /gal 0.2 0.25  で銀河座標ならいい感じ？
+
+	pixel_to_ra_dec/cursor  : 座標値を表示
+
+	read/size=10024 Nova_Vul2007_0.2-5.0keV.img
+
+	## Suzakuプロセスによる一連の流れ
+
+	viewport 2x2
+	read suzaku_sim_679-1014.img
+	display
+	chh key=instrume
+	set detname [chh key=instrume]
+	chh key=exposure
+	expr [chh key=exposure]/1E3
+	format %.1f [expr [chh key=exposure]/1E3]
+	set exposure [format %.1f [expr [chh key=exposure]/1E3]]
+	iminfo/csize=0.75 "$detname $exposure ks"
+	grid/ticks_only
+
+	read suzaku_sim_679-1034.img
+	display
+	chh key=instrume
+	set detname [chh key=instrume]
+	chh key=exposure
+	expr [chh key=exposure]/1E3
+	format %.1f [expr [chh key=exposure]/1E3]
+	set exposure [format %.1f [expr [chh key=exposure]/1E3]]
+	iminfo/csize=0.75 "$detname $exposure ks"
+	grid/ticks_only
+
+	read suzaku_sim_679-1034.img
+	display
+	chh key=instrume
+	set detname [chh key=instrume]
+	chh key=exposure
+	expr [chh key=exposure]/1E3
+	format %.1f [expr [chh key=exposure]/1E3]
+	set exposure [format %.1f [expr [chh key=exposure]/1E3]]
+	iminfo/csize=0.75 "$detname $exposure ks"
+	grid/ticks_only
+
+	chh key=telescop
+	set telescop [chh key=telescop]
+	chh key=object
+	set field [chh key=object]
+	vplabel/top "$telescop XIS observation of $field  (Sequence 902001010)"
+	scale
+
+	## イメージ足しあわせ
+
+	read/fits/size=2000/rebin=1 input01.img
+	read/fits/exposure/size=2000/rebin=1 input01_exp.img
+	save_image
+	read/fits/size=2000/rebin=1 input02.img
+	read/fits/exposure/size=2000/rebin=1 input02_exp.img
+	sum_image
+	save_image
+	disp
+	/xw
+	disp/exp
+	disp/cor
+	write/fits output.img
+	write/fits/exp output_exp.img

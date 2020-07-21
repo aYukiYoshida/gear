@@ -1,0 +1,21 @@
+書式
+
+解説
+
+オプション
+
+使用例
+
+たとえば、input.imgというfitsイメージを、regionfile.regという(SKY imageフォーマットの、つまり、DS9のregion file formatの設定で「Image」としてsaveした場合の)region fileでフィルタリングしたいときは、以下のようにします。
+
+ftimgcalc output.img 'regfilter("regionfile.reg",A.P1,A.P2)? A:0' a=input.img
+
+また、この手法は、xissimarfgenなどで利用する、source region skyfits imageやextracting region skyfits image(つまり、acceptしたいピクセルには1が、excludeしたいピクセルには0がつまったようなイメージ)を作ることもできます。具体的には、regfilter()?で、各ピクセルが指定したregionの中に入るかどうかの判定結果に対して(?の後のところ)、判定後のピクセルに詰めたい値を書けばよいことになります。
+
+regfilter()? (ピクセルがacceptedな場合の値):(ピクセルがexcludedな場合)
+
+と、いうことで、
+
+ftimgcalc output.img 'regfilter("regionfile.reg",A.P1,A.P2)? 1:0' a=input.img (上の例の「A:0」が「1:0」に変わっている)
+
+とすると、1もしくは0がつまったイメージが生成できます。 

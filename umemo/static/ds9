@@ -1,0 +1,20 @@
+書式
+
+解説
+	Shiftを押しながらRegionを選択すると、背面にあるRegionが選択できる
+
+オプション
+	-geometry 910x771	: 画像領域を768x768で出力したい時
+	-geometry 1070x931	: 横画面で正方形 (.ds9.prf使用時)
+	-cmap file aho.sao	: 自分でカラーマップを設定できる
+
+使用例
+
+
+
+■色調の反転
+Color > Invert Colormap
+
+
+■REGION
+	Projection		: 射影したプロファイルが取れる.結構便利.

@@ -1,0 +1,225 @@
+################################################################################
+gsoprocessv2
+################################################################################
+参照
+http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/hxd_repro.html
+umemo of gsoreprocess
+
+
+1.リンク付け
+2.hk file listの作成
+3.PI付け
+4.PI付け
+5.イベント選別用の GRADE , DET_TYPE をうめる
+6.イベント抽出の準備
+7.イベント抽出
+8.keyward "DETNAM" の書き換え
+9.keyward "TIMEDEL" の書き換え
+
+
+=====================================================================================
+1.リンク付け
+=====================================================================================
+yyoshida@ungyo) pwd
+/data09/yyoshida/Data/Suzaku/A0535_62/100021010/hxd/event_rp
+
+dir=/data09/yyoshida/Data/Suzaku/A0535_62/100021010
+ln -sf ${dir}/auxil/ae100021010.ehk.gz
+ln -sf ${dir}/auxil/ae100021010.tim.gz
+ln -sf ${dir}/auxil/ae100021010.orb.gz
+ln -sf ${dir}/hxd/hk/ae100021010hxd_0.hk.gz
+ln -sf ${dir}/hxd/event_uf/ae100021010hxd_0_wel_uf.evt.gz
+
+
+=====================================================================================
+2.hk file listの作成
+=====================================================================================
+cat << EOF >! hk_file.lis
+ae100021010hxd_0.hk.gz
+ae100021010.ehk.gz
+EOF
+
+
+=====================================================================================
+3.時刻付け
+=====================================================================================
+hxdtime_com="hxdtime read_iomode=create time_change=n pi_pmt_change=n pi_pin_change=n gtimode=y gti_time=S_TIME time_convert_mode=4 use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+
+${hxdtime_com} << EOF
+ae100021010hxd_0_wel_uf.evt.gz
+ae100021010hxd_0_wel_rp.evt
+CALDB
+@hk_file.lis
+ae100021010.tim.gz
+EOF
+
+=====================================================================================
+4.PI付け
+=====================================================================================
+hxdpi_com="hxdpi read_iomode=overwrite time_change=n grade_change=n pi_pmt_change=y pi_pin_change=y gtimode=n gti_time=S_TIME rand_seed=7 rand_skip=0 use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+
+${hxdpi_com} << EOF
+ae100021010hxd_0_wel_rp.evt
+CALDB
+@hk_file.lis
+CALDB
+CALDB
+CALDB
+CALDB
+ae100021010.orb.gz
+EOF
+
+
+=====================================================================================
+5.イベント選別用の GRADE , DET_TYPE をうめる
+=====================================================================================
+hxdgrade_com="hxdgrade hxdgrade_psdsel_criteria=2 read_iomode=overwrite time_change=n grade_change=y pi_pmt_change=n pi_pin_change=n gtimode=n gti_time=S_TIME use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+
+${hxdgrade_com} << EOF
+ae100021010hxd_0_wel_rp.evt
+CALDB
+CALDB
+CALDB
+EOF
+
+
+=====================================================================================
+6.イベント抽出の準備
+=====================================================================================
+yyoshida@ungyo) pwd
+/data09/yyoshida/Data/Suzaku/A0535_62/100021010/hxd/event_rp
+
+cp ../../auxil/ae100021010.mkf.gz .
+gunzip ae100021010.mkf.gz 
+dir=/data09/yyoshida/Data/Suzaku/A0535_62/100021010/hxd/hk/
+ln -sf ${dir}/ae100021010hxd_0_tel_uf.gti.gz
+
+wget http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/pin_mkf.sel
+wget http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/gso_mkf.sel
+
+
+=====================================================================================
+7.イベント抽出
+=====================================================================================
+yyoshida@ungyo) pwd
+/data09/yyoshida/Data/Suzaku/A0535_62/100021010/hxd/event_rp
+
+DET=(pin gso)
+DETTYPE=(1:1 0:0)
+
+for i in 1 2 ;do
+cat << EOF >! ae100021010hxd_${DET[${i}]}_rp_xsel.txt
+
+read event ae100021010hxd_0_wel_rp.evt
+./
+select mkf @${DET[${i}]}_mkf.sel
+./
+filter column "DET_TYPE=${DETTYPE[${i}]}"
+filter time file ae100021010hxd_0_tel_uf.gti.gz
+extract event 
+save event ae100021010hxd_${DET[${i}]}no_rp.evt
+yes
+exit
+no
+EOF
+done
+
+
+=====================================================================================
+8.keyward "DETNAM" の書き換え
+=====================================================================================
+det=(pin gso)
+DET=(PIN GSO)
+
+for i in 1 2 ;do
+for j in 0 1 ;do
+fparkey comm="detector name" add=no << EOF
+WELL_${DET[${i}]}
+ae100021010hxd_${det[${i}]}no_rp.evt[${j}]
+DETNAM
+EOF
+done
+done
+
+
+書き換えできたか確認
+
+for i in pin gso ;do
+fkeyprint ae100021010hxd_${i}no_rp.evt DETNAM
+done
+
+以下出力結果
+# FILE: ae100021010hxd_pinno_rp.evt
+# KEYNAME: DETNAM
+ 
+# EXTENSION:    0
+DETNAM  = 'WELL_PIN'           / detector name
+ 
+# EXTENSION:    1
+DETNAM  = 'WELL_PIN'           / detector name
+ 
+# EXTENSION:    2
+ 
+# FILE: ae100021010hxd_gsono_rp.evt
+# KEYNAME: DETNAM
+ 
+# EXTENSION:    0
+DETNAM  = 'WELL_GSO'           / detector name
+ 
+# EXTENSION:    1
+DETNAM  = 'WELL_GSO'           / detector name
+ 
+# EXTENSION:    2
+
+
+
+=====================================================================================
+9.keyward "TIMEDEL" の書き換え
+=====================================================================================
+
+for i in pin gso ;do
+for j in 0 1 ;do
+fparkey comm="finest time resolution" add=no << EOF
+6.1E-05
+ae100021010hxd_${i}no_rp.evt[${j}]
+TIMEDEL
+EOF
+done
+done
+
+書き換えできたか確認
+
+for i in pin gso ;do
+fkeyprint ae100021010hxd_${i}no_rp.evt TIMEDEL
+done
+
+
+以下出力結果
+
+# FILE: ae100021010hxd_pinno_rp.evt
+# KEYNAME: TIMEDEL
+ 
+# EXTENSION:    0
+TIMEDEL =              6.1E-05 / finest time resolution
+ 
+# EXTENSION:    1
+TIMEDEL =              6.1E-05 / finest time resolution
+ 
+# EXTENSION:    2
+ 
+# FILE: ae100021010hxd_gsono_rp.evt
+# KEYNAME: TIMEDEL
+ 
+# EXTENSION:    0
+TIMEDEL =              6.1E-05 / finest time resolution
+ 
+# EXTENSION:    1
+TIMEDEL =              6.1E-05 / finest time resolution
+ 
+# EXTENSION:    2
+
+
+
+
+
+#EOF#

@@ -1,0 +1,33 @@
+----- saoimage ---------
+
+Region の選択 (xselectからの)
+  １。「Cursor」をクリック、さらに「領域の形」をクリック
+  ２。マウス左ボタンを押しながら中心の移動
+      マウス中ボタンを押しながら半径の変更
+  ３。's'で円内の領域選択、 'e'で円外の領域選択
+  ４。「領域の形」を再度クリックして、複雑な領域指定可能
+  ５。「region」「write」をクリックして、領域ファイル名を指定してセーブ
+
+--- Key-Binding
+
+a	: rAise all SAOimage windows to the top and refresh
+b,c,j,g	: そこの座標を表示(b:B1950, c:current, j:J2000, g:galactic)
+d	: Delete the smallest region enclosing the mouse
+n	: new file
+l,t	: その辺りの座標（ピクセル）と値を表示
+x	: ??
+-	: 最初に戻る？
++	: 全部０にする？？
+?	: Help
+
+--- Option
+
+-gal	: galactic	-fk4	: eq.1950	 -fk5	: eq.2000 (default)
+% env R_DISPOSE='mv %s /tmp/foo.ps' saoimage -fits test.fits   -> PSを残す
+
+--- Blink
+
+１。'Scale'をクリックした後、'Blink'を左ボタンでクリック。
+２。'etc'、'new'で新しいファイルを読み込む。
+３。'Scale'をクリックした後、'Blink'を中ボタンでクリック。
+４。左ボタンと中ボタンを交互にクリックすると、blinkする。

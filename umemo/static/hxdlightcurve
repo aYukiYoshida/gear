@@ -1,0 +1,152 @@
+********************************************************************************
+lightcurve作成手順(hxd)
+********************************************************************************
+
+ref)
+
+http://www.astro.isas.jaxa.jp/suzaku/analysis/hxd/hxdfaq/hxd_dtcor_lc.html
+
+http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/pinbgd.html
+
+
+================================================================================
+1.lightcurveの抽出
+================================================================================
+
+
+event=(ae405077010_hxd_pinbgd.evt.gz ae405077010hxd_0_pinno_cl.evt.gz ae405077010hxd_0_pse_cl.evt.gz)
+src=(nxb src pse)
+
+for i in 1 2 3;do
+cat << EOF >! pin_${src[${i}]}_xsel.txt
+
+read event event/${event[${i}]}
+./
+filter time file gti/evt_nxb_merge.gti  
+set binsize 64
+extract curve
+save curve pin_${src[${i}]}.lc
+exit
+no
+EOF
+done
+
+
+
+================================================================================
+2.pseのライトカーブのcount rateの補正
+================================================================================
+
+fcalc "pin_pse.lc[1]" pin_pse_div4.lc DTCOR "RATE/4"
+
+
+
+
+================================================================================
+3.pseのライトカーブのDTCOR columnをevt ligthcurveにコピー
+================================================================================
+
+faddcol "pin_src.lc[1]" "pin_pse_div4.lc[1]" DTCOR
+
+
+
+================================================================================
+4.srcライトカーブのRATEをDTCORで割る
+================================================================================
+
+fcalc "pin_src.lc[1]" pin_src_dtcor.lc RATE "RATE/DTCOR"
+fcalc "pin_src_dtcor.lc[1]" pin_src_dtcor.lc ERROR "ERROR/DTCOR" clobber=yes
+
+
+
+================================================================================
+5.nxbライトカーブのRATEを1/10にする
+================================================================================
+
+fcalc "pin_nxb.lc[1]" pin_nxb_div10.lc RATE "RATE/10"
+fcalc "pin_nxb_div10.lc[1]" pin_nxb_div10.lc ERROR "ERROR/10" clobber=yes
+
+
+================================================================================
+6.lcmath(src - nxb)
+================================================================================
+
+cat <<EOF >! pin_lcmath.txt
+pin_src_dtcor.lc
+pin_nxb_div10.lc
+pin_nbg.lc 
+1
+1
+no
+EOF
+
+
+********************************************************************************
+generate light curve of HXD-PIN via hxdpinxblc and hxdgsoxblc
+********************************************************************************
+================================================================================
+generate non energy-filterd light curve(1s bin)
+================================================================================
+cxbrate=0.02239
+hxdpinxblc binlc=1 cxb_rate=${cxbrate} cxb_err_mode=phot clobber=yes synch=yes bkgsub=yes << EOF
+evt/pin_raw.evt.gz
+evt/pse_pure.evt.gz
+evt/pin_nxb.evt.gz
+auto_
+EOF
+tail=1s
+mv -f auto_hxd_pin_net.lc lc/raw/auto_pin_nbg_${tail}.lc
+mv -f auto_hxd_pin_sr.lc lc/raw/auto_pin_raw_${tail}.lc
+mv -f auto_hxd_pin_bg.lc lc/raw/auto_pin_nxb_${tail}.lc
+mv -f auto_hxd_pse.lc lc/raw/auto_hxd_pse_${tail}.lc
+
+
+================================================================================
+generate energy-divided light curve
+================================================================================
+rng=(1560 1525 2560)
+lower=(40 40 67)
+upper=(160 67 160)
+
+for i in raw nxb ;do
+for j in `seq 1 3` ;do
+cat << EOF >! pin_${i}_phacutextevt_${rng[${j}]}_xsel.txt
+xsel_sect
+read event evt/pin_${i}.evt.gz
+./
+set PHANAME PI_PIN
+filter pha_cutoff ${lower[${j}]} ${upper[${j}]} 
+show filter
+extract event
+save event evt/tmp_pin_${i}_${rng[${j}]}.evt
+no
+clear pha_cutoff
+
+exit
+no
+EOF
+done
+done
+
+
+det=pin
+rng=(1560 1525 2560)
+cxbrate=(0.01743 0.01371 0.00393)
+
+for n in `seq 1 3` ;do
+srcevt=evt/tmp_${det}_raw_${rng[${n}]}.evt
+nxbevt=evt/tmp_${det}_nxb_${rng[${n}]}.evt
+hxdpinxblc binlc=1 cxb_rate=${cxbrate[${n}]} cxb_err_mode=phot clobber=yes synch=yes bkgsub=yes << EOF && rm -f ${srcevt} ${nxbevt}
+${srcevt}
+evt/pse_pure.evt.gz
+${nxbevt}
+auto_
+EOF
+mv -f auto_hxd_${det}_net.lc lc/energydiv_tmp/auto_${det}_nbg_${rng[${n}]}.lc
+mv -f auto_hxd_${det}_sr.lc lc/energydiv_tmp/auto_${det}_raw_${rng[${n}]}.lc
+mv -f auto_hxd_${det}_bg.lc lc/energydiv_tmp/auto_${det}_nxb_${rng[${n}]}.lc
+mv -f auto_hxd_pse.lc lc/raw
+done
+
+
+#EOF#

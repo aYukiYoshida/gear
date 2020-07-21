@@ -1,0 +1,9 @@
+解説
+	ホームページなどの作成に使用する言語
+
+文法
+	<blockquote></blockquote>               : 引用形式で表示
+	<!-- comments -->	                : コメント
+	<!-- #include file="./aho.html" -->	: ファイル内容を挿入
+	<DIR></DIR>				: lsの様な感じ (<20文字/1行)
+	<MENU></MENU>				: 1行に1つずつ表示

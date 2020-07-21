@@ -1,0 +1,19 @@
+書式
+
+解説
+
+オプション
+
+使用例
+
+	Cronなど制御端末(/dev/tty)が無い状況でHEADASを使うとエラーが出る事がある
+	その場合は環境変数 HEADASNOQUERY を以下のようにセットする(値はなんでも良い？)
+
+	export HEADASNOQUERY="1"
+
+	特にこのエラーは xrtpipeline で遭遇してかなり苦労した (こんなもんわかるか！)
+	他にもアウトプットなどは以下の環境変数で設定できる
+
+	export HEADASPROMPT="headas_prompt.log"
+	export HEADASOUTPUT="headas_output.log"
+	export HEADASERROR="headas_error.log"

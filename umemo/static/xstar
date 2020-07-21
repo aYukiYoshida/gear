@@ -1,0 +1,68 @@
+書式
+        xstar  [cfrac] [temperature] [lcpres] [pressure] [density]
+	       [spectrum or spectrum_file] [spectun] [trad] [luminosity]
+	       [column_density] [rlogxi] [habund] [heabund] [cabund] [nabund]
+	       [oabund] [neabund] [mgabund] [siabund] [sabund] [arabund] [caabund]
+	       [feabund] [niabund] [modelname] (nsteps) (niter) (lwrite)
+	       (lprint) (lstep) (emult) (taumax) (xeemin) (critf) (vturbi) (npass)
+
+解説
+
+	光イオン化ガスによる放射スペクトルと物理状態を計算するプログラム
+	xstarの計算結果は数値として出てくるだけでxspecでは使用できない
+	計算したモデルをxspecで使用するにはxstar2xspecを使用すれば良い
+
+オプション
+
+	xstar >
+	cfrac		: Geometryが完全な球かどうか	   (1.0 = Spherical Symmetry)
+	temperature	: 温度				   (10^4 K)
+	lcpres		: 密度と圧力のどちらを定数にするか (0 = density, 1 = pressure)
+	pressure	: 圧力				   (dynes cm^-2)
+	density		: 密度				   (cm^-3)
+	spectrum	: bbody, brems, pow, file から選択する
+	spectrum_file	: ASCII file によりスペクトルを指定する
+	spectun		: スペクトルの単位		   (0 = erg cm^-2 s^-1 erg^-1)
+							   (1 = photons cm^2 s^-1 erg^-1)
+	trad		: Radiation Temperature		   (10^7 K)
+	luminosity	: 輝度				   (10^38 erg s^-1)
+	column_density	: カラム密度			   (cm^-2)
+	rlogxi		: Log of ionization parameter
+	habund		: Hydrogen abundance  (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	heabund		: Helium abundance    (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	cabund		: Carbon abundance    (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	nabund		: Nitrogen abundance  (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	oabund		: Oxygen abundance    (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	neabund		: Neon abundance      (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	mgabund		: Magnesium abundance (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	siabund		: Silicon abundance   (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	sabund		: Sulfur abundance    (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	arabund		: Argon abundance     (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	caabund		: Calcium abundance   (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	feabund		: Iron abundance      (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	niabund		: Nickel abundance    (1.0 = Solar(Grevesse, Noels & Sauval 1996))
+	modelname	: モデルの名前 (最大80文字)
+
+	----------- Hidden Options -----------
+
+	nsteps		: Number of steps
+	niter		: Number of iterations
+	lwrite		: Write switch (1 = yes, 0 = no)
+	lprint		: Print switch (1 = yes, 0 = no)
+	lstep		: Step size choice switch
+	emult		: Courant multiplier
+	taumax		: Tau max for courant step
+	xeemin		: Critical ion abundance
+	critf		: Turbulent velocity (km/s)
+	vturbi		: Loop control (0 = standalone)
+	npass		: Number of passes
+	mode		: Mode
+
+使用例
+
+	Spherical Cloud の計算
+	xstar cfrac=1.0 temperature=1000.0 lcpres=0 pressure=0.03 density=1.0E+4 spectrum="pow" spectun=0 trad=-1.0 rlrad38=1.0E-10 column=1.0E+17 rlogxi=5.0 habund=1.0 heabund=1.0 cabund=1.0 nabund=1.0 oabund=1.0 neabund=1.0 mgabund=1.0 siabund=1.0 sabund=1.0 arabund=1.0 caabund=1.0 feabund=1.0 niabund=0.0 modelname="Spherical Cloud" niter=99
+	=> total time 1862.18518(s) with agyo.rikkyo
+
+	H II Region の計算
+	xstar cfrac=1.0 temperature=1.0 lcpres=0 pressure=0.03 density=1.0E+2 spectrum="bbody" spectun=0 trad=0.004 rlrad38=1.0 column=1.0E+23 rlogxi=5.0 habund=1.0 heabund=1.0 cabund=0.6215 nabund=0.429 oabund=0.445 neabund=0.417 mgabund=0.0 siabund=0.0 sabund=0.421 arabund=0.0 caabund=0.0 feabund=0.0 niabund=0.0 modelname="H II Region" niter=99

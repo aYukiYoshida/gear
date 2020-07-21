@@ -1,0 +1,32 @@
+勝手に設定
+
+xrandr --output VGA --auto --output LVDS --auto
+
+解像度を指定
+
+xrandr --output VGA --mode 1600x1200 --output LVDS --mode 1400x1050
+
+デュアル出力してみる
+
+xrandr --output VGA --auto --right-of LVDS
+xrandr --output VGA --auto --left-of LVDS
+
+ディスプレイ出力のON/OFFを制御する
+
+xrandr --output VGA --off
+xrandr --output LVDS --off
+
+2画面クローン
+
+xrandr --output VGA --same-as LVDS
+
+画面を回転させる
+
+xrandr --output LVDS --rotate left
+xrandr --output VGA --rotate left
+
+鏡面ディスプレイ！
+
+xrandr --output "LVDS" --reflect x
+xrandr --output "LVDS" --reflect xy
+

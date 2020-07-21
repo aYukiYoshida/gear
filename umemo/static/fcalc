@@ -1,0 +1,12 @@
+書式
+	fcalc [infile[ext#]] [outfile] [column_name] [expr]
+
+解説
+	Fitsファイルのコラム同士や定数との演算を行う
+	演算する場合は1.0の様に小数点を付けないと全部切り捨てられるので注意
+
+オプション
+
+
+使用例
+	fcalc src.pha+1 src.pha clname=COUNTS expr="COUNTS*1.5" clobber=yes

@@ -1,0 +1,19 @@
+###### IRAF regions #########
+
+    ANNULUS         xcenter ycenter inner_radius outer_radius (outer_radius) ...
+    ANNULUS         xcenter ycenter inner_radius outer_radius (n=<number>)
+    BOX             xcenter ycenter xwidth yheight (optional angle)
+    CIRCLE          xcenter ycenter radius
+    ELLIPSE         xcenter ycenter xwidth yheight angle
+    FIELD           none
+    PIE             xcenter ycenter angle1 angle2 (angle3) (angle4) (angle5) ...
+    PIE             xcenter ycenter angle1 angle2 (n=<number>)
+    POINT           x1 y1 x2 y2 ... xn yn
+    POLYGON         x1 y1 x2 y2 ... xn yn
+    ROTBOX          xcenter ycenter xwidth yheight angle
+    
+      !             not             Exclude this shape from this region
+      &             and             Include only the overlap of these shapes
+      ^             exclusive or    Include both shapes except their overlap
+      |             inclusive or    Include all of both shapes
+    

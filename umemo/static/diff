@@ -1,0 +1,36 @@
+################################################################################
+diff
+################################################################################
+
+書式
+	diff [options] from-file to-file
+	bdiff [options] from-file to-file
+	tkdiff [options] from-file to-file
+	fdiff fits-file fits-file
+	xxdiff [options] from-file to-file
+
+解説
+	ASCIIファイルの内容を比較する
+	CUIでそのまま表示される diff は処理が早い
+	大きなファイルの為に bdiff というコマンドもある
+	GUIで表示される tkdiff が横に並んで表示されるので見やすい
+	(libtkを読み込むには astrostart コマンドを打てば良い)
+	fdiffはfitsファイルの内容を比較できる
+	xxdiffはxwindowを使用。視覚的に違いがわかる。ただし、uniでしか使えない。
+
+オプション
+	-b	: 空白の個数の違いの差は無視する
+	-B	: 余分な空白行の違いの差は無視する
+	-c	: copied context フォーマットで出力 (patch コマンドを使う場合に有効)
+	-u	: unified context フォーマットで出力 (patch コマンドを使う場合に有効)
+	-p	: どこの関数内での差分かを出力する
+	-q	: ファイルが異なるかどうか表示
+	-r	: recursive な差分を取る
+	-h	: 高速比較 ?
+
+使用例
+	tkdiff -b aho1.txt aho2.txt
+	diff =(cat aho1.txt) =(cat aho2.txt)
+
+
+その他

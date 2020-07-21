@@ -1,0 +1,44 @@
+書式
+
+解説
+	bashの場合は"elif"と書くが、cshの場合は"else if"と書く
+
+オプション
+
+使用例
+	if [ -f aho1.txt ] ; then
+	    echo "ok1"
+	elif [ ! -f aho2.txt ] ; then
+	    echo "ok2"
+	else
+	    echo "aho"
+	fi
+
+	if [ ! -f ${event} ] ; then
+	    echo "OK."
+	fi
+
+	if [ "${datadir_tmp}"x != "x" ] ; then
+	    datadir=${datadir_tmp}
+	fi
+
+Jouken
+	-f aho.txt	: aho.txtが通常のファイルとして存在する
+	-L aho.txt	: sinnborikku
+	-d aho		: ahoがディレクトリ
+	-e aho.txt	: aho.txtが存在する
+	-s aho.txt	: aho.txtのサイズが0より大きい
+	-x aho.txt	: aho.txtが実行可能
+	-n $aho		: 文字列($aho)の長さが0より大きい
+	-z $aho		: 文字列($aho)の長さが0
+	$aho1 = $aho2	: 文字列($aho1)と文字列($aho2)が等しい
+	$aho1 != $aho2	: 文字列($aho1)と文字列($aho2)が等しくない
+	1 -eq 2		: 数値(1)と数値(2)が等しい
+	1 -ge 2		: 数値(1)が数値(2)以上
+	1 -gt 2		: 数値(1)が数値(2)より大きい
+	1 -le 2		: 数値(1)が数値(2)以下
+	1 -lt 2		: 数値(1)が数値(2)未満
+	1 -ne 2		: 数値(1)と数値(2)が等しくない
+	!条件		: 条件が偽であれば真
+	条件1 -a 条件2	: 条件1 and 条件2
+	条件1 -o 条件2	: 条件1 or 条件2

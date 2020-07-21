@@ -1,0 +1,24 @@
+K-Alpha
+
+LAbel 10 "N_VI"     LIne 90 0.0 P 0.4307 10.0 ! N_VI     Ka (He-Like)
+LAbel 11 "NVII"     LIne 90 0.0 P 0.5003 10.0 ! N_VII    Ka (H-Like)
+LAbel 12 "O_VII"    LIne 90 0.0 P 0.5739 10.0 ! O_VII    Ka (He-Like)
+LAbel 13 "O_VIII"   LIne 90 0.0 P 0.6537 10.0 ! O_VIII   Ka (H-Like)
+LAbel 14 "Ne_IX"    LIne 90 0.0 P 0.9220 10.0 ! Ne_IX    Ka (He-Like)
+LAbel 15 "Ne_X"     LIne 90 0.0 P 1.0219 10.0 ! Ne_X     Ka (H-Like)
+LAbel 16 "Mg_XI"    LIne 90 0.0 P 1.3522 10.0 ! Mg_XI    Ka (He-Like)
+LAbel 17 "Mg_XII"   LIne 90 0.0 P 1.4726 10.0 ! Mg_XII   Ka (H-Like)
+LAbel 18 "Si_XIII"  LIne 90 0.0 P 1.8649 10.0 ! Si_XIII  Ka (He-Like)
+LAbel 19 "Si_XIV"   LIne 90 0.0 P 2.0060 10.0 ! Si_XIV   Ka (H-Like)
+LAbel 20 "S_XV"     LIne 90 0.0 P 2.4605 10.0 ! S_XV     Ka (He-Like)
+LAbel 21 "S_XVI"    LIne 90 0.0 P 2.6226 10.0 ! S_XVI    Ka (H-Like)
+LAbel 22 "Ar_XVII"  LIne 90 0.0 P 3.1395 10.0 ! Ar_XVII  Ka (He-Like)
+LAbel 23 "Ar_XVIII" LIne 90 0.0 P 3.3229 10.0 ! Ar_XVIII Ka (H-Like)
+LAbel 24 "Fe_XXV"   LIne 90 0.0 P 6.7002 10.0 ! Fe_XXV   Ka (He-Like)
+LAbel 25 "Fe_XXVI"  LIne 90 0.0 P 6.9728 10.0 ! Fe_XXVI  Ka (H-Like)
+
+K-Beta
+
+LAbel 40 "Ne_X"     LIne 90 0.0 P 1.2109 10.0 ! Ne_X     Kb?
+LAbel 41 "Mg_XII"   LIne 90 0.0 P 1.7448 10.0 ! Mg_XII   Kb?
+LAbel 42 "Si_XIII"  LIne 90 0.0 P 2.1826 10.0 ! Si_XIII  Kb?

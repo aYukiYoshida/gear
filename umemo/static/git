@@ -1,0 +1,202 @@
+################################################################################
+git
+################################################################################
+FORMAT
+
+
+EXPLAIN
+  分散型バージョン管理システム.
+  分散型: 自分のマシンにリポジトリを持つ
+  バージョン管理システム: (複数人で)開発過程を記録しながら開発を行なうためのシステム
+
+
+OPTION
+
+EXAMPLE
+  あれこれ元に戻す
+    git checkout .                ワーキングツリーをHEADの状態に戻す(ファイル編集したけどまだaddしてない時)
+    git checkout -- .             同上 ("--" はファイルパスとブランチ名を区別するためのおまじない.　"--" の後ろにファイルパス)
+    git checkout HEAD -- .        同上
+      
+    git reset HEAD                addしちゃったやつ(インデックス)を元に戻す時
+    git reset --hard HEAD         ワーキングツリーの変更も含めて元に戻す
+    
+    git reset --soft HEAD~        commitだけを戻してaddした状態にする
+
+    git reset HEAD~               commitとindexを戻してワーキングツリーを編集した状態にする
+    git reset --mixed HEAD~       同上
+
+    git reset --hard HEAD~        commitもindexもワーキングツリーも戻す
+
+
+COMMAND
+    git init                            初期設定する. ステージングエリアとローカルリポジトリができる
+    git add hoge                        hogeをステージングに追加する
+    git add *                           ワークツリー内の全てをステージングに追加する
+    git add .                           すべての未登録ファイルをステージングに追加する
+    git add -A                          新規作成, 削除, 変更全てをステージングに追加する
+    git add -u                          前のバージョンにあった変更のみをステージングに追加する
+    git add -p                          変更点を部分的にステージングに追加する
+
+    git commit -m "hello"               現在のステージングの内容を, ローカルリポジトリに登録する.
+    git commit --amend                  直前のコミットを上書きしてコミットする.
+    git commit -a                       変更のあったファイルすべてをコミットする.
+    git commit -v                       変更点を表示してコミットする.
+
+    git diff hoge                       ローカルとリモートのhogeの差分を抽出する.
+    git diff --cached                   現在のステージングの内容と最新のコミットとの差分を表示
+
+    git rm hoge                         hogeを削除する
+    git rm -r hoge/                     hoge/以下のファイルを削除する
+    git rm --cached hoge                hogeファイルを追跡から除外
+    git mv hoge aho                     hogeをahoに移動する
+
+    git branch                          ローカルブランチの一覧
+    git branch -r                       リモートブランチの一覧
+    git branch -a                       リモート/ローカルブランチの一覧
+    git branch [old] hoge               hogeブランチを作成
+    git branch -m old-hoge new-hoge     hogeブランチの名称をahoに変更
+    git branch -d hoge                  hogeブランチの削除
+    git branch -d -r origin/hoge        hogeリモート追跡ブランチの削除
+    git branch hoge origin/hoge         リモートのhogeブランチをローカルにおろす
+    git branch -f master HEAD~3         masterブランチを3個前の親コミットへ強制的に移動
+    git branch -u origin/master         現在のブランチにorigin/masterブランチを追跡させる
+    git branch -u origin/master local   localブランチにorigin/masterブランチを追跡させる
+
+    git merge hoge                      現在のブランチにhogeブランチを結合する
+    git merge --abort                   結合を取り消す.conflictが起きたら一旦中止できる.
+    git merge --squash hoge             現在のブランチにhogeブランチのコミットを一つのコミットとして結合する
+                                        git commitを実行して完了
+
+    git rebase hoge                     現在のブランチの派生元をhogeブランチに変更する
+                                        現在のahoブランチがある時点でhogeブランチから派生したブランチで,
+                                        その後ahoブランチとhogeブランチそれぞれでコミットがあったとする
+                                        このときに現在のahoブランチにhogeブランチをrebaseすると,
+                                        最新状態のhogeブランチの派生元にしたahoブランチに, 
+                                        ahoブランチでコミットした内容が反映されたものが現在のコミットになる
+    git rebase -i						
+
+    git cherry-pick hash                hashコミットの内容を現在のブランチに反映
+    git cherry-pick -n hash             hashコミットの内容を現在のブランチにコミットログを残さずに反映
+                                        -nオプションで複数のコミットを取り上げる場合は, 常に-nオプションを指示する必要がある.
+    git cherry-pick --abort             cherry-pickをやめる. conflictが起きたら一旦中止できる.
+    git cherry-pick --continue          conflictが起き一旦中止だったcherry-pickを再開. conflict解消後に実行しよう.
+
+    git checkout -- hoge                ワークツリーのhogeをステージングの状態に戻す
+    git checkout hoge                   作業中のブランチをhogeに変更する
+    git checkout -b hoge                hogeブランチを作成し, hogeに変更する
+                                        = git branch hoge + git checkout
+    git checkout -b aho origin/aho      リモートのahoブランチをローカルブランチに下ろして, 切り替える
+    git checkout HEAD~1                 現在のコミットから1つ前のコミットに変更する
+    git checkout --ours hoge            現在のブランチを正として, コンフリクトを解消する.
+    git checkout --theirs hoge          マージで参照したのブランチを正として, コンフリクトを解消する.
+    git checkout HASH FILE              FILEをHASHのコミットの状態に戻す
+
+    git clean                           作業ディレクトリから追跡対象外のファイルを削除する
+    git clean -n                        対象外のファイルを確認
+    git clean -f PATH                   PATHのファイルを削除
+    git clean -f                        カレントディレクトリ以下のファイルを削除
+    git clean -df                       カレントディレクトリ以下のファイルとディレクトリを削除
+
+    git status                          ローカルのワークツリーの状態を表示. 
+                                        前回のコミットと比較した変更内容を表示.
+    git show                            最新のコミットの内容を表示.
+    git show hash                       hashのコミットの変更点の確認.
+    git log                             コミットログを表示.
+    git log --oneline                   一行省略形でコミットログを表示.
+    git log --grep=STR                  コミットログ内をSTRで検索
+    git log --author=AUTHOR             AUTHORのコミットログ内を検索
+    git reflog                          いろいろ見れる
+    git config --list                   現在のリポジトリなどの設定の一覧を出力
+    git diff                            ワーキングツリーとHEADの差分を抽出
+    git diff hoge                       ワーキングツリーとHEADのhogeファイルの差分を抽出
+    git diff HEAD^                      最後のコミットからの差分を表示
+    git diff --name-only HEAD^          最後のコミットからの差分ファイルを表示
+    git diff file1.txt file2.txt        特定ファイルの差分を表示
+    git diff commit1 commit2            コミットの差分
+
+    git remote -v                       リモートリポジトリの情報の一覧表示
+    git remote add hoge URL             リモートポジトリをhogeというリポジトリ名で追加する
+                                        ex) git remote add std git@artin.tok.access-company.com:NFBE_DTVProfile/NFBE2CEFHQ.git
+    git remote set-url hoge URL         リモートポジトリhogeのURLを変更する
+    git remote rename hoge aho          リモートポジトリ名をhogeからahoに変更する
+    git remote rm hoge                  リモートポジトリhogeを削除する
+    git remote update                   リモートリポジトリを管理する. リモートリポジトリ単位で情報を取得する.
+
+    git tag                             ローカルリポジトリのタグの一覧表示
+    git tag ver1.0                      ローカルリポジトリでタグver1.0を作成する.
+    git tag -d ver1.0                   ローカルリポジトリのタグver1.0を削除する.
+    git tag -l 'v1.*'                   パターンでタグを検索
+    git tag -a v0.0.0 -m 'ver 0.0.0'    タグの作成
+    git push origin v0.0.0              タグの共有
+
+    git clone URL                       リモートリポジトリをローカルリポジトリに複製する
+                                        URLの書式(プロトコルによってことなる)
+                                        rsync://<HOST>/<REPOSITORY_PATH>
+                                        http://<HOST>[:PORT]/<REPOSITORY_PATH>
+                                        https://<HOST>[:PORT]/<REPOSITORY_PATH>
+                                        git://<HOST>[:PORT]/<REPOSITORY_PATH>
+                                        ssh://[USER@]<HOST>[:PORT]/<REPOSITORY_PATH>
+                                        file://<REPOSITORY_PATH>				
+    git clone --depth 1 URL             最新リビジョンのリモートリポジトリをローカルリポジトリに複製する.
+    git push URL hoge:aho               ローカルのhogeブランチを, リモートのahoブランチに反映する.
+    git push URL ver1.0                 タグver1.0をリモートリポジトリに反映する.
+    git push URL :ver1.0                タグver1.0の削除をリモートリポジトリに反映する.
+    git push --force origin test        originリポジトリにtestブランチを履歴同士の競合を無視して, 強制的にpush
+    git fetch URL hoge                  ローカルリポジトリに, リモートリポジトリのhogeブランチを反映する.
+                                        ex) git fetch origin redmine-162734-mod-patch:redmine-162734-mod-patch
+    git push --force-with-lease origin test
+                                        ローカルとリモートを比較確認し, ローカルが最新で
+                                        でなければ, PUSHが失敗する.
+    git pull URL hoge                   ローカルリポジトリに, リモートリポジトリのhogeブランチを反映し,
+                                        ローカルリポジトリでの更新内容を結合する.
+                                        = git fetch + git merge
+    git pull URL hoge --rebase          ローカルリポジトリに, リモートリポジトリのhogeブランチを反映し,
+                                        ローカルリポジトリの派生元をそれに変更する
+                                        = git fetch + git rebase
+
+    git revert hash                     hashのコミットによるすべての変更を元に戻す新しいコミットを生成し, 
+                                        現在のブランチに適用する.
+    git revert -m 1 hash                hashのコミットがマージコミットの場合, マージされた側のブランチの
+                                        状態に戻す新しいコミットを生成し,現在のブランチに適用する.
+    git revert -m 2 hash                hashのコミットがマージコミットの場合, マージした側のブランチの
+                                        状態に戻す新しいコミットを生成し,現在のブランチに適用する.
+    git reset [--mixed]                 HEADとインデックスの位置を変更する. ワークツリーに影響なし.
+    git reset HEAD                      HEAD, インデックスをHEADに変更する. すなわち直前のgit addを取り消す.
+    git reset HEAD^                     HEAD, インデックスをHEAD^に変更する. 
+                                        すなわち直前のgit add, git commitを取り消す.
+    git reset --soft                    HEADの位置を変更する. インデックスとワークツリーに影響なし.
+    git reset --soft HEAD               なんの変更もしない.
+    git reset --soft HEAD^              直前のgit commitを取り消す.
+    git reset --hard                    HEAD,インデックス,ワークツリーのすべての位置を変更する. 
+    git reset --hard HEAD               最新のコミットの状態に戻す. 
+                                        git add, ファイル等の更新もなかったことになる.
+    git reset --hard HEAD^              一つ前のコミットの状態に戻す. 
+    git reset --hard hash               hashコミットの状態に戻す.
+
+    git stash                           現在の作業を一時退避する.
+    git stash pop                       戻す場合
+    git stash save                      変更点を一旦退避させる
+    git stash list                      退避した作業の一覧表示
+    git stash apply hoge                退避したhogeスタッシュの作業を戻す
+    git stash drop hoge                 退避したhogeスタッシュの作業を削除する
+    git stash clear                     退避した全ての作業を削除する
+
+    HEAD          現在のブランチの先頭をさす.HEADを移動することで, ブランチが切り替わる.
+                  HEAD~(チルダ)とHEAD^(キャレット)の違いは,
+                  ~は世代を遡って指定,  ^は複数ある親コミットの中から指定.
+    HEAD~         ひとつ前のコミットを指定.
+    HEAD~~        ふたつ前のコミットを指定.
+    HEAD~2        ふたつ前のコミットを指定. HEAD~~と同義.
+    HEAD^         複数の親コミットがあった場合に, 1番目の親コミットを指定する. 
+                  HEAD~と同義.
+    HEAD^^        1番目の親コミットの親コミットを指定する. HEAD~~, HEAD~2と同義.
+    HEAD^2        複数の親コミットがあった場合に, 2番目の親コミットを指定する. 
+                  HEAD^^とは異義.
+    HEAD@2        git reflogを参照して指定する. 
+    ORIG_HEAD     最新の一つ手前のコミットに対するハッシュ値の別名
+    FEACH_HEAD    リモートブランチの最新のコミットに対するハッシュ値の別名
+
+
+
+#EOF#

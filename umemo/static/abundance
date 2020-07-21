@@ -1,0 +1,56 @@
+Elemental Abundance (Solar)
+
+Element    angr       feld       aneb       grsa       wilm      lodd
+    H      1.00e+0    1.00e+0    1.00e+0    1.00e+0    1.00e+0   1.00e+0
+    He     9.77e-2    9.77e-2    8.01e-2    8.51e-2    9.77e-2   7.92e-2
+    Li     1.45e-11   1.26e-11   2.19e-9    1.26e-11   0.00      1.90e-9
+    Be     1.41e-11   2.51e-11   2.87e-11   2.51e-11   0.00      2.57e-11
+    B      3.98e-10   3.55e-10   8.82e-10   3.55e-10   0.00      6.03e-10
+    C      3.63e-4    3.98e-4    4.45e-4    3.31e-4    2.40e-4   2.45e-4
+    N      1.12e-4    1.00e-4    9.12e-5    8.32e-5    7.59e-5   6.76e-5
+    O      8.51e-4    8.51e-4    7.39e-4    6.76e-4    4.90e-4   4.90e-4 
+    F      3.63e-8    3.63e-8    3.10e-8    3.63e-8    0.00      2.88e-8
+    Ne     1.23e-4    1.29e-4    1.38e-4    1.20e-4    8.71e-5   7.41e-5
+    Na     2.14e-6    2.14e-6    2.10e-6    2.14e-6    1.45e-6   1.99e-6
+    Mg     3.80e-5    3.80e-5    3.95e-5    3.80e-5    2.51e-5   3.55e-5
+    Al     2.95e-6    2.95e-6    3.12e-6    2.95e-6    2.14e-6   2.88e-6
+    Si     3.55e-5    3.55e-5    3.68e-5    3.55e-5    1.86e-5   3.47e-5
+    P      2.82e-7    2.82e-7    3.82e-7    2.82e-7    2.63e-7   2.88e-7
+    S      1.62e-5    1.62e-5    1.89e-5    2.14e-5    1.23e-5   1.55e-5
+    Cl     1.88e-7    1.88e-7    1.93e-7    3.16e-7    1.32e-7   1.82e-7
+    Ar     3.63e-6    4.47e-6    3.82e-6    2.51e-6    2.57e-6   3.55e-6
+    K      1.32e-7    1.32e-7    1.39e-7    1.32e-7    0.00      1.29e-7
+    Ca     2.29e-6    2.29e-6    2.25e-6    2.29e-6    1.58e-6   2.19e-6
+    Sc     1.26e-9    1.48e-9    1.24e-9    1.48e-9    0.00      1.17e-9
+    Ti     9.77e-8    1.05e-7    8.82e-8    1.05e-7    6.46e-8   8.32e-8 
+    V      1.00e-8    1.00e-8    1.08e-8    1.00e-8    0.00      1.00e-8
+    Cr     4.68e-7    4.84e-7    4.93e-7    4.68e-7    3.24e-7   4.47e-7
+    Mn     2.45e-7    2.45e-7    3.50e-7    2.45e-7    2.19e-7   3.16e-7
+    Fe     4.68e-5    3.24e-5    3.31e-5    3.16e-5    2.69e-5   2.95e-5
+    Co     8.60e-8    8.60e-8    8.27e-8    8.32e-8    8.32e-8   8.13e-8
+    Ni     1.78e-6    1.78e-6    1.81e-6    1.78e-6    1.12e-6   1.66e-6
+    Cu     1.62e-8    1.62e-8    1.89e-8    1.62e-8    0.00      1.82e-8
+    Zn     3.98e-8    3.98e-8    4.63e-8    3.98e-8    0.00      4.27e-8
+
+angr : Anders E. & Grevesse N. (1989, Geochimica et Cosmochimica Acta 53, 197)
+feld : Feldman U.(1992, Physica Scripta 46, 202 except for elements not listed
+       which are given grsa abundances)
+aneb : Anders E. & Ebihara (1982, Geochimica et Cosmochimica Acta 46, 2363)
+grsa : Grevesse, N. & Sauval, A.J. (1998, Space Science Reviews 85, 161)
+wilm : Wilms, Allen & McCray (2000, ApJ 542, 914 except for elements not listed
+       which are given zero abundance)
+lodd : Lodders, K (2003, ApJ 591, 1220)
+
+http://heasarc.gsfc.nasa.gov/docs/software/lheasoft/xanadu/xspec/manual/XSabund.html
+
+--------------------------------------------------------------------------------------
+The Composition by Mass (Solar)
+
+    Fraction of H      (X)	= 0.707  +/- 2.5 %
+    Fraction of He     (Y)	= 0.274  +/- 6   %
+    Fraction of Others (Z)	= 0.0189 +/- 8.5 %
+
+\bibitem[D\"{a}ppen(2000)]{daeppen2000} D\"{a}ppen,~W.\ 2000, in Allen's Astrophysical
+		Quantities, ed. A.~N.~Cox (New York: Springer-Verlag), 27
+
+--------------------------------------------------------------------------------------

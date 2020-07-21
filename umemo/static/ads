@@ -1,0 +1,21 @@
+ADS論文検索時の略語の意味
+	A: NASA/STI Abstract Available 
+	C: Citations Available (references that cite that article) 
+	D: Data Table Available 
+	E: Electronic Version Available 
+	F: Full Article Available in PDF or Postscript format 
+	G: Full Article Available in GIF format (page by page) 
+	I: Author Comment is Available 
+	L: Information available from Library of Congress 
+	M: Article is available for purchase through the mail 
+	N: Source Information available from NED 
+	O: Original Author Abstract also Available 
+	P: PDS (Planetary Data Systems) Information Available 
+	R: References Available (references cited by that article) 
+	S: Source Information available from CDS 
+	T: Table of Contents Search available 
+
+
+^name は主著しゃ
+name$ は最後
+^name$ は単著だけどフルネームでないとだめ

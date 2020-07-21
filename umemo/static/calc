@@ -1,0 +1,16 @@
+書式
+	calc
+
+解説
+	演算
+
+オプション
+
+使用例
+	help full			: 全てのヘルプを見る
+	config("display", 50)		: 50桁まで表示する
+	epsilon(1e-50)			: Epsilon(精度)を50桁まで保つ
+
+	config("mode", "exp")		: exponential output
+	epsilon(epsilon() / 8)		: 3 bits more accuracy
+	printf("%e\n",0.3)		: 指数表示

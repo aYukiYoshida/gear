@@ -1,0 +1,8 @@
+Emission Measure = Norm(xspec.apec) * (4*pi()*((Distance[cm]*(1+z))^2)*(10^14))
+
+Norm="2.986594E-03"
+Distance="10.5"
+Convert="3.08568025E+21"
+calc "printf(\"%.2e\n\",${Norm}*(4*pi()*((${Distance}*${Convert}*(1+0))^2)*(10^14)))"
+
+## 10^57 cm^{-3}とかその程度の値になる

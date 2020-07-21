@@ -1,0 +1,148 @@
+CFITSIOの簡単なメモ
+
+コマンド簡単解説
+
+以下の説明では、CFITSIO User's Reference Guideに従って、関数の引数で ">" の場所以前は入力、以降は出力を表している。
+例えば
+　　　function(a, b, >c, d)
+だと、a, b が入力で、c, dが出力。
+
+各データ型に対し、それぞれ関数が用意されている場合がある。例えばfits_write_key_lngとfits_write_key_dblとか。関数の最後とデータ型の対応は以下の通り。
+_bit 	bit
+_byt 	unsigned byte (8bit)
+_sbyt 	signed byte
+_sht 	short integer (僕のPCでは16bit)
+_lng 	long integer (僕のPCでは32bit)
+_lnglng 	8-byte LONGLONG integer
+_usht 	unsigned short integer
+_ulng 	unsigned long integer
+_uint 	unsigned int integer
+_int 	int integer (機種依存。だいたい32bitだが、たまに16bit。僕のPCでは32bit)
+_flt 	浮動小数点表示のfloat (僕のPCでは32bit) 例: 1.23456789e3
+_fixflt 	固定小数点表示のfloat 例: 1234.56789
+_dbl 	浮動小数点表示のdouble(僕のPCでは64bit)
+_fixdbl 	固定小数点表示のdouble
+_cmp 	複素数 (float のペア)
+_fixcmp 	固定小数点表示の複素数
+_dblcmp 	倍精度複素数 (doubleのペア)
+_fixdblcmp 	固定小数点表示の倍精度複素数
+_log 	論理値
+_str 	文字列
+
+    * fits_create_file(fitsfile **ftpr, char *filename, > int *status)
+
+      文字列filenameの名前を持つFITS fileを作成。
+    * fits_create_img(fitfile *fptr, int bitpix, int naxis, long *naxes, > int *status)
+
+      新たに primary array か IMAGE extension を作る。
+      もし fptr が指すファイルが空だったら primary arrayが作成されて、もし存在していたら新しい IMAGE extensionが作られる。
+          o
+
+            bitpix　　　各ピクセルがとる数値の種類と値域を示す。
+
+            値 	#define 	定義
+            8 	BYTE_IMG 	8-bit byte pixels (0-255)
+            16 	SHORT_IMG 	16-bit 整数 pixels
+            32 	LONG_IMG 	32-bit 整数 pixels
+            -32 	FLOAT_IMG 	32-bit floating point pixels
+            -64 	DOUBLE_IMG 	64-bit floating point pixels
+          o naxis　　軸の数
+          o naxes　　非負の整数で、各軸の大きさを示す配列。だからポインター引数。
+
+    * fits_create_hdu(fitsfile *fptr, > int *status)
+
+      FITS fileの最後に新しい HDU を作る。完全に空でなんのヘッダーもないHDUが作られる。一般にはfits_create_imgとかfits_create_tblとかを使う方が良い。
+    * fits_movabs_hdu(fitsfile *fptr, int hdunum, > int *hdutype, int *status)
+
+      hdunumで表された番号の HDU　へジャンプする。
+      HDU番号は 1 から始まる。番号 1 は primary array。
+
+      hdutype は、必要がなかったらヌルポインタを入れておけばいい。
+      そうでなければ、IMAGE_HDU, ASCII_TBL, BINARY_TBLのどれかの値が返ってくる。
+    * fits_read_record(fitsfile *fptr, int keynum, > char *card, int *status)
+
+      CHUのn番目のヘッダーを返す。keynum は 1から始まる。80文字のヘッダー全体が card に読み込まれる。
+    * fits_write_col_dbl(fitsfile *fptr, int column, long firstrow, long firstelem, long nelements, DTYPE **array, > int *status)
+
+      コラムに double の値を書き込む関数。"rD"型に使用。
+      CDUに書き込む。
+      column 	書き込むコラムの番号。コラム番号は1から始まる。
+      firstrow 	書き込む場所の行番号。行番号も1から始まる。
+      firstelem 	そのコラムがベクトル値の場合の、成分の番号。
+      スカラーコラムの場合は無視される。
+      nelements 	続けていくつデータを書き込むか。
+      array 	書き込む変数が格納された配列。
+
+
+    * fits_write_col_int(fitsfile *fptr, int column, long firstlow, long firstelem, long nelements, int *array, > int *status)
+
+      コラムに整数を書き込む。通常は"rJ"型に書き込む時に使用する。
+      しかし、intというのは、機種によって2bytes(16bits)だったり4bytes(32bits)だったりするそうなので、はっきりしないから使わない方がよさそう。
+    * fits_write_col_sht(fitsfile *fptr, int column, long firstlow, long firstelem, long nelements, short *array, > int *status)
+
+      コラムに short の値を書き込む。"rI"型コラムに書きこむ時使用。
+    * fits_write_col_uint(fitsfile *fptr, int column, long firstlow, long firstelem, long nelements, unsigned int *array, > int *status)
+
+      コラムに unsigned int (32bit) を書き込む。つまり、"rV"型に書き込むとき使用。
+    * fits_write_col_byt(fitsfile *fptr, int column, long firstrow, long firstelem, long nelements, unsigned char *array, > int *status)
+
+      コラムにバイト値(unsigned byte)を書き込む関数。つまり"rB"型を書き込むときに使用。
+      arrayの型は unsigned char とするのが良いようだ。
+    * fits_write_key(fitsfile *fptr, int datatype, char *keyname, DTYPE *value, char *comment, > int *status)
+
+      キーワードを書き込むためのもっとも基本的な関数。
+      datatype は書き込むデータ型を表しており、次のうちのどれか。
+         1. TSTRING
+         2. TLOGICAL (== int)
+         3. TBYTE
+         4. TSHORT
+         5. TUSHORT
+         6. TINT
+         7. TUNINT
+         8. TLONG
+         9. TULONG
+        10. TFLOAT
+        11. TDOUBLE 
+
+      DTYPE のところは、書き込むデータ型に従って適宜intとかdoubleとかになる。
+    * fits_write_key_str(fitsfile *fptr, char *keyname, char *value, char *comment, > int *status)
+
+      ファイルに文字列のキーワードを書き込む。
+          o keyname ... キーワードの名前
+          o value ... キーワードの値の文字列
+          o comment ... コメントの文字列。必要なければヌルポインタ。 
+
+      キーワードは、規約で８文字までと決められているが、HIERARCH Conventionではそれ以上の長さのものも認められていて、CFITSIOを使ってそういうキーワードを作ると、自動的に"HIERARCH"という名前がキーワードの先頭につけられる。
+    * fits_write_key_dbl(fitsfile *fptr, char *keyname, double numval, int decimals, char *comment, > int *status)
+
+      doubleの値のキーワードを書き込む。
+          o keyname ... キーワードの名前
+          o numval ... 書き込む値
+          o decimals ...
+            通常は、小数点以下の桁数。例えば1.23456E-3をdecimal=2にすると、1.23e-3と書き込まれる。もし負の数にすると、C言語での %G 形式で書き込まれる。%G形式とは、%fか%Eの短い方を自動的に選択する形式。
+
+
+    * fits_write_key_flt(fitsfile *fptr, char *keyname, float numval, int decimals, char *comment, > int *status)
+
+      floatの値のキーワードを書き込む。
+    * fits_write_key_log(fitsfile *fptr, char *keyname, int numval, char *comment, > int *status)
+
+      論理値 (T = true, F=false)を書き込む。
+    * fits_write_key_lng(fitsfile *fptr, char *keyname, long numval, char *comment, > int *status)
+
+      long の整数の値を持つキーワードを書き込むときの関数。longに限らず通常の整数のときにも使ってよいようだ。
+    * fits_write_btblhdr(fitsfile *fptr, long nrows, int tfields, char **ttype, char **tform, char **tunit, char *extname, long pcount, > int *status)
+
+      バイナリーテーブルに対するヘッダーを書き込む。
+      pcount は通常 0 にしておけばよい。面倒は CFITSIOが見てくれる。
+    * fits_modify_comment(fitsfile *fptr, char *keyname, char *comment, > int *status)
+
+      keynameのキーワードのコメント部分を変更。
+    * fits_update_key_str(fitsfile *fptr, char *keyname, char *value, char *comment, > int *status)
+
+      指定したキーワードが存在していれば、その値やコメントをアップデートする関数。もし存在しなければ、新しいキーワードが作られる。
+      commentのところに '&' が入っている場合は、コメントは変更されない。
+      modifyとupdateの違いは不明だが、指定キーワードが存在しなかったときの動作か？
+    * fits_copy_hdu(fitsfile *infptr, fitsfile *outfptr, int morekeys, > int *status)
+
+      infptrのCHDUを、outfptrの最後にくっつける。morekeyは出力ファイルへの追加キーワードらしいけど、なんだかよくわかりません。とりあえずゼロにしておけばいい。

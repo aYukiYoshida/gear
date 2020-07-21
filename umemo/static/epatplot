@@ -1,0 +1,12 @@
+書式
+	epatplot
+解説
+
+オプション
+
+使用例
+
+	The PATTERN assignments are: single pixel events: PATTERN == 0, double pixel
+	events: PATTERN in [1:4], triple and quadruple events: PATTERN in [5:12].
+
+	要するにepatplotはグレード分岐比を解析するのだ

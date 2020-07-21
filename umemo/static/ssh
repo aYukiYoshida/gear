@@ -1,0 +1,13 @@
+書式
+
+解説
+	sshを使用して他のPCを操作する
+
+オプション
+
+使用例
+	ssh username@agyo.rikkyo.ac.jp
+	ssh -l username agyo.rikkyo.ac.jp
+
+	slogin username@agyo.rikkyo.ac.jp
+	slogin -l username agyo.rikkyo.ac.jp

@@ -1,0 +1,12 @@
+書式
+
+解説
+
+オプション
+
+使用例
+	fcopy input.lc"[gtifilter('aho.gti')]" output.lc	: GTI Filter
+	fcopy input.flc"[ FRACEXP == 1.0 ]" output.flc		: Filter
+	fcopy input.flc"[ FRACEXP <= 1.0 ]" output.flc		: Filter
+	fcopy input.flc"[ TIME <= 64800 ]"  output.flc		: Time Filter
+	fcopy input.flc "\!"output.flc				: 上書き

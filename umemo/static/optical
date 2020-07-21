@@ -1,0 +1,42 @@
+書式
+
+解説
+
+	可視光・赤外線観測波長域
+
+	Band	Lambda	Color	Comments
+	U	0.37	紫外	Johnson U band
+	B	0.44	青	Johnson B band
+	V	0.55	緑-黄	Johnson V band (Photometric V band)
+	Rc	0.66	赤	Cousins R band
+	Ic	0.81	赤外	Cousins I band
+	J	1.22		J band (Near Infrared)
+	H	1.65		H band (Near Infrared)
+	K	2.18		K band (Near Infrared)
+	L	3.55		L band (Near Infrared)
+	Vis	?.??		Visual Observations
+
+	異なる波長間における天体の等級の差を色指数と呼ぶ
+	色指数は通常、波長が短いバンドから長いバンドでの等級を差し引く
+	色指数が小さいほど天体は青い(つまり温度が高い)事を示す
+	B-Vは恒星など、U-Vは高温の天体、R-Iは低温の天体に好んで用いられる
+
+	遠方にある天体の色指数(B-V)は星間物質の吸収による減光の影響を受ける
+	可視光での減光量は波長が短いほど大きくなる
+	つまり天体の真の色に比べて赤い色として観測される、(星間)赤化とよぶ
+	観測した色指数(B-V) - 実際の天体の真の色指数(?) = 色超過 E(B-V)
+	色超過 E(B-V) = A_{B} - A_{V} (BとVの吸収量の差分ともかける)
+	色超過は赤化の度合いと思えば良い
+	E(B-V)をどうやって見積もるかはTBW
+	B-Vはだいたい高温(青い)から低温まで -0.3 〜 1.6 くらいは分布する
+
+	可視光の色からは星間吸収の量が求まる
+	A_{V} : Vバンドの星間吸収 interstellar extinction
+	R_{V} : 赤化定数 reddening constant
+	銀河系内の典型的な減光は方向により異なるが、だいたい
+	R_{V} = A_{V}/E_{B-V} = 3.14 \citep{schultz1975}
+	以下の法則を使用するとNHに換算できるのでX線に適応可能
+	N_{H}/A_{V} = 1.79x10^{21} cm^{-2} mag^{-1} \citep{predehl1995}
+	E(B-V)がわからない場合はB-Vを代用するのか...?
+
+	スペクトル解析はSP2というソフトがあるらしい

@@ -1,0 +1,576 @@
+********************************************************************************
+MEMO OF SOMEBODY(hxd)
+********************************************************************************
+
+
+ref)
+http://sky.geocities.jp/mishida48/kenkyuu/log/Suzaku/LS5039/20090416/LS5039_PIN.log
+--------------------------------------------------------------------------------
+【目標】LS5039のPIN
+
+## 詳細情報
+     18 26 15.19	-14 54 39.2	2007-09-09 16:16:24	402015010	      203239.90000	2007-10-11 15:43:38
+
+【結論】
+
+
+【作業】
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(1)  必要なファイルを準備
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+cd /joker/home/ishida/kenkyuu/Data/Suzaku/LS5039/Analysis/
+mkdir 20090416
+cd 20090416
+mkdir fits
+mkdir log
+cd fits
+
+1-1) リンクをはる
+
+ln -s ../../../Rawdata/ae402015010hxd_0_pinno_cl.evt .
+ln -s ../../../Rawdata/ae402015010_hxd_pinbgd.evt .
+
+## PROCVER = '2.1.6.14'           / Processing script version
+
+となっているのでリプロセスは不要。
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(2) NXB DATAの取得
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+## http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/pinbgd.htmlから
+ftp://legacy.gsfc.nasa.gov/suzaku/data/background/pinnxb_ver2.0_tuned/
+へ行き取得。すざくホームページのはダウンロードできない...
+
+## クイックルックのためのBKG:"quick" 正確なBKG:"tuned"(dead-time corrected)
+## 取得したファイル:ae402015010_hxd_pinbgd.evt.gz
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(3) GTIのマージ
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+3-1) マージ
+
+mgtime ingtis="ae402015010hxd_0_pinno_cl.evt+2,ae402015010_hxd_pinbgd.evt.gz+2" outgti="ae402015010hxd_wel_pin.gti" merge="AND"
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(4) スペクトルの抽出
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+4-1) PIN
+
+xselect
+
+read event "ae402015010hxd_0_pinno_cl.evt"
+./
+filter time file ae402015010hxd_wel_pin.gti
+show filter
+set PHANAME PI_PIN
+extract spec
+save spec LS5039_PIN.pha
+q
+n 
+
+4-2) PIN_BKG
+
+xselect
+
+read event "ae402015010_hxd_pinbgd.evt"
+./
+filter time file ae402015010hxd_wel_pin.gti
+show filter
+set PHANAME PI_PIN
+extract spec
+save spec LS5039_PIN_bkg.pha
+q
+n 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(5) dead time 補正
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+5-1) リンクを貼る
+
+## ae*hxd_0_pse_cl.evt.gzは、HeasarcのHXD Cleaned (event_cl)ある。
+
+ln -s ../../../Rawdata/ae402015010hxd_0_pse_cl.evt .
+
+5-2) dead time 補正
+
+cp LS5039_PIN.pha LS5039_PIN_dtcor.pha
+nice +20 hxddtcor event_fname="ae402015010hxd_0_pse_cl.evt" pi_fname="LS5039_PIN_dtcor.pha" save_pseudo=no chatter=2 &
+
+#  hxddtcor: hxddtcor version 1.50 
+hxddtcor: Inputs are 1 evt file(s) and 1 spec file(s).
+hxddtcor:   event_fname = ae402015010hxd_0_pse_cl.evt
+hxddtcor:   spec  = LS5039_PIN_dtcor.pha
+hxddtcor:   save pseudo = no 
+hxddtcor: format version 0
+hxddtcor:  extract pse_uf events.
+hxddtcor:  extract pse_cl events with GRADE_HITMAT and QUALITY.
+hxddtcor: process LS5039_PIN_dtcor.pha ==========================
+hxddtcor:   current exposure = 181070.49
+hxddtcor:   make pseudo list ae402015010hxd_0_pse_cl.evt (168762.75 sec)
+EXPOSURE 168762.750000 / Exposure time
+hxddtcor:  ------ /usr/local/xray/heasoft650/heasoft-6.5/i686-pc-linux-gnu-libc2.3.4/bin/hxddtcor version 1.50------
+hxddtcor:    event file[0]= ae402015010hxd_0_pse_cl.evt
+hxddtcor:    save pseudo = no
+hxddtcor:    EXPOSURE changed from 181070.49 to 168762.75
+hxddtcor:    Live time is 93.2 %.
+Checksum keywords updated successfully.
+hxddtcor: process done.
+
+5-3) 補正されたか確認
+
+fkeyprint infile="LS5039_PIN.pha" keynam="EXPOSURE"
+
+# FILE: LS5039_PIN.pha
+# KEYNAME: EXPOSURE
+ 
+# EXTENSION:    0
+EXPOSURE= 1.810704927431047E+05 / Exposure time
+ 
+# EXTENSION:    1
+EXPOSURE= 1.810704927431047E+05 / Exposure time
+ 
+# EXTENSION:    2
+EXPOSURE= 1.810704927431047E+05 / Exposure time
+
+fkeyprint infile="LS5039_PIN_dtcor.pha" keynam="EXPOSURE"
+
+# FILE: LS5039_PIN_dtcor.pha
+# KEYNAME: EXPOSURE
+ 
+# EXTENSION:    0
+EXPOSURE=        168762.750000 / Exposure time
+ 
+# EXTENSION:    1
+EXPOSURE=        168762.750000 / Exposure time
+ 
+# EXTENSION:    2
+EXPOSURE=        168762.750000 / Exposure time
+
+## 168762.750000/1.810704927431047E+05*100=93.2%なのでOK
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(6) PINバックグラウンドの積分時間補正
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+6-1) ヘッダの書き換え
+
+cp LS5039_PIN_bkg.pha LS5039_PIN_bkg_expcor.pha
+ fkeyprint infile="LS5039_PIN_bkg_expcor.pha" keynum="EXPOSURE"
+
+# FILE: LS5039_PIN_bkg_expcor.pha
+# KEYNAME: EXPOSURE
+ 
+# EXTENSION:    0
+EXPOSURE= 1.810704927431047E+05 / Exposure time
+ 
+# EXTENSION:    1
+EXPOSURE= 1.810704927431047E+05 / Exposure time
+ 
+# EXTENSION:    2
+EXPOSURE= 1.810704927431047E+05 / Exposure time
+
+fparkey
+1.810704927431047E+06
+LS5039_PIN_bkg_expcor.pha+0
+EXPOSURE
+fparkey
+
+LS5039_PIN_bkg_expcor.pha+1
+ 
+fparkey
+ 
+LS5039_PIN_bkg_expcor.pha+2
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(7) スペクトル解析
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+7-1) grppha
+
+grppha
+LS5039_PIN_dtcor.pha
+!LS5039_PIN_dtcor_min40.pha
+group min 40
+exit
+
+7-2) rmf ダウンロード
+
+## http://www.astro.isas.jaxa.jp/suzaku/caldb/hxd/　へ行き、ae_hxd_pinhxnome4_20080129.rspを選び右クリック→「名前を付けてリンク先を保存」
+mv ~/Desktop/ae_hxd_pinhxnome4_20080129.rsp ~/kenkyuu/Data/Suzaku/LS5039/Rawdata/
+
+7-2) 表示
+
+xspec
+data 1 LS5039_PIN_dtcor_min40.pha
+resp 1 ae_hxd_pinflate4_20080129.rsp
+data 2 LS5039_PIN_bkg_expcor.pha
+resp 2 ae_hxd_pinflate4_20080129.rsp
+data 3 CXB.fak
+resp 3 ae_hxd_pinflate4_20080129.rsp
+cpd /xw
+setplot e
+setpl co r y 5e-4 0.1
+setpl co r x 10 70
+ig bad
+plot ldata
+
+ip
+la t "LS5039_PIN_min40_and_nxb_and_cxb_spectrum"
+pl
+hardcopy LS5039_PIN_min40_and_nxb_and_cxb_spec.ps/cps
+q
+exit
+y
+
+convert -rotate 90 1_PIN_min60_and_nxb_and_cxb_spec3.ps 1_PIN_min60_and_nxb_and_cxb_spec3.jpg
+
+7-3) NXB,CXBを引いてフィッティング
+
+grppha
+LS5039_PIN_dtcor.pha
+!LS5039_PIN_dtcor_min900.pha
+group min 900
+exit
+
+xspec
+log LS5039_PIN_dtcor_min900_fit.log
+data 1:1 LS5039_PIN_dtcor_min900.pha
+back LS5039_PIN_bkg_expcor.pha
+resp ae_hxd_pinflate4_20080129.rsp
+corfile CXB.fak
+cpd /xw
+setplot e
+setpl co r x 10 50
+setpl co r y 1e-5 0.03
+ig bad
+ig  **-13.0 50.0-** 
+plot ldata
+
+model powerlaw
+
+
+query yes
+fit
+plot ldata del
+err 1 2
+flux 13 50
+log none
+
+ip
+la t "LS5039_PIN_min900_sub_all_powerlaw"
+pl
+hardcopy  LS5039_PIN_dtcor_min900_sub_all_powerlaw.ps/cps
+q
+exit
+y
+
+convert -rotate 90 1_PIN_dtcor_min500_sub_all_powerlaw3.ps 1_PIN_dtcor_min500_sub_all_powerlaw3.jpg
+
+## 使ったログ :LS5039_PIN_dtcor_min900_fit.log
+
+=========================================================================
+5-3) xspec
+
+xspec
+data LS5039_PIN_dtcor_min40.pha
+back LS5039_PIN_bkg_expcor.pha
+resp ae_hxd_pinflate4_20080129.rsp
+cpd /xw
+setplot e
+setpl co r x 10 50
+setpl co r y 1e-5 0.01
+ig bad
+plot ldata
+
+ip
+la t "LS5039_min40_sub_bkg_spectrum"
+pl
+hardcopy pin_LS5039_min40_spec.ps/cps
+q
+exit
+y
+
+5-4) fitting
+
+xspec
+log PIN_LS5039_min40.log
+data LS5039_PIN_min40.pha
+back LS5039_PIN_bkg_expcor.pha
+resp ae_hxd_pinhxnome4_20080129.rsp
+cpd /xw
+setplot e
+setpl co r x 10 50
+setpl co r y 1e-5 0.01
+ig bad
+plot ldata
+@xis0_LS5039_powerlaw.xcm
+query yes
+fit
+plot ldata residuals
+log none
+
+ip
+la t "PIN_LS5039_min40_sub_bkg_powerlaw"
+pl
+hardcopy PIN_LS5039_min40_addmodel.ps/cps
+q
+exit
+y
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(6) PIN表示
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+6-1) raw,nxb,残差を表示
+
+xspec
+data 1 LS5039_PIN_min40.pha
+resp 1 ae_hxd_pinhxnome4_20080129.rsp
+data 2 LS5039_PIN_bkg_expcor.pha
+resp 2 ae_hxd_pinhxnome4_20080129.rsp
+data 3 LS5039_PIN_min40.pha
+back 3 LS5039_PIN_bkg_expcor.pha
+resp 3 ae_hxd_pinhxnome4_20080129.rsp
+cpd /xw
+setplot e
+setpl co r x 10 70
+setpl co r y 5e-4 0.1
+ig bad
+plot ldata 
+
+ip
+la t "PIN_LS5039_min40_sub_bkg_powerlaw"
+pl
+
+wi 3
+grid on 
+
+la t PIN_LS5039_min40_and_NXB_and_residuals
+
+hardcopy PIN_LS5039_min40_addmodel.ps/cps
+q
+exit
+y
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+(7) PIN表示(スケールを10天体揃えて)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+7-1) raw,nxb,残差を表示
+
+xspec
+data 1 LS5039_PIN_min40.pha
+resp 1 ae_hxd_pinhxnome4_20080129.rsp
+data 2 LS5039_PIN_bkg_expcor.pha
+resp 2 ae_hxd_pinhxnome4_20080129.rsp
+data 3 LS5039_PIN_min40.pha
+back 3 LS5039_PIN_bkg_expcor.pha
+resp 3 ae_hxd_pinhxnome4_20080129.rsp
+cpd /xw
+setplot e
+setpl co r x 10 70
+ig bad
+plot ldata
+
+ip
+skip single
+plot ver
+wi 1
+LOC 0 0.3 1 1
+r y 5e-4 0.3 
+la t LS5039_PIN_min40_and_NXB_and_residuals2
+pl
+wi 2 
+LOC 0 0.3 1 1
+r y 5e-4 0.3
+pl
+wi 3 
+LOC 0 0.05 1 0.4
+la x Energy[keV] 
+pl
+log y off
+r y -1e-2 0.08
+grid on
+ls 3 on grid
+pl
+h LS5039_PIN_min40_and_NXB_and_residuals2.ps/cps
+q
+exit
+y
+
+7-2)fluxを求める
+
+xspec
+data LS5039_PIN_min40.pha
+back LS5039_PIN_bkg_expcor.pha
+resp ae_hxd_pinflate4_20080129.rsp 
+cpd /xw
+setplot e
+setpl co r x 10 70
+setpl co r y 1e-6 0.01
+ig bad
+plot ldata
+
+log LS5039_PIN_min40_flux_flat.log
+show
+model wabs*powerlaw
+
+
+
+freeze 1
+query yes
+fit
+plot ldata del
+flux 10 70
+new 1 0
+flux 10 70
+log none
+exit
+y
+
+7-3)レスポンスを変えて比較
+
+ln -s /newace/BACKUP/CALDB20080616/data/suzaku/hxd/cpf/ae_hxd_pinflate4_20080129.rsp .
+
+xspec
+data LS5039_PIN_min40.pha
+back LS5039_PIN_bkg_expcor.pha
+resp ae_hxd_pinhxnome4_20080129.rsp
+cpd /xw
+setplot e
+setpl co r x 10 70
+setpl co r y 1e-6 0.01
+ig bad
+plot ldata
+
+log LS5039_PIN_min40_flux_hxnom.log
+show
+model wabs*powerlaw
+
+
+
+freeze 1
+query yes
+fit
+plot ldata del
+flux 10 70
+new 1 0
+flux 10 70
+log none
+exit
+y
+
+===============================================
+<飯塚さんから>
+
+## Windowを3つ重ねる
+
+iplot
+PLT> 
+PLT> 
+PLT> plot
+PLT> skip single
+PLT> plot
+PLT> plot ver
+PLT> plot
+PLT> wh
+SKIP SING
+YAX  LIN 0 0
+LWIDTH   2.
+LW   1.0 ON   1
+MARK     1 ON   1
+LW   1.0 ON   2
+MARK     1 ON   2
+LW   1.0 ON   3
+MARK     1 ON   3
+R    X   10 70
+WIN      1
+YPLOT  1
+LOC  0 0.599999964 1 0.933333278
+LAB  NX OFF
+LAB  T  \fRdata
+LAB  X  Energy (keV)
+LAB  Y  normalized counts s\u-1\d keV\u-1\d
+R    Y   0.000500000024 0.100000001
+WIN      2
+YPLOT  2
+LOC  0 0.333333313 1 0.666666627
+LAB  NX OFF
+R    Y2 7.11316943E-6 0.0531328283
+WIN      3
+YPLOT  3
+LOC  0 0.0666666627 1 0.400000006
+R    Y3 2.43485579E-6 0.00612689229
+WIN  ALL
+LOG  X ON 1 2 3
+LOG  Y ON 1 2 3
+PLT> wi 1
+PLT> LOC  0 0.599999964 1 0.933333278
+PLT> LOC  0 0.3 1 1
+PLT> plot
+PLT> wi 2
+PLT> LOC  0 0.3 1 1
+PLT> plot
+PLT> r y 1E-5 0.1
+PLT> wi 1
+PLT> r y 1E-5 0.1
+PLT> wi 3
+PLT> show
+ Please use the Info command.
+PLT> wh
+SKIP SING
+YAX  LIN 0 0
+LWIDTH   2.
+LW   1.0 ON   1
+MARK     1 ON   1
+LW   1.0 ON   2
+MARK     1 ON   2
+LW   1.0 ON   3
+MARK     1 ON   3
+WIN      1
+YPLOT  1
+LOC  0 0.300000012 1 1
+LAB  NX OFF
+LAB  T  \fRdata
+LAB  X  Energy (keV)
+LAB  Y  normalized counts s\u-1\d keV\u-1\d
+R    X1 10 70
+R    Y   9.99999975E-6 0.100000001
+WIN      2
+YPLOT  2
+LOC  0 0.300000012 1 1
+LAB  NX OFF
+R    X2 10 70
+R    Y2 9.99999975E-6 0.100000001
+WIN      3
+YPLOT  3
+LOC  0 0.0666666627 1 0.400000006
+R    X3 10 70
+R    Y3 2.43485579E-6 0.00612689229
+WIN  ALL
+LOG  X ON 1 2 3
+LOG  Y ON 1 2 3
+PLT> LOC  0 0.0666666627 1 0.400000006
+PLT> LOC  0 0 1 0.3
+PLT> plot
+PLT> LOC  0 0 1 0.35
+PLT> plot
+PLT> log y off
+PLT> plot
+PLT> r y
+PLT> la rot
+PLT> plot
+PLT> log y
+PLT> plot
+PLT> log y off
+PLT> pl
+PLT> r y
+PLT> grid on
+PLT> plot
+PLT> ls 3 on grid
+PLT> plot
+PLT> ls 4 on grid
+PLT> plot
+PLT> grif off
+======================================================
+
+#EOF#

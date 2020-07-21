@@ -1,0 +1,28 @@
+まずは teldef file を見てください。
+
+衛星軸（オイラー角）方向に天体があるとき
+  (EA1 = RA, EA2 = 90 - DEC, EA3 = 90 - roll)
+天体は xisnominal position に像を結びます。その位置は tekdef の
+
+FOC_XOFF=                 -3.5 / DETX offset (pixel) to the FOC center position
+FOC_YOFF=                -11.5 / DETY offset (pixel) to the FOC center position
+FOC_ROTD=                  0.0 / DET rotation angle (deg) in FOC coordinates
+
+として定義されていまして、DETX,DETY を pixel 表示すると
+
+DETX0 = 512.5 - 3.5 = 509.0
+DETY0 = 512.5 - 11.5 = 501.0
+
+になります。この位置は検出器ごとに値が異なります。ここまでが前置きです。
+
+ 例えば、(RA,DEC)=(RA0,DEC0) の天体を (DETX,DETY)=(DETX1,DETY1) の位置に像を結ばせたい時は(DETX0,DETY0)からの offset 角を
+
+offset_DETX [deg] = (DETX1-DETX0)*0.024/4750*180/3.1415....
+offset_DETY [deg] = (DETY1-DETY0)*0.024/4750*180/3.1415....
+
+(EA1,EA2,EA3) = (RA0,90-DEC0,0)
+(RA,DEC)=(RA0-(offset_DETX / cos (DETY)),DEC0-offset_DETY)
+
+を入力していただけると、ご希望の simulation ができると思います。
+EA3 = 0 以外はまわす式が入るので、計算項が増えて複雑になります。
+どうしもまわしたい時は再度ご連絡ください。

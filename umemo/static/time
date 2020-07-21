@@ -1,0 +1,138 @@
+Time Systemについてのメモ
+
+役に立つリンク集
+
+    * XTEのページ: A Time Tutorial
+    * Absolute Astronomy: Time Scale
+    * 山形大学柴田さんのページ: 時間解析に必要な時刻系についての基礎知識
+    * US Naval Observatory:Time Service Department
+          o その中のTime System解説部 
+    * 天体計算の基礎
+    * Astronomical Times 
+    http://tycho.usno.navy.mil/systime.html
+http://stjarnhimlen.se/comp/time.html
+
+いろいろなTime System
+
+世界的に使用されている時刻体系
+
+    TAI (International Atomic Time)
+
+        たくさんの原子時計を用いて決定した、統計的な時刻。単位はSI単位系の秒。
+	BIPM (International Bureau of Weights and Measures)により管理。
+
+    世界時　Universal Time (UT)
+
+        真夜中を0時として、平均太陽日で進んでいく時刻。昔で言うグリニッジ標準時(GMT)を
+	詳しく再定義しなおしたもの。GMTは学術的には消滅。
+
+        UT0 	経度0の場所における、地球の回転に基づく時刻。遠くの恒星の日周運動として観測できる。
+        UT1 	UT0に対して、地球の極運動による影響を補正したもの。地球自転が一定していないため、季節により変動する。
+        UT2 	UT1に地球自転変動の補正を加えたもの。しかし、UTCの定義には使われない。
+
+    * Universal Time (UT) is counted from 0 hours at midnight, with unit of duration the mean solar day, defined to be as uniform as possible despite variations in the rotation of the Earth.
+          o UT0 is the rotational time of a particular place of observation. It is observed as the diurnal motion of stars or extraterrestrial radio sources.
+          o UT1 is computed by correcting UT0 for the effect of polar motion on the longitude of the observing site. It varies from uniformity because of the irregularities in the Earth's rotation. 
+
+    協定世界時　Coordinated Universal Time (UTC)
+
+        本当はTAIで全て物事を進められると物理的にはすっきりしていて良いのだが、
+	地球自転がだんだん遅くなる(一年一秒ぐらい）ので、ほっとくと昼夜が逆転する。
+	そのために考えられた時刻。
+        原子時計により定められる時刻。UT1と1秒以内の差を保ち、さらにもう一つの原子時計
+	であるTAIとの差が 1秒の整数倍だけ異なる時刻体系。UT1との時間差をキープするため、
+	時々閏秒(正の値)が挿入される。
+        UTC = TAI - (number of leap seconds)
+        で、UTCとTAIの差は閏秒の挿入された回数になり、その値はIERS UTC document。2006年1月、
+	7年ぶりにうるう秒が挿入されました。
+
+    * Coordinated Universal Time (UTC) differs from TAI by an integral number of seconds. UTC is kept within 0.9 seconds of UT1 by the introduction of one-second steps to UTC, the "leap second." To date these steps have always been positive.
+
+    日本標準時(JST)
+
+        独立行政法人通信総合研究所が原子時計を用いて決めている時刻。 TAI の決定にも利用されている。
+        JST=UTC+9時間
+
+    Terrestrial Time (TT) = Terrestial Dynamical Time (TDT)
+
+        力学時と呼ばれる。
+        ＴＡＩで1977年1月1日0時0分0秒を力学時で1977年1月1.0003725日とし、TTの１日は平均海面に
+	おける原子時計による秒の86400倍と定義する。
+        この定義により、TT-TAI=32.184sec
+        このドキュメントを書いている2006/3/3の時点では、TAI-UTC=33sec なので、TT-UTC=65.184sec
+          o Terrestrial Time (TT), (or Terrestrial Dynamical Time, TDT), with unit of duration 86400 SI seconds on the geoid, is the independent argument of apparent geocentric ephemerides. TDT = TAI + 32.184 seconds.
+
+
+    Barycentric Time (TB) = Barycentric Dynamical Time (TDB)
+
+        地球表面ではなく、太陽系重心中心において TT と同様に定義された時刻。
+        地球は太陽の重力ポテンシャルの中におり、そして太陽中心に対して動いている。
+	この重力と運動の相対論的補正を行ったもの。 TTとは周期的にしか違わない。
+         o Barycentric Dynamical Time (TDB), is the independent argument of ephemerides and dynamical theories that are referred to the solar system barycenter. TDB varies from TT only by periodic variations. 
+
+
+    Geocentric Coordinate Time (TCG)
+
+        地球の重心におけるTT。一般相対論的効果である、重力ポテンシャルによる時計の進み方の違いを
+	補正する (自転による運動も補正はしないのかな？)。普通の用途ではTCGとTTを区別する必要はない。
+        TCG - TT = Lg x (JD -2443144.5) x 86400sec, with Lg = 6.969291e-10.
+
+    * Geocentric Coordinate Time (TCG) is a coordinate time having its spatial origin at the center of mass of the Earth. TCG differs from TT as: TCG - TT = Lg x (JD -2443144.5) x 86400 seconds, with Lg = 6.969291e-10.
+
+    Barycentric Coordinate Time (TCB)
+
+        太陽系重心における TB。重力ポテンシャルによる時計の進み方の違いを補正しただけ。
+	通常の用途では、TBとTCBを区別する必要はない。
+        TCB - TDB = Lb x (JD -2443144.5) x 86400 s　with Lb= 1.550505e-08
+
+   * Barycentric Coordinate Time (TCB)is a coordinate time having its spatial origin at the solar system barycenter. TCB differs from TDB in rate. The two are related by: TCB - TDB = iLb x (JD -2443144.5) x 86400 seconds, with Lb = 1.550505e-08.
+
+    ユリウス日 (JD)
+
+        紀元-4712年1月1日から数えた日数。
+
+    Modified Julian Date (MJD)
+
+        MJD = JD - 2400000.5
+
+多くの人には関係ないが、Astro-E2関係者には大事な時刻体系
+
+    Astro-E time
+
+        2000年1月1日 00:00:00 (UTC)を原点として、そこから経った秒数。
+
+    TI
+
+        XISにおいては、DPに搭載された32bitタイムカウンターの値のこと。
+	1/4096秒ごとにカウントアップするので、一周するのに、
+	(2^32)/(4096)sec=1048576sec=12.1日かかる。一周したらまたゼロに戻るので、
+	時刻が12日昔に戻ったように見えるので注意。
+        Astro-E Timeへの変換は aste_ti2timeという関数で行う。
+	これで、カウンターの進み具合の温度依存性とか、衛星と地上間の距離による
+	電波遅延とかの補正が行われる。
+        Astro-E2にGPSを積んでおけば、こんな苦労しなくていいのにねぇ...
+
+    S_TIME
+
+        CCSDSパケットのセカンダリーヘッダーにはパケット生成時刻がTIで入っているが、
+	これをSIRIUSがAstro-E timeに変化したもの。この変換は50ミリ程度の精度しかないことに注意。
+        任意のTIをAstro-E Timeに変換したいとき、そのTIに対するS_TIMEの情報があれば、
+	上記TIの繰り上がりに対処できる。従ってaste_ti2time()は引数にS_TIMEをとる。
+
+http://tycho.usno.navy.mil/systime.html
+
+    Atomic Time
+
+    	   with the unit of duration the Systeme International (SI) second defined
+	   as the duration of 9,192,631,770 cycles of radiation corresponding to the
+	   transition between two hyperfine levels of the ground state of cesium 133.
+	   TAI is the International Atomic Time scale, a statistical timescale based
+	   on a large number of atomic clocks.
+
+
+    Dynamical Time
+    	      replaced ephemeris time as the independent argument in dynamical theories and ephemerides. Its unit of duration is based on the orbital motions of the Earth, Moon, and planets.
+
+
+    * Sidereal Time
+      	       with unit of duration the period of the Earth's rotation with respect to a point nearly fixed with respect to the stars, is the hour angle of the vernal equinox. 

@@ -1,0 +1,532 @@
+################################################################################
+SUZAKU HXD SPECTRUM ANALYSIS
+################################################################################
+1.PINのspec作成手順
+2.GSOのspec作成手順
+
+
+********************************************************************************
+1.PINのspec作成手順
+********************************************************************************
+
+1-0.NXBイベントの取得
+1-1.specの抽出
+1-2.pin eventのspecのdead time correct
+1-3.Scale down of PIN BackGround Flux
+
+
+================================================================================
+1-0.NXBイベントの取得
+================================================================================
+## http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/pinbgd.htmlから
+ftp://legacy.gsfc.nasa.gov/suzaku/data/background/pinnxb_ver2.0_tuned/
+へ行き取得。すざくホームページのはダウンロードできない...
+
+
+#wget
+
+wget ftp://legacy.gsfc.nasa.gov/suzaku/data/background/pinnxb_ver2.0_tuned/2010_10/ae405077010_hxd_pinbgd.evt.gz
+
+クイックルックのためのBKG:"quick" 正確なBKG:"tuned"(dead-time corrected)
+
+
+================================================================================
+1-1.specの抽出
+================================================================================
+event=(ae405077010_hxd_pinbgd.evt.gz ae405077010hxd_0_pinno_cl.evt.gz)
+src=(nxb src)
+
+for i in 1 2 3;do
+cat << EOF >! pin_${src[${i}]}_xsel.txt
+
+read event event/${event[${i}]}
+./
+filter time file gti/evt_nxb_merge.gti  
+set phaname PI_PIN
+extract spec
+save spec pin_${src[${i}]}.pi
+no
+exit
+no
+EOF
+done
+
+
+================================================================================
+1-2.pin eventのspecのdead time correct
+================================================================================
+検出器の不感時間の補正。一般にNXBに関しては必要ない
+
+--------------------------------------------------------------------
+1-2-1.hxddtcor
+--------------------------------------------------------------------
+% cp pin_src.pi pin_src_dtcor.pi #コピーして別のpi fileを補正する
+% hxddtcor        
+HXD unscreened event FITS file name? (@flist of files or file name)[] ae405077010hxd_0_pse_cl.evt.gz 
+^pseudoのイベントファイル
+HXD PHA fits file name ? (@flist of file list or file name)[] pin_src_dtcor.pi
+^補正したいPIファイル
+
+
+#hxddtcor 実行時の出力
+
+hxddtcor: hxddtcor version 1.50 
+hxddtcor: Inputs are 1 evt file(s) and 1 spec file(s).
+hxddtcor:   event_fname = ../../event/ae405077010hxd_0_pse_cl.evt.gz
+hxddtcor:   spec  = pin_src_dtcor.pi
+hxddtcor:   save pseudo = n 
+hxddtcor: format version 0
+hxddtcor:  extract pse_uf events.
+hxddtcor:  extract pse_cl events with GRADE_HITMAT and QUALITY.
+hxddtcor: process pin_src_dtcor.pi ==========================
+hxddtcor:   current exposure = 95662.07
+hxddtcor:   make pseudo list ../../event/ae405077010hxd_0_pse_cl.evt.gz (88323.00 sec)
+EXPOSURE 88323.000000 / Exposure time
+hxddtcor:  ------ /usr/local/xray/heasoft/6.6.1/i686-pc-linux-gnu-libc2.7/bin/hxddtcor v
+ersion 1.50------
+hxddtcor:    event file[0]= ../../event/ae405077010hxd_0_pse_cl.evt.gz
+hxddtcor:    save pseudo = n
+hxddtcor:    EXPOSURE changed from 95662.07 to 88323.00
+hxddtcor:    Live time is 92.3 %.
+Checksum keywords updated successfully.
+hxddtcor: process done.
+
+
+--------------------------------------------------------------------
+1-2-2.補正されたか確認
+--------------------------------------------------------------------
+
+fkeyprint pin_src.pi exposure #補正前のファイル
+>EXPOSURE= 9.566207112139463E+04 / Exposure time
+
+
+fkeyprint pin_src_dtcor.pi exposure #補正後のファイル
+>EXPOSURE=         88323.000000 / Exposure time
+
+88323.000000 / 9.566207112139463E+04 * 100 = 92.3% -> OK!!
+
+
+ 
+
+================================================================================
+1-3.Scale down of PIN BackGround Flux
+================================================================================
+PIN のバックグラウンドの積分時間の補正
+PINのバックグランドファイルに関しては、統計負けしないように、
+10倍のfluxでイベントファイルを作成している。
+そのため、出来たBackGroundのPI FILEのExposureを10倍することで
+BackGroundのfluxを0.1倍にする。
+ftoolのfparkey等でheader部分を書き換える。
+
+--------------------------------------------------------------------
+1-3-1.exposure timeの調査
+--------------------------------------------------------------------
+yyoshida@ungyo) fkeyprint pin_nxb.pi EXPOSURE
+# FILE: pin_nxb_dtcor.pi
+# KEYNAME: EXPOSURE
+ 
+# EXTENSION:    0
+EXPOSURE=         89103.750000 / Exposure time
+ 
+# EXTENSION:    1
+EXPOSURE=         89103.750000 / Exposure time
+ 
+# EXTENSION:    2
+EXPOSURE=         89103.750000 / Exposure time
+
+
+-------------------------------------------------------------------
+1-3-2.exposure timeの補正
+-------------------------------------------------------------------
+for j in 0 1 2 ;do
+fparkey comm="Exposure time" add=no << EOF
+89103.750000E+01
+pin_nxb_on_expcor.pi[${j}]
+EXPOSURE
+EOF
+done
+
+
+
+-------------------------------------------------------------------
+1-3-3.補正後のfileの確認
+-------------------------------------------------------------------
+yyoshida@ungyo) fkeyprint pin_nxb_exptcor.pi EXPOSURE
+ 
+# FILE: pin_nxb_exptcor.pi
+# KEYNAME: EXPOSURE
+ 
+# EXTENSION:    0
+EXPOSURE=     89103.750000E+01 / Exposure time
+ 
+# EXTENSION:    1
+EXPOSURE=     89103.750000E+01 / Exposure time
+ 
+# EXTENSION:    2
+EXPOSURE=     89103.750000E+01 / Exposure time
+
+
+================================================================================
+1-4.Cosimic X-ray BackGround
+================================================================================
+・CXBの作成
+詳細は
+
+http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/pin_cxb.html
+
+を参照
+
+xspecでfakeitでモデルを仮定してCXBをつくる
+
+model pow*highecut
+1.29
+9.412e-3
+1e-4
+40.0
+fakeit none
+ae_hxd_pinflate9_20100731.rsp
+
+
+********************************************************************************
+2.GSOのspec作成手順
+********************************************************************************
+gsonxb_ver2.5
+
+2-1.GSOのNXBの取得
+2-2.GSOのNXBにbarycenをかける
+2-3.GSOのレスポンスの取得
+2-4.GSO unscreened eventの再プロセス
+2-5.作成したGSOのイベントにbarycenをかける
+2-6.GSOのイベントとGSO-NXBのGTIマージ
+2-7.GSOのスペクトルの抽出
+2-8.GSO-EVTのデットタイム補正
+2-9.GSOスペクトルの足し合わせ
+2-10.EVT,NXBのspecのbinまとめ
+
+ref)http://www.astro.isas.jaxa.jp/suzaku/analysis/hxd/gsonxb/
+注1) GSOのバックグランドはPINを違ってカウントレートが10倍になっていないので、露光時間を補正する必要がない。
+注2) GSOのバックグランドファイルはCXBを含んでいないが、バックグランド全体の0.1%なので無視してよい。
+注3) GSOのバックグランドのスペクトルはPINと違ってデットタイム補正が必要。
+注4) GSOのソースとバックグランドのスペクトルは同じbinまとめが必要。(NXBのversionに依ってbinのまとめ方が異なるので注意)
+
+
+================================================================================
+2-1.GSOのNXBの取得
+================================================================================
+
+wget ftp://legacy.gsfc.nasa.gov/suzaku/data/background/gsonxb_ver2.5/2010_10/ae405077010_hxd_gsobgd.evt.gz 
+
+
+================================================================================
+2-2.GSOのNXBにbarycenをかける
+================================================================================
+
+orbit=/data09/yyoshida/data/SCF_effect/GX_14/auxil/ae405077010.orb.gz
+RA=263.0092
+DEC=-24.7456
+i=ae405077010_hxd_gsobgd.evt.gz
+
+gunzip ${i}
+aebarycen << EOF |tee ${i%.evt.gz}_barycen.txt
+${i%.gz}
+${orbit}
+${RA}
+${DEC}
+EOF
+gzip ${i%.gz}
+
+
+================================================================================
+2-3.GSOのレスポンスの取得
+================================================================================
+ref)http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/gso_newgain.html
+
+ftp://legacy.gsfc.nasa.gov/caldb/data/suzaku/hxd/cpf/ae_hxd_gsohxnom_20080129.rsp
+ftp://legacy.gsfc.nasa.gov/caldb/data/suzaku/hxd/cpf/ae_hxd_gsohxnom_20100524.rsp
+
+url=ftp://legacy.gsfc.nasa.gov/caldb/data/suzaku/hxd/cpf
+wget ${url}/ae_hxd_gsohxnom_20080129.rsp
+wget ${url}/ae_hxd_gsohxnom_20100524.rsp
+
+
+================================================================================
+2-4.GSO unscreened eventの再プロセス
+================================================================================
+参照
+http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/hxd_repro.html
+
+--------------------------------------------------------------------
+2-4-1.必要なファイルのリンクづけ
+--------------------------------------------------------------------
+mkdir event_rp ;cd event_rp
+dir="/data09/yyoshida/data/SCF_effect/GX_14"
+ln -sf ${dir}/hxd/event_uf/ae405077010hxd_1_wel_uf.evt.gz
+ln -sf ${dir}/hxd/event_uf/ae405077010hxd_2_wel_uf.evt.gz
+ln -sf ${dir}/hxd/hk/ae405077010hxd_0.hk.gz
+ln -sf ${dir}/auxil/ae405077010.ehk.gz
+ln -sf ${dir}/auxil/ae405077010.tim.gz
+
+
+--------------------------------------------------------------------
+2-4-2.hk file listの作成
+--------------------------------------------------------------------
+cat << EOF >! hk_file.list 
+ae405077010hxd_0.hk.gz
+ae405077010.ehk.gz
+EOF
+
+
+--------------------------------------------------------------------
+2-4-3.時刻づけ
+--------------------------------------------------------------------
+hxdtime_com="hxdtime read_iomode=create time_change=n pi_pmt_change=n pi_pin_change=n gtimode=y gti_time=S_TIME time_convert_mode=4 use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+
+for i in ae405077010hxd_1_wel_uf.evt.gz ae405077010hxd_2_wel_uf.evt.gz ;do
+${hxdtime_com} << EOF
+${i}
+${i%.evt.gz}2.evt
+CALDB
+@hk_file.list
+ae405077010.tim.gz
+EOF
+done
+
+
+--------------------------------------------------------------------
+2-4-4.PIづけ
+--------------------------------------------------------------------
+hxdpi_com="hxdpi read_iomode=overwrite time_change=n grade_change=n pi_pmt_change=y pi_pin_change=y gtimode=n gti_time=S_TIME rand_seed=7 rand_skip=0 use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+
+for i in 1 2 ;do
+${hxdpi_com} create_name=hxdpi_${i}.out << EOF
+ae405077010hxd_${i}_wel_uf2.evt
+@hk_file.list
+CALDB
+CALDB
+CALDB
+CALDB
+EOF
+done
+
+
+--------------------------------------------------------------------
+2-4-5.イベント選別用のカラム GRADE, DET_TYPE をうめる
+--------------------------------------------------------------------
+hxdgrade_com="hxdgrade hxdgrade_psdsel_criteria=2 read_iomode=overwrite time_change=n grade_change=y pi_pmt_change=n pi_pin_change=n gtimode=n gti_time=S_TIME use_pwh_mode=n num_event=-1 event_freq=10000 anl_verbose=-1 anl_profile=yes"
+
+for i in 1 2 ;do
+${hxdgrade_com} create_name=hxdgrade_${i}.out << EOF
+ae405077010hxd_${i}_wel_uf2.evt
+CALDB
+CALDB
+CALDB
+EOF
+done
+
+
+--------------------------------------------------------------------
+2-4-6.イベント抽出の準備
+--------------------------------------------------------------------
+yyoshida@ungyo) pwd                                
+/data09/yyoshida/data/SCF_effect/GX_14/hxd/event_rp
+
+cp ../../auxil/ae405077010.mkf.gz .
+gunzip ae405077010.mkf.gz 
+ln -sf /data09/yyoshida/data/SCF_effect/GX_14/hxd/hk/ae405077010hxd_1_tel_uf.gti.gz
+ln -sf /data09/yyoshida/data/SCF_effect/GX_14/hxd/hk/ae405077010hxd_2_tel_uf.gti.gz
+
+#HXDの標準的な条件のmkfファイルのdownload
+wget http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/pin_mkf.sel
+wget http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/gso_mkf.sel
+
+
+--------------------------------------------------------------------
+2-4-7.イベント抽出
+--------------------------------------------------------------------
+for i in 1 2 ;do
+cat << EOF >! ae405077010hxd_${i}_wel_uf2_xsel.txt
+
+read event ae405077010hxd_${i}_wel_uf2.evt
+./
+select mkf @gso_mkf.sel
+./
+filter column DET_TYPE=0:0
+filter time file ae405077010hxd_${i}_tel_uf.gti.gz
+extract event
+save event ae405077010hxd_${i}_gsono_cl2.evt
+yes
+exit
+no
+EOF
+done
+
+
+--------------------------------------------------------------------
+2-4-8.keyward "DETNAM" の書き換え
+--------------------------------------------------------------------
+for i in 1 2 ;do
+for j in 0 1 ;do
+fparkey comm="detector name" add=no << EOF
+WELL_GSO
+ae405077010hxd_${i}_gsono_cl2.evt[${j}]
+DETNAM  
+EOF
+done
+done
+
+
+--------------------------------------------------------------------
+2-4-9.keyward "TIMEDEL" の書き換え
+--------------------------------------------------------------------
+for i in 1 2 ;do
+for j in 0 1 ;do
+fparkey comm="finest time resolution" add=no << EOF
+6.1E-05
+ae405077010hxd_${i}_gsono_cl2.evt[${j}]
+TIMEDEL
+EOF
+done
+done
+
+
+================================================================================
+2-5.作成したGSOのイベントにbarycenをかける
+================================================================================
+
+orbit=/data09/yyoshida/data/SCF_effect/GX_14/auxil/ae405077010.orb.gz
+RA=263.0092
+DEC=-24.7456
+
+for i in 1 2 ;do
+aebarycen << EOF |tee ae405077010hxd_${i}_gsono_cl2_barycen.txt
+ae405077010hxd_${i}_gsono_cl2.evt
+${orbit}
+${RA}
+${DEC}
+EOF
+done
+
+
+================================================================================
+2-6.GSOのイベントとGSO-NXBのGTIマージ
+================================================================================
+
+for i in 1 2 ;do
+mgtime << EOF
+event/ae405077010hxd_${i}_gsono_cl2.evt[2],event/ae405077010_hxd_gsobgd.evt.gz[2]
+gti/ae405077010hxd_${i}_gsono_cl2_barycen.gti
+AND
+EOF
+done
+
+
+================================================================================
+2-7.GSOのスペクトルの抽出
+================================================================================
+
+--------------------------------------------------------------------
+2-7-1.src
+--------------------------------------------------------------------
+src=src
+
+for i in 1 2 ;do
+cat << EOF >! gso_${src}_${i}_xsel.txt
+
+read event ae405077010hxd_${i}_gsono_cl2.evt
+/data09/yyoshida/data/SCF_effect/GX_14/hxd/analysis/event/
+filter time file gti/ae405077010hxd_${i}_gsono_cl2_barycen.gti
+extract all
+save spec spec/src/gso_${src}_${i}.pi
+exit
+no
+EOF
+done
+
+
+--------------------------------------------------------------------
+2-7-2.nxb
+--------------------------------------------------------------------
+2つのGTIファイルごとにスペクトルを抽出
+
+src=nxb
+
+for i in 1 2 ;do
+cat << EOF >! gso_${src}_${i}_xsel.txt
+
+read event ae405077010_hxd_gsobgd.evt.gz
+/data09/yyoshida/data/SCF_effect/GX_14/hxd/analysis/event/
+filter time file gti/ae405077010hxd_${i}_gsono_cl2_barycen.gti
+extract all
+save spec spec/src/gso_${src}_${i}.pi
+exit
+no
+EOF
+done
+
+
+================================================================================
+2-8.GSO-EVTのデットタイム補正
+================================================================================
+for j in src nxb ;do
+for i in 1 2 ;do
+cp gso_${j}_${i}.pi gso_${j}_dtcor_${i}.pi
+hxddtcor << EOF |tee log/gso_${j}_dtcor_${i}.txt
+../../event/ae405077010hxd_0_pse_cl.evt.gz 
+gso_${j}_dtcor_${i}.pi
+EOF
+mv gso_${j}_${i}.pi archive/
+done
+done
+
+
+================================================================================
+2-9.GSOスペクトルの足し合わせ
+================================================================================
+-------------------------------------------------------------------
+2-9-1.src
+-------------------------------------------------------------------
+mathpha expr="gso_src_dtcor_1.pi + gso_src_dtcor_2.pi" units="C" \
+        outfil="gso_src_dtcor_0.pi" exposure="CALC" areascal="NULL" \
+        backscal="%" ncomments="0" errmeth="Gauss" clobber="yes"
+
+-------------------------------------------------------------------
+2-9-2.nxb
+-------------------------------------------------------------------
+mathpha expr="gso_nxb_dtcor_1.pi + gso_nxb_dtcor_2.pi" units="C" \
+        outfil="gso_nxb_dtcor_0.pi" exposure="CALC" areascal="NULL" \
+        backscal="%" ncomments="0" errmeth="Gauss" clobber="yes"
+
+
+================================================================================
+2-10.EVT,NXBのspecのbinまとめ
+================================================================================
+ref : http://www.astro.isas.jaxa.jp/suzaku/analysis/hxd/gsonxb/
+
+spec=(gso_nxb_dtcor_0.pi gso_src_dtcor_0.pi)
+
+for i in ${spec} ;do
+cat << EOF >! ${i%.pi}_grp.txt
+archive/${i}
+${i%.pi}_grp.pi
+group 0 24 25 25 26 2 27 27 1 28 28 1 29 30 2 31 31 1
+group 32 33 2 34 35 2 36 36 1 37 38 2 39 40 2 41 42 2
+group 43 44 2 45 46 2 47 49 3 50 51 2 52 54 3 55 56 2
+group 57 59 3 60 62 3 63 65 3 66 68 3 69 71 3 72 75 4
+group 76 79 4 80 83 4 84 87 4 88 91 4 92 95 4 96 100 5
+group 101 105 5 106 110 5 111 116 6 117 121 5
+group 122 127 6 128 134 7 135 140 6 141 147 7
+group 148 154 7 155 162 8 163 170 8 171 178 8
+group 179 187 9 188 196 9 197 206 10 207 216 10
+group 217 227 11 228 238 11 239 249 11 250 262 13
+group 263 274 12 275 288 14 289 302 14 303 317 15
+group 318 332 15 333 349 17 350 366 17 367 384 18
+group 385 403 19 404 422 19 423 443 21 444 465 22
+group 466 487 22 488 511 24
+exit
+EOF
+done
+
+
+#EOF#
+
+

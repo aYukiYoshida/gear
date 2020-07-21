@@ -1,0 +1,11 @@
+書式
+	pkg_which [-hQQq] [-c pkgname] [file] ...
+
+解説
+	FreeBSD Package Database を検索する
+	libファイルがどのパッケージに由来しているか調べるのに便利
+
+オプション
+
+使用例
+	pkg_which /usr/local/lib/libpaper.so.2

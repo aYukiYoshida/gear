@@ -1,0 +1,30 @@
+################################################################################
+fdelhdu
+################################################################################
+FORMAT
+
+    fdelhdu infile[ext#] confirm proceed
+
+
+EXPLAIN
+
+    FITSファイルの特定のextensionの削除 
+
+
+OPTION
+
+PARAMETERS
+
+   infile    削除したいextensionを含むFITSファイル
+   confirm   [boolean]指定したEXTENSIONの情報表示 (default = yes)
+   proceed   [boolean]yesにするとextensionの削除を実行する
+
+
+
+EXAMPLE
+
+   fdelhdu test.fits+1 no yes   1st EXTENSIONの削除
+   fdelhdu test.fits+1 yes no   1st EXTENSIONの情報表示
+
+
+#EOF#

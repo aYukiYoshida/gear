@@ -1,0 +1,128 @@
+arXiv.astro-ph 投稿方法
+
+    http://arxiv.org/
+    http://jp.arxiv.org/
+
+解説 (ユーザー登録)
+
+	まずはユーザーアカウントを作るが、登録ページがひたすらわかりにくい
+	右上の赤い帯にある Help -> To Register -> registration form と進む
+	探すのが面倒臭い場合は http://arxiv.org/edit-user/ に直接接続する
+
+	E-mail、ユーザー名、パスワードなどで登録フォームを埋めて送信する
+	登録したアドレスに Verification Code が記されたメールが来たら完了
+
+解説 (原稿作成)
+
+	最も簡単な方法は TeX と EPS を tar.gz で圧縮して送信すれば問題無し
+	ちなみにApJの場合は本当にそのまま送っただけでエミュレータが作動した
+
+	TeXの原稿とfigureファイルを送信すると勝手にコンパイルしてpdfになる
+	(特に参考文献は勝手にハイライトされて出てくる)
+	以前はPDFLaTeX形式で原稿を作成するのが推奨されていたが今はそのまま
+	PDFLaTeX形式だとEPSファイルをfigureとして取り込めないので注意する
+	pdf, jpg, png あたりなら使用できる様なので、figureはpngに変換する
+
+	ファイルは最終的に tar.gz 形式でかためて、1つのファイルとして送信
+	ファイルの容量が約2MB?より大きいと受理されないらしいので色々頑張る
+	図のサイズを落とすには以下の手順がおすすめ
+
+	方法 1 : GSviewのconvertを使用して適当な解像度のEPSに変換して保存
+		 あんまり圧縮できないが大きな欠点 (むしろ増える場合も？)
+	方法 2 : EPSをBMPやPNGに変換して、減色と圧縮加工した後でEPSに戻す
+
+	具体的にはEPSを Adobe Illustrator の「データ書き出し」でPNGに変換
+	(画質最高で保存してもかなり小さくなり、だいたい0.05倍くらいになる)
+	Unixにファイルを移動して convert コマンドによりPNGをEPSに変換する
+	(普通に変換するとサイズがまたもや大きくなるのでeps2形式を指定する)
+
+	UNIX) convert aho.png eps2:aho.eps
+
+	PDFLaTeX形式で提出したい場合は変換したEPSを再びPNGかJPGに変換する
+	(この手順だと色々やっている割にはあまり劣化しない様な気がする...)
+
+	UNIX) convert aho.eps aho.jpg
+
+	PDFLaTeX形式で提出する場合は原稿の方もそれなりに修正する必要がある
+	こちらも色々あると思うが、とりあえず以下の手順なら可能な事は実証済み
+
+	変更 1 : TeX原稿の最初に以下の1行を加えておく
+	\pdfoutput=1
+
+	変更 2 : 図を表示させる為に \documentclass には [pdftex] を付ける
+	\documentclass[pdftex]{pasj00}
+
+	変更 3 : 図のアドレスをEPSからJPGに修正する (図は原稿と同じDir.へ)
+	{../Figures/1/1.eps} => {1.jpg}
+
+	最後に以下でpdfを作成して内容確認する (図が表示されない場合が多い)
+
+	UNIX) pdflatex ms.tex
+
+	用意が整ったら原稿や図、READMEなど必要ファイルを tar.gz にまとめる
+	(PASJの場合は 00README.XXX ファイルを作成して同じフォルダに入れる)
+	http://www.asj.or.jp/pasj/ja/astroph_j.html 詳しくはこちらを参照
+
+	UNIX) tar xvfz ms.tar.gz ms
+
+解説 (Submit)
+
+	完成した原稿をSubmitするページも、ひたすらわかりにくい...
+	右上の赤い帯にある Help -> To Submit a Paper -> Submit form と進む
+	探すのが面倒臭い場合は http://arxiv.org/help/submit/ に直接接続する
+
+	以下の質問などに答える...
+
+	A. Verify your Contact Information
+	所属や名前に間違いが無ければ information is correct にチェックする
+
+	B. Legal Statement
+	とりあえず一番上のやつをチェックしておけば良い
+
+	C. Policy Statement
+	とりあえず同意する事が出来るなら I agree にチェックする
+
+	D. Archive and Subject Class
+	Choose Archive	       : Astrophysics
+	Select subject class   : High Energy Astrophysical Phenomena
+
+	E. The Files
+	ここでは最終的にUploadするファイル数を入れる (ほとんどの場合は1つ)
+
+	全てフォームを埋めたら Continue ボタンで先に進む
+	次のページは原稿の内容や詳細を埋めるページなので以下の項目に答える
+	初めてSubmitする場合、5年以内に4paper以上投稿している人の許可が必要
+	そのまま素直に進むとarXivからちゃんとメールが来る
+	条件を満たしている人にそのメールを転送して、論文投稿の許可をもらう
+	これらの手続きが終わると以下の様なフォームが出てやっとSubmit出来る
+
+	Are you an author ? : Yes or No
+	Title of article    : Title (TeXコマンドは未使用で)
+	Author(s)	    : D. Takei, M. Tsujimoto, ...
+	Subj-class	    : Secondary は特に必要なさそう
+	Comments	    : Accepted for publication in ApJL (4 pages, 3 figures)
+	Report-no	    : Local report number, otherwise leave blank.
+	Journal-ref	    : Full biblio info; only if already "published".
+	DOI		    : If known, otherwise leave blank.
+	Abstract	    : 論文と同じ内容をTeXコマンドを除いて張り付け
+
+	論文をアップロードする前に "SUBMIT" ボタンを押すことで内容確認可能
+	OKなら画面を一つ戻り Upload this file: からアップロードして SUBMIT
+	Attempted Submission to astro-ph と出力されるので、内容を読んでおく
+	Now Processing Submission を読んで CLICK HERE TO CHECK STATUS を押す
+	arXiv から受理メールが来るので、pdfなどがちゃんと見れるか確認する
+	以上で arXiv への投稿の手続きは完了して、あとは大体2〜3日でML公開
+
+	あとは素直に必要事項を入力して、tar.gzでまとめた原稿を送信する
+	(送信するファイルを指定しないでSubmitボタンを押すと表示を確認可能)
+
+	入力事項などについて、詳しい事は以下のサイトも参照
+	http://www.math.tsukuba.ac.jp/~tasaki/tool/arxiv.html
+	http://tmugs.math.metro-u.ac.jp/arxiv.html
+	http://www-cr.scphys.kyoto-u.ac.jp/member/midori/HTML/astroph.html
+
+	しばらくしてパスワードとアドレスが書いてあるメールが届いたら完了
+	自分のアカウントのページにSubmitした論文の情報が追加される
+	(数日以内に Table of Contents から流されるらしい)
+
+	GMTの21時にサブミットするといちばんトップになるみたい

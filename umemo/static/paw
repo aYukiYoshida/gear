@@ -1,0 +1,29 @@
+書式
+	paw
+
+解説
+	画像解析ツール
+
+オプション
+
+
+使用例
+	PAW >
+	hi/file 0 data.ntp			: データの読込み
+	hi/list					: データのリスト化
+	nt/list					: データのリスト化
+	nt/pri 10				: データの中身表示
+	nt/pl 10.x				: xについて1次元プロット
+	nt/pl 10.x%y				: x*yについて2次元プロット
+	nt/pl 10.x%y%pha			: x*y*phaについて3次元プロット
+	nt/pl 10.x%y segment=1.and.400<PHA<3000 : x*yについて条件を付けてプロット
+	nt/proj 100 10.y%x			: 定義したヒストグラムにデータを入れる
+	hi/pl 100				: ヒストグラムを表示する
+	hi/pl 100 lego				: ヒストグラムをlego表示する
+	opt/nstat				: 右上の表示を消す
+	opt zfl1				: 図をダンプする準備 (.ps .eps .tex .gifが可能)
+	pic/pri aho.ps				: 図をpsファイルにダンプする
+	sh ls					: シェルのコマンドを使う
+
+	2d 100 '' 30 0. 600. 30 200. 1000.	: 2次元ヒストグラムの定義
+	> 2d [id] [title] [x_bin] [x_min] [x_max] [y_bin] [y_min] [y_max]

@@ -1,0 +1,51 @@
+まずはここを見る
+
+	http://www.swift.ac.uk/XRT.shtml
+
+Obs
+
+	観測の開始と終了にはBias Mapが入り、観測出来ない時間帯はLow Rate Photodiodeモード
+	になっている様だ
+	観測の切れ目(Photodiode)から観測に移行する際は必ずWTモードから始まり、カウントレート
+	の診断が行われる
+	天体が暗い場合は、めちゃくちゃ短いExposureのWTモードのイベントファイルが出来上がった
+	りする
+	WTモードの観測はパイプライン処理の時にxrtscreenのGRADEやGTI判定でイベントが一つも残
+	らない場合がある
+	そうすると、PCモードのイベントファイルだけが出来上がるので、いきなりPCか?と思うけど
+	実は違うので注意
+
+Image
+
+	リージョンの取り方はPCもWTもサークルが便利
+	1pixel = 2.36arcsec
+	暗い天体は20ピクセル程度、明るい天体は30ピクセル程度の半径が推奨
+	バックグラウンドは50〜60ピクセル程度を内縁とする円環が推奨
+	xrtcentroidで求めた天体位置の系統誤差は 3.5 arcsec 程度になる
+
+Lightcurve
+
+	corrfactorはbadpixelなら2以下だが、annulusなら大きくなる
+
+WT-Mode
+
+	WT-Modeで吸収が10^{22}cm^{-2}を越える場合はGrade0と0-2を比較する
+	比較した時に1keV以下でBumpが見えたらGrade0だけを使用する方が良い
+	WT-ModeのBackgroundで7.5keVにNickel輝線、2-3keVにdipの傾向がある
+	WTモードの場合、黒い部分はちゃんと除いて有効面積が計算される
+	ただしBACKSCALの値はリージョンに依存するので要注意
+
+Spectra
+
+	モデルにはSiとAuエッジの影響で2keV付近に10%程度の残渣がある
+	PC-Modeで0.5cps、WT-Modeで100cpsを越えたらパイルアップ調査が必要
+
+XRT Spec
+
+	1 channel               = 10 eV
+	1 pixels                = 2.35731204 arcsec
+	Energy Range            = 0.3 - 10.0 keV
+	Time Resolution PC-Mode = 2.5 sec
+	Time Resolution WT-Mode = 1.7 msec
+	PSF                     = 18 arcsec at 1.5 keV
+	PSF                     = 22 arcsec at 8.1 keV

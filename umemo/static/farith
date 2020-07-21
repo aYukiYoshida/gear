@@ -1,0 +1,18 @@
+書式
+	farith [infile1] [infile2] [outfilel] [options]
+
+解説
+	Fitsファイル同士の演算が行える
+	主にイメージ解析などで使用する事が多い
+
+オプション
+	ADD, +		 : infile1 + infile2
+	SUB, -		 : infile1 - infile2
+	MUL, *		 : infile1 * infile2
+	DIV, /		 : infile1 / infile2
+	MIN		 : Minimum Value
+	MAX		 : Maximum Value
+
+使用例
+	farith src.img bkg.img sub.img SUB
+	farith src1.img src2.img add.img +

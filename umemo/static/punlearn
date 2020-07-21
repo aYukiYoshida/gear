@@ -1,0 +1,32 @@
+################################################################################
+punlearn
+################################################################################
+PUNLEARN(L)            UNIX Programmer's Manual             PUNLEARN(L)
+     punlearn - copy a fresh copy of the parameter file from the system
+     	        FTOOLSの引数の初期化に便利
+
+
+FORMAT
+
+     punlean [ paramfile1...  ]
+
+
+EXPLAIN
+
+     punlearn gets a new copy of the requested parameter file from
+     the system parameter files.
+
+     The environment variable PFILES specifies the directory in
+     which to look for the parameter file, if the pathname of the
+     file is not part of the paramfile specification.
+
+
+OPTION
+
+
+
+EXAMPLE
+
+
+
+#EOF#

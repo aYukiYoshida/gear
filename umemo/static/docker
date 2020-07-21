@@ -1,0 +1,28 @@
+################################################################################
+docker
+################################################################################
+FORMAT
+
+
+
+EXPLAIN
+    公式ドキュメントに敵うものはない.
+    https://docs.docker.com/reference/
+    http://docs.docker.jp/index.html (in Japanese)
+
+
+OPTION
+
+
+
+COMMAND
+    docker ps                   起動しているコンテナの一覧表示
+    docker ps -a                停止しているコンテナも含めて一覧表示
+    docker rm CONTAINERID       CONTAINERIDのコンテナを削除
+    docker images               イメージの一覧表示
+    docker rmi IMAGEID          IMAGEIDのイメージを削除
+    docker pull IMAGE[:TAB]     IMAGE[:TAB]のダウンロード
+    docker inspect IMAGEID      IMAGEIDのイメージの詳細確認
+    
+
+#EOF#

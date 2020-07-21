@@ -1,0 +1,12 @@
+立ち上げで失敗する場合はgrubでnomodesetをオプションで入れる
+その後、ターミナルが起動したら /etc/X11/xorg.conf を削除すればよい
+
+ネットワークIPの振り直し
+sudo dhclient eth0
+
+一覧を表示
+dpkg -l
+
+apt-cache search aho
+apt-get install gparted
+

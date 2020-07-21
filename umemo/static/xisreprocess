@@ -1,0 +1,41 @@
+################################################################################
+xisreprocess
+################################################################################
+
+** Format **
+
+
+
+** Explain **
+   
+   FTOOLSのaepipelineを使用
+   ref)http://heasarc.gsfc.nasa.gov/docs/suzaku/analysis/abc/node9.html
+
+
+** Option **
+
+
+
+
+** Example **
+   ref)20150714.txt of 4U1626-67	
+   yyoshida@ungyo) pwd
+   /data09/yyoshida/Data/Suzaku
+
+   export CALDB=/data09/yyoshida/Data/caldb
+   dir=/data09/yyoshida/Data/Suzaku/4U1626_67
+   aepipeline clobber=yes << EOF
+   ${dir}
+   event_rp
+   ae400015010
+   1
+   2
+   XIS
+   EOF
+   mv event_rp ${dir}/xis/
+   for i in ${dir}/xis/event_rp/* ;do
+   gzip $i
+   done
+
+
+#EOF#

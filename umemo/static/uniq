@@ -1,0 +1,28 @@
+書式
+    uniq [OPTION] input.txt
+
+解説
+    前後の行同士を比較して重複する行を削除する
+    前後の行にない重複行を削除したい場合は先にsortすれば良い
+
+    ex)	OK	NG
+    	abcab   abcab
+	abcab	defde
+	abcab	abcab
+	defde	defde
+	defde	abcab
+
+
+オプション
+    -c		:重複した行数を表示
+    -d		:重複した行のみを1行のみ表示
+    -i		:大文字/小文字を区別しない
+    -D		:重複した行のみを重複した分だけ表示
+    -u		:重複した行を削除
+    -f <FIELD>	:FIELD+1以降で重複を判定
+		 フィールド番号は0はじまり
+    -w <NUM>	:NUM-1文字目までで重複を判定
+
+
+使用例
+    uniq -f 2 -w 3	:3フィールド以降で2文字目までで重複を判定

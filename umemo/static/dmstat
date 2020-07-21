@@ -1,0 +1,51 @@
+書式
+
+解説
+
+オプション
+
+使用例
+	dmstat "intable.fits[sky=circle(4096,4096,20),pha=:100][cols time]"
+	dmstat "ae902001010xi1_0_3x3n069b_cl.img[sky=circle(0,0,20)]" centroid=no
+	dmstat "ae902001010xi1_0_3x3n069b_cl.img[sky=circle(0,0,20)]" centroid=yes
+	単位はピクセル
+	dmstat "ae902001010xi0_0_3x3n066a_cl.img[sky=region(src02a.reg)]" centroid=no
+
+	S/Nを見積もる方法
+
+
+
+	x="769" ; y="769"
+	bkg_counts=`dmstat "bkg.img" centroid=no | grep "sum" | awk '{print $2}'`
+	bkg_area=`dmstat "exp.img" centroid=no | grep "sum" | awk '{print $2}'`
+	for i in `seq 1 300` ; do
+	    obs_area=`dmstat "exp.img[sky=circle(${x},${y},${i})]" centroid=no | grep "sum" | awk '{print $2}'`
+	    obs_counts=`dmstat "src.img[sky=circle(${x},${y},${i})]" centroid=no | grep "sum" | awk '{print $2}'`
+	    signal=`echo "${obs_counts} ${obs_area} ${bkg_counts} ${bkg_area}" | awk '{print $1-($3*($2/$4)}'`
+	    noise=`echo "${obs_counts} ${obs_area} ${bkg_counts} ${bkg_area}" | awk '{print sqrt($1+($3*($2/$4)^2))}'`
+	    sn=`echo "${signal} ${noise}" | awk '{print $1/$2}'`
+	done
+
+	その2
+
+	sx="941" ; sy="926" ; bx="302" ; by="302"
+	for i in `seq 1 300` ; do
+	    obs_counts=`dmstat "src.img[sky=circle(${sx},${sy},${i})]" centroid=no | grep "sum" | awk '{print $2}'`
+	    obs_area=`dmstat "exp.img[sky=circle(${sx},${sy},${i})]" centroid=no | grep "sum" | awk '{print $2}'`
+	    bkg_counts=`dmstat "src.img[sky=circle(${bx},${by},${i})]" centroid=no | grep "sum" | awk '{print $2}'`
+	    bkg_area=`dmstat "exp.img[sky=circle(${sx},${sy},${i})]" centroid=no | grep "sum" | awk '{print $2}'`
+	    signal=`echo "${obs_counts} ${obs_area} ${bkg_counts} ${bkg_area}" | awk '{print $1-($3*($2/$4)}'`
+	    noise=`echo "${obs_counts} ${obs_area} ${bkg_counts} ${bkg_area}" | awk '{print sqrt($1+($3*($2/$4)^2))}'`
+	    sn=`echo "${signal} ${noise}" | awk '{print $1/$2}'`
+	done
+
+sx="941" ; sy="926" ; bx="803" ; by="609" ; rad_min="1" ; rad_max="300"
+for i in `seq ${rad_min} ${rad_max}` ; do
+    obs_counts=`dmstat "src.img[sky=circle(${sx},${sy},${i})]" centroid=no | grep "sum" | awk '{print $2}'`
+    obs_area=`dmstat "exp.img[sky=circle(${sx},${sy},${i})]" centroid=no | grep "sum" | awk '{print $2}'`
+    bkg_counts=`dmstat "src.img[sky=circle(${bx},${by},${i})]" centroid=no | grep "sum" | awk '{print $2}'`
+    bkg_area=`dmstat "exp.img[sky=circle(${bx},${by},${i})]" centroid=no | grep "sum" | awk '{print $2}'`
+    signal=`echo "${obs_counts} ${obs_area} ${bkg_counts} ${bkg_area}" | awk '{print $1-($3*($2/$4)}'`
+    noise=`echo "${obs_counts} ${obs_area} ${bkg_counts} ${bkg_area}" | awk '{print sqrt($1+($3*($2/$4)^2))}'`
+    sn=`echo "${signal} ${noise}" | awk '{print $1/$2}'`
+done

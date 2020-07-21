@@ -1,0 +1,45 @@
+********************************************************************************
+calsource(xis)
+********************************************************************************
+
+==============================
+calソースのarfの作成
+==============================
+uniformで作成するとよい。
+領域はimageからcalソースの部分のregionを作成する。
+"CALMASK=NONE"とする。
+
+example)
+
+src_mode=UNIFORM 
+rmin=0.0
+rmax=13.0
+xis=(0 3)
+numreg=1
+reg_mode=SKYREG
+att=ae401011010.att
+
+for i in ${xis} ;do
+cat << EOF >! x${i}_arfgen.txt
+XIS${i} 
+${src_mode}
+${rmin} 
+${rmax} 
+${numreg}
+${reg_mode}
+../region/${reg}/x${i}_calsrc.reg
+${reg}/x${i}_calsrc.arf
+MIXED 
+400000 
+0.005 
+../spec/xis${i}.pi
+NONE
+../spec/xis${i}.pi 
+../../${att} 
+xis${i}.rmf 
+medium
+EOF
+done
+
+
+#EOF#

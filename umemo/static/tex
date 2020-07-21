@@ -1,0 +1,767 @@
+書式
+	[p]latex aho.tex
+
+解説
+	Texで作ると書類が格段にきれいだ
+
+注意
+	半角カタカナを使用すると正しく表示されないかエラーになるので使用禁止
+	コマンドの周辺は空白にした方が良いことが多い (特殊文字や数式を除く)
+	特殊文字も含めてコマンドはなるべく行頭に記入した方が良いことが多い
+	欧文、算用数字は1バイト文字を使用、前後にも1バイトの空白を入れる
+	括弧だけは2バイト文字を使用する方が出力がきれいになるらしい
+        長文になるときは、なるべく図などを include で入れると良い
+	maketitle後に\thispagestyle{empty}を入れないと1ページだけ番号が出る
+
+
+Texのコンパイル
+
+	platex aho.tex -> aho.dvi -> xdviでdvi fileがみれる。
+	dvips aho.dvi -> aho.ps生成 -> gvでps fileがみれる。
+	dvipdf aho.dvi -> aho.pdf生成 -> xvでpdf fileがみれる。
+
+Texコンパイル時の文字コードのエラーの処理による改善@uni
+
+	#nkfコマンドによる改善
+	 scp  /Users/yyoshida/research/coherent/presentation/2011/abstract3.tex \
+	 uni:/data08/yyoshida/Works/Astronomical_Society/2011_autumn
+	 cp 2011b.cls 2011b.c.s.      
+	 yes
+	 nkf --unix 2011b.c.s. > 2011b.cls
+	 nkf -e abstract3.tex > abstract3_euc.tex  #日本語漢字フィルタはめちゃくちゃ使える!!
+	 platex abstract3_euc.tex                
+	 dvips abstract3_euc.dvi -o abstract3_euc.ps
+	 ps2pdf abstract3_euc.ps
+	 xv abstract3_euc.pdf  
+
+	#もうひとつの解決方法
+	 emacs上で、
+	 Ctrl-x
+	 return
+	 f
+	 文字コードを聞かれるので"euc-japan"と答える。
+
+
+コマンド
+
+	%	: コメント行
+	__	: 連続する半角空白は1個の半角空白扱い (空白コマンドもあり)
+	//	: 改行 (インデントなし)
+	空白行	: 改行 (インデントあり)
+
+	文書クラス (Document Class)
+
+	\documentstyle[Option]{Classfile}	: コンパイルにjlatexを使用する場合
+	\documentclass[Option]{Classfile}	: コンパイルにplatexを使用する場合
+	\documentclass[(10-12)pt]{...}		: 文字を10pt-12ptに指定可能
+	\documentclass[(one,two)column]{...}	: 段組みの数を指定
+	\documentclass[(one,two)side]{...}	: 両面印刷を考慮するか
+	\documentclass[(final,draft)]{...}	: 文書がはみ出る場合にマークするか
+	\documentclass[paper]{...}		: 印刷用紙のサイズを指定する
+	\documentclass[landscape]{...}		: 用紙の回転
+	\documentclass[(no)titlepage]{...}	: 表紙を独立したページにするか
+	\documentclass[fleqn]{...}		: 数式は左寄せで表示
+	\documentclass[11pt,fleqn]{...}		: 複数のオプションを指定する方法
+
+	クラスファイル (Class File)
+
+	article,jarticle,jsarticle		: 論文用 (jは日本語版、sは進化版)
+	report,jreport				: レポート用 (jは日本語版)
+	book,jbook,jsbook			: 卒論用 (jは日本語版、sは進化版)
+
+	プリアンブル
+
+	\setlength{\textwidth}{0.0in}		: テキストの幅(1ページあたり)
+	\setlength{\textheight}{0.0in}		: テキストの長さ(1ページあたり)
+	\setlength{\oddsidemargin}{0.0in}	: 奇数ページ左余白
+	\setlength{\evensidemargin}{0.0in}	: 偶数ページ左余白
+	\setlength{\topmargin}{0.0in}		: 上の余白
+	\setlength{\headheight}{0.0in}		:
+	\setlength{\headsep}{0.0in}		:
+	\setlength{\columnsep}{0.0in}		: 中央の余白幅
+	\setlength{\hoffset}{0.0in}		:
+	\setlength{\voffset}{0.0in}		:
+	\renewcommand{\baselinestretch}{}	: 行間指定({}の中に倍率が入っても良い)
+
+	長さの指定 (Length)
+
+	mm : ミリメートル			cm : センチメートル (10mm)
+	in : インチ (25.4mm)			pt : ポイント (1/72.27in)
+	em : 文字Mの幅				ex : 文字xの高さ
+	zh : 和文フォントの高さ			zw : 和文フォントの幅
+
+	ページスタイル (Page Style)
+
+	\pagestyle{plain}			: フッタ中央にページ番号を付ける
+	\pagestyle{empty}			: ページ番号無し
+
+	\author					: 著者名設定
+	\boldmath				: 数式太文字化
+	\clearpage				: 改ページ
+	\date{\today}				: 日付設定
+	\documentstyle{jsarticle}		: 文書スタイル
+	\dotfill				: 長い横点線
+	\fbox					: 四角形で囲む
+	\footnotemark				: 脚注記号(本文) 
+	\footnotetext				: 脚注出力
+	\footnote				: 脚注,脚注記号
+	\framebox{文字列}			: 文字列を四角形で囲む
+	\fussy					: 単語間空白抑制 
+	\hrulefill				: 長い横直線
+	\hspace{長さ}				: 横方向空白(行先頭無効)
+	\hspace*{長さ}				: 横方向空白(行先頭有効)
+	\hyphenation				: ハイフネーション設定
+	\ldots					: ...(横に点3個)
+	\maketitle				: タイトル出力
+	\mbox{文字列}				: LRモード出力、{}内自動改行無効
+	\minipage				: ページ内に小型ページ作成
+	\onecolumn				: 一段組に変更
+	\pagestyle{ページスタイル名}		: ページスタイル変更
+	\raisebox{長さ}{文字列}			: 字の上げ下げ
+	\rule{長さ(横)}{長さ(縦)}		: 塗り潰した四角
+	\samepage				: 改ページ抑制
+	\settowidth{変数名}{文字列}		: 文字列幅設定
+	\sloppy					: 常に行揃え
+	\subitem				: 字下げ
+	\subsubitem				: 字下げ
+	\thispagestyle{style}			: 一時的にページスタイル変更
+	\title{文字列}				: タイトル表示 
+	\today					: 日付表示 
+	\twocolumn				: 二段組に変更
+	\underline{文字列}			: 下線
+	\vspace{長さ}				: 縦方向空白(ページ先頭無効)
+	\vspace*{長さ}				: 縦方向空白(ページ先頭有効)
+	\newpage                                : 新たなページ
+	\clearpage                              : 新たなページ
+	\phantom{文字列}			: 文字列分の空白をあける
+	\indent					: インデントする
+	\noindent				: インデントしない
+
+	\smallskip                              : 小さい行間 (2-4pt)
+	\medskip                                : 中くらいの行間 (4-8pt)
+	\bigskip                                : 大きな行間 (8-16pt)
+
+	\include{pagestyle}                     : pagestyle.texを読み込む
+
+	スペース
+
+	\quad                                   : 2バイト文字分の空白
+	\qquad                                  : \quad の 2 倍の空白
+	\_                                      : 1バイト文字分の空白
+	\,                                      : \_ の  1/3 倍の空白
+	\>                                      : \_ の  4/9 倍の空白
+	\;                                      : \_ の  5/9 倍の空白
+	\!                                      : \_ の -1/3 倍の空白
+
+	2段組(タイトル、Abstractは1段出力)
+
+	\documentstyle[twocolumn]{jsarticle}
+	\begin{document}
+	    \twocolumn[\abstract{}]
+	\end{document}
+
+	特殊文字 
+
+	\#	#
+	\$	$
+	\%	%
+	\&	&
+	\_	\
+	\{	{
+	\}	}
+	\tt\symbol{94}	^
+	\tt\symbol{126}	~
+
+	2.4 文字の大きさや書体設定
+
+	\begin{font}\end{font}			: 文字の設定
+	\font{aho}				: 文字の設定
+	{\font aho}				: 文字の設定
+
+	\tiny		 5pt	     \scriptsize      7pt
+	\footnotesize	 8pt	     \small	      9pt
+	\normalsize	10pt	     \large	     12pt
+	\Large		14pt	     \LARGE	     17pt
+	\huge		20pt	     \Huge	     25pt
+
+	\textrm		Roman	     \textmd	     Default (太さ)
+	\textem		Empatic	     \textbf	     Bold
+	\textsf		San Serif    \textup	     Default (書体)
+	\texttt		TypeWriter   \textit	     Italic
+	\textgt		ゴシック     \textsl	     Slant
+	\textmc		明朝	     \textsc	     SMALL CAPITAL
+
+	章節関連 
+
+	\part{タイトル名}			: 部
+	\chapter{タイトル名}			: 章(jarticleスタイルでは使用不可)
+	\chapter*{タイトル名}			: 章(番号なし、jarticleスタイルでは使用不可)
+	\section{タイトル名}			: 節
+	\section*{タイトル名}			: 節(番号なし)
+	\subsection{タイトル名}			: 小節
+	\subsection*{タイトル名}		: 小節(番号なし)
+	\subsubsection{タイトル名}		: 小々節
+	\subsubsection*{タイトル名}		: 小々節(番号なし)
+	\paragraph{タイトル名}			: 段落(番号なし)
+	\paragraph*{タイトル名}			: 段落(番号なし)
+	\subparagraph{タイトル名}		: 小段落(番号なし)
+	\subparagraph*{タイトル名}		: 小段落(番号なし)
+
+	setcounter{見出し名}{番号}		: 使うと章や節の番号が任意に変更できる。
+
+	環境
+
+	\begin{abstract}\end{abstract}		: 要旨出力
+	\begin{array}\end{array}		: 文字,数式を並べて出力 (配列)
+	\begin{center}\end{center}		: センタリング
+	\begin{description}\end{description}	: 箇条書き(印) 
+	\begin{enumerate}\end{enumerate}	: 箇条書き(番号) 
+	\begin{eqnarray}\end{eqnarray}		: 数式揃え(番号あり) 
+	\begin{eqnarray*}\end{eqnarray*}	: 数式揃え(番号なし) 
+	\begin{figure}\end{figure}		: 図出力 
+	\begin{figure*}\end{figure*}		: 図出力 
+	\begin{flushleft}\end{flushleft}	: 左寄せ 
+	\begin{flushright}\end{flushright}	: 右寄せ 
+	\begin{itemize}\end{itemize}		: 箇条書き 
+	\begin{list}\end{list}			: レイアウトのリスト 
+	\begin{minipage}\end{minipage}		: 小さいページ作成 
+	\begin{picture}\end{picture}		: 図形作成 
+	\begin{quotation}\end{quotation}	: 引用文 
+	\begin{quote}\end{quote}		: 引用文 
+	\begin{tabbing}\end{tabbing}		: 大きな表の作成 
+	\begin{table}\end{table}		: 表出力 
+	\begin{table*}\end{table*}		: 表出力 
+	\begin{tabular}\end{tabular}		: 表作成 
+	\begin{thebibliography}
+	\end{thebibliography}			: 参考文献リスト作成 
+	\begin{theindex}\end{theindex}		: 索引作成 
+	\begin{titlepage}\end{titlepage}	: タイトルデザイン 
+	\begin{verbatim}\end{verbatim}		: ソース出力 
+	\begin{verbatim*}\end{verbatim*}	: ソース出力 
+	\begin{verse}\end{verse}		: 引用文 
+	\begin{comment}\end{comment}		: 間はコメント文
+
+	箇条書き (通常)
+
+	\begin{itemize}
+		\item 項目A
+		\item 項目B
+	\end{itemize}
+
+	箇条書き (印が番号)
+
+	\begin{enumerate}
+		\item 項目1
+		\item 項目2
+	\end{enumerate}
+
+        箇条書き (印を設定)
+
+        \begin{description}
+                \item[a] 項目1
+                \item[b] 項目2
+        \end{description}
+
+        箇条書き (印を設定)
+
+        \begin{list}{見出し}{初期設定}
+                \item 項目1
+                \item 項目2
+        \end{list}
+
+	------------------------------------------------------------------------------
+	? 数式 (Equation)
+	------------------------------------------------------------------------------
+
+	$(Eq.)$					: 数式モード 文中に数式を載せる場合
+	/[(Eq.)/]				: 数式モード 数式のみの行 (番号無し)
+	\begin{equation}(Eq.)\end{equation}	: 数式モード 数式のみの行 (番号あり)
+	\begin{eqnarray}(Eq.)\end{eqnarray}	: 数式モード 数式揃え (番号あり)
+	\begin{eqnarray*}(Eq.)\end{eqnarray*}	: 数式モード 数式揃え (番号無し)
+
+	長い数式を書く場合は基本的に eqnarray モードを使用するのが良さそうだ
+	数式モードにおいて改行したい場合は文中と同様に \\ で可能
+	Eqnarrayモードで途中の数式に番号を付けたくない場合は \nonumber で指定可能
+	イコールなどを揃えて表示したい場合はその部分を & で囲んで A&=&B の様にする
+
+	?.1 パッケージ
+
+	\usepackage{amsmath,amssymb}		: AMSの数学記号
+
+	数式を使う場合は amsmath パッケージをプリアンブルに追加しておくと良い
+	これを使用しないと一風変わった記号などはほとんど使えないので注意しておく
+
+	?.2 記号
+
+	× \times	÷ \div		± \pm		○ \circ	● \bullet
+	〜 \sim		≡ \equiv	>> \gg		<< \ll		√ \sqrt{}
+	∫ \int		Σ \sum		∞ \infty	∩ \cap		∪ \cup
+	∀ \forall	∃ \exists	§ \S           ¶ \P		・ \centerdot
+
+	α \alpha	β \beta	γ \gamma	δ \delta	ε \epsilon
+        ζ \zeta	η \eta		θ \theta	ι \iota	κ \kappa
+	λ \lambda	μ \mu		ν \nu		ξ \xi		ο o
+	π \pi		ρ \rho		σ \sigma	τ \tau		υ \upsilon
+	φ \phi		χ \chi		ψ \psi		ω \omega
+
+	Α \rm{A}	Β \rm{B}	Γ \Gamma	Δ \Delta	Ε \rm{E}
+	Ζ \rm{E}	Ｈ \rm{H}	Θ \Theta	Ι \rm{I}	Κ \rm{K}
+	Λ \Lambda	Μ \rm{M}	Ν \rm{N}	Ξ \Xi		Ο \rm{O}
+	Π \Pi		Ρ \rm{P}	Σ \Sigma	Τ \rm{T}	Υ \Upsilon
+	Φ \Phi		Χ \rm{X}	Ψ \Psi		Ω \Omega
+
+	大文字イタリック体 (\var[ギリシャ文字])
+	\varGamma \varDelta \varTheta \varLambda \varXi	\varPi \varSigma
+	\varUpsilon \varPhi \varPsi \varOmega
+
+	変形ギリシャ文字 (\var[ギリシャ文字])
+	\varepsilon \vartheta \varpi \varrho \varsigma \varphi
+
+	sin \sin	cos \cos	tan \tan
+	lim \lim	log \log	ln  \ln
+
+	≦ \lesssim
+	≧ \gtrsim
+
+	ローマ数字の定義
+
+	\def\rnum#1{\expandafter{\romannumeral #1}}
+	\def\Rnum#1{\uppercase\expandafter{\romannumeral #1}}
+
+	?.3 数式コマンド早見表
+
+	\cal					: カリグラフ文字
+	\cdots					: … (横に点3つ)
+	\ddots					: … (斜に点3つ)
+	\ldots					: … (横に点3つ)
+	\displaystyle				: 文字サイズ変更
+	\frac{分子}{分母}			: 分数
+	\imath					: ドット無しi
+	\jmath					: ドット無しj
+	\jot					: 数式間縦空白
+	\left					: 数式用左括弧
+	\lefteqn				: 数式左寄せ
+	\mathop					: 数式の記号化 
+	\mathstrut				: アクセント記号の高さを一致
+	\mit					: 数式イタリック 
+	\nonumber				: 式番号なし
+	\not					: 否定記号
+	\overbrace				: 上括弧
+	\overline{文字列}			: 上線
+	\pmod					: 剰余
+	\prime					: 微分記号
+	\right					: 数式用右括弧
+	\scriptscriptstyle			: 文字サイズ変更 
+	\scriptstyle				: 文字サイズ変更
+	\stackrel{上式}{下式}			: 数式の上に数式
+	\textstyle				: 文字サイズ変更
+	\unboldmath				: 太文字数式
+	\underbrace				: 下括弧
+	\underline{文字列}			: 下線
+	\vdots					: 省略記号(縦に点３つ) 
+	\widehat				: アクセント記号(大)
+	\widetilde				: アクセント記号(大)
+
+	矢印(一部) 
+
+	\to(または\leftarrow)			→
+	\gets(または\rightarrow)		←
+	\uparrow				↑
+	\downarrow				↓
+	\Rightarrow				2重線矢印(右向き)
+	\Leftarrow				2重線矢印(左向き)
+	\Leftrightarrow				2重線矢印(左右方向)
+
+	括弧 
+
+	(	(
+	)	)
+	\{	{
+	\}	}
+	[	[
+	]	]
+	\langle	<
+	\rangle	>
+	|	|
+	\|	||
+
+	添字
+
+	^{} 上添字	_{} 下添字
+
+	行列
+
+	\begin{array}\end{array}	: 使用して行列を表現できる。
+
+	例1 普通の行列(式番号付き)
+	\begin{eqnarray}
+	\left(
+	    \begin{array}{ccc}
+	            1&0&0\\
+		    0&1&0\\
+		    0&0&1
+	    \end{array}
+	    \right)
+	\end{eqnarray}
+
+	例2 中括弧の右に式を3つ並べる。
+         (注) この場合、右側に括弧がないので\rightコマンドの右に.をつけること。
+	 \begin{eqnarray}
+	 \left
+	 \{
+	     \begin{array}{cc}
+	             a=  x^2 + 2x + 1 & (i)\\
+		     b=  2x + 2 & (ii)\\
+		     c=  2  & (iii)
+	       \end{array}
+	 \right.
+	\end{eqnarray}
+
+	------------------------------------------------------------------------------
+	表
+
+	\begin{table}[hbtp]
+	 \begin{center}
+	  \begin{threeparttable}
+	   \caption{表の説明}\label{tb:table}
+	   \begin{tabular}{lrr}
+	    \hline\hline
+	    aho1 & aho2 & aho3 \\
+	    aho1 & aho2 & aho3 \\
+	    \hline
+	    aho1 & aho2 & aho3 \\
+	    \hline\hline
+	   \end{tabular}
+	   \begin{tablenotes}
+	    \item[a] This is aho.
+	   \end{tablenotes}
+	  \end{threeparttable}
+	 \end{center}
+	\end{table}
+
+	表作成に使用する基本的なコマンド
+
+	\begin{table}\end{table}	表出力、正確には表の領域の確保
+	\begin{table*}\end{table*}	表出力、2段組環境でも段組と無関係に横長の表を出力可能
+	\begin{tabular}{}\end{tabular}{} : 表作成、左から2番目の{}の中は以下の通り 
+
+	l	要素左揃え		 c		要素中央揃え
+	r	要素右揃え		 p{(幅)}	要素幅調整
+	|	縦罫線			 ||		2重の縦罫線
+
+	\caption{ }	表(図)題記述、{}の中に題名を記入して使用
+	\hline	横罫線
+	\hline \hline	2重横罫線
+	\label{ } 	相互参照用の印、{}の中にはラベル名を入力 
+	\ref{}で参照可能
+
+	表作成用コマンド(2.8.1で示したのは除く) 
+
+	\cline{}	部分的横罫線、{}内は行数
+	\makebox{}	文字列幅、文字位置の変更
+	\multicolumn{ }	複数の欄を1つの欄にする 
+	\multicolumn{1}{c}{質量} {}内は一括化したい欄の数
+
+	\usepackage{multirow}
+	\multirow{行数}{幅}{セルの中身} 引数の2つ目は*にしておくと，自動で幅を決定してくれる
+
+	\vline	縦罫線
+
+	\setlength{\tabcolsep}{1mm} 横幅を調整できる
+
+	Threeparttable Packageを使用してテーブルの下に注釈を付ける
+
+	\begin{tablenotes}
+	　\item[a] This is aho.
+	\end{tablenotes}
+
+	Minipageを使用してテーブルの下に注釈を付ける
+
+	\begin{minipage}{0.90\hsize}
+	 $^{*}$ aho
+	\end{minipage}
+
+	図 
+
+	画像ファイル(epsfile, 拡張子は.ps)を LaTeX で使用するには，まず
+	\documentstyle[]{}
+	の[]の中に，epsfと記入する．
+	次に，画像ファイルを使いたいところに
+	\epsfile{file=epsfilename.ps}
+	または,
+	\epsfile{file=epsfilename.ps, scale=1.2}
+	と記入する．
+	なお，scale=の右の数字は拡大率である．
+	scale=の代わりに、横倍率設定用の hscale=、縦倍率設定用のvscale=もある
+	この数字を小さくすると，表示される面積が小さくなる．
+	その後コンパイルして，ビューアを見る時に, {PS Fig} をクリックすれば良い．
+
+        [使用例]
+        \begin{figure}[]\end{figure}    : 図の出力 ([]内には以下の文字)
+
+        h                               : そのままの場所に図を表示 (here)
+        t                               : ページの一番上に図を表示 (top)
+        b                               : ページの一番下に図を表示 (bottom)
+        p                               : 別のページに図を表示 (other page)
+
+        \epsfile{file=(ファイル名).ps,scale=(倍率)}     psファイルの図を貼る 
+        拡張子を.epsにすればepsファイルも貼れる
+
+	画像ファイルを寄せて表示する方法
+
+	\begin{wrapfigure}[20]{r}{0.5\textwidth}
+	 \begin{center}
+	  \includegraphics[width=0.5\textwidth]{nova.eps}
+	 \end{center}
+	 \caption{Figure.1}
+	 \label{fg:f1}
+	\end{wrapfigure}
+
+        画像ファイルを2つ以上横に並べる方法 
+        (1)  1枚の図ごとにタイトルを1つ付ける方法
+
+	\newlength{\minitwocolumn}
+	\setlength{\minitwocolumn}{0.4\textwidth}
+	\addtolength{\minitwocolumn}{0.3\columnsep}
+	\begin{figure}[h]
+	 \begin{tabular}{c c}
+	  \begin{minipage}{\minitwocolumn}
+	   \begin{center}
+	    \epsfile{file=picture1.ps}
+	    \caption{画像１}
+	    \label{fig:画像１}
+	   \end{center}
+	  \end{minipage}
+	  &
+	  \begin{minipage}{\minitwocolumn}
+	   \begin{center}
+	    \epsfile{file=picture2.ps}
+	    \caption{画像２}
+	    \label{fig:画像２}
+	   \end{center}
+	  \end{minipage}
+	 \end{tabular}
+	\end{figure}
+
+	(2)  複数の図に対してタイトルを1つ付ける方法
+
+	\begin{figure}[h]
+	 \leavevmode
+	 \begin{center}
+	  \begin{tabular}{ c c }
+	   \epsfile{file=picture3-1.ps}
+	   &
+	   \epsfile{file=picture3-2.ps}
+	  \end{tabular}
+	  \caption{画像３}
+	  \label{fig:画像３}
+	 \end{center}
+	\end{figure}
+
+	(3)  3つの図を並べる方法(一例)
+
+	\begin{figure}[h]
+	 \leavevmode
+	 \begin{center}
+	  \begin{tabular}{ c c c }
+	   \epsfile{file=picture4-1.ps,scale=0.35}
+	   &
+	   \epsfile{file=picture4-2.ps,scale=0.35}
+	   &
+	   \epsfile{file=picture4-3.ps,scale=0.35}\\
+	   (a)pictureA.
+	   &
+	   (b)pictureB.
+	   &
+	   (c)pictureC.
+	  \end{tabular}
+	  \caption{画像４}
+	  \label{fig:画像４}
+	 \end{center}
+	\end{figure}
+
+	2.9.3 図形要素 
+
+	\begin{figure}[h]
+	 \begin{picture}(100, 50)
+	  (図形要素)
+	 \end{picture}
+	 \caption{図1}
+	 \label{fig:図1}
+	\end{figure}
+
+	これを使用する利点は
+	(1)dviファイルの出力が速くなること
+	(2)(意外にも?)正確な図が描きやすいこと
+	(3)トラブルが発生しにくいこと
+	等が挙げられるでしょう。
+	欠点は、
+	(1)複雑な図が描けない
+	(2)(意外にも?)図を描くのに時間がかかる
+	(3)コンパイルしてxdviで見ないと図の出力結果が分からない(視覚的に分かりづらい)
+	等が挙げられます。
+
+	図形要素早見表
+
+	\circle{直径} 	円 
+	\circle*{直径} 	円(塗りつぶし) 
+	\dashbox{点線一つ分の長さ}(幅、高さ){長さ}	点線四角形 
+	\frame{図形要素}	四角形で囲む
+	\line(w、h){長さ}	直線(傾きh/w)
+	\makebox (幅、高さ){文字列}	文字列幅変更,文字位置変更
+	\multiput(基準点x、基準点y)(移動量x、移動量y){要素数}{図形要素}	同一図形要素を複数出力
+	\oval(幅、高さ)	角の丸い四角形
+	\put (基準点x、基準点y){図形要素}	図形要素出力
+	\thicklines	太線
+	\thinlines	普通の線(細線) 
+	\vector(w、h){長さ}	矢印付き直線(傾きh/w)
+
+	2.10 参照 
+	章節、図表を出力して参照するときは2回コンパイルする必要がある。
+
+	\label{}	相互参照用の印、{}内で印の区別をする
+	\ref{}	相互参照する、参照先は{}内に入力
+	\pageref 	ページ参照
+
+	章節参照
+
+	\section{使用例}\label{sec:使用例の節}
+	\section{使用例の考察}
+	\ref{sec:使用例の節}節の結果、以下に示す。
+
+	数式参照
+
+	以上の結果を(\ref{eqn:参照式})に示す。
+	\begin{equation}
+	y = ae^x + c
+	\label{eqn:参照式}
+	\end{equation}
+
+	表参照
+
+	測定環境をTable\ref{table:測定環境}に示す。\\
+	\begin{table}[h]
+	\begin{center}
+	\caption{測定環境}
+	\label{table:測定環境}
+	\begin{tabular}{|c|c|}\hline
+	項目& 値 \\ \hline \hline
+	カウント数 & 384$ \times $288 pixels \\ \hline
+	長さ & 250mm \\ \hline
+	\end{tabular}
+	\end{center}
+	\end{table}
+
+	図参照
+
+	システム構成図をFig.\ref{fig:構成}に示す。\\
+	\begin{figure}[h]
+	\begin{center}
+	\epsfile{file=picture2-10.ps,scale=0.8}
+	\caption{画像2-10}
+	\label{fig:構成}
+	\end{center}
+	\end{figure}
+	 
+	2.11 参考文献
+
+	\begin{thebibliography}{9999} 
+        \end{thebibliography}           : 参考文献リスト作成、2番目の{}には9999を入れる
+        \bibitem{ラベル}                : 文献リスト番号、参照用の印でもある
+        \bibliographystyle              : 文献リスト形式
+        \bibliography                   : 文献リスト作成
+        \cite{ラベル}                   : 文献参照、ラベルは\bibitemと対応
+
+        \citet{jon90}                   : Jones et al. (1990)
+        \citet[chap.~2]{jon90}          : Jones et al. (1990, chap.~2)
+        \citep{jon90}                   : (Jones et al., 1990)
+        \citep[chap.~2]{jon90}          : (Jones et al., 1990, chap.~2)
+        \citep[see][]{jon90}            : (see Jones et al., 1990)
+        \citep[see][chap.~2]{jon90}     : (see Jones et al., 1990, chap.~2)
+        \citet*{jon90}                  : Jones, Baker, and Williams (1990)
+        \citep*{jon90}                  : (Jones, Baker, and Williams, 1990)
+        \citet{jon90,jam91}             : Jones et al. (1990); James et al. (1991)
+        \citep{jon90,jam91}             : (Jones et al., 1990; James et al. 1991)
+        \citep{jon90,jon91}             : (Jones et al., 1990, 1991)
+        \citep{jon90a,jon90b}           : (Jones et al., 1990a,b)
+        \citealt{jon90}                 : Jones et al. 1990
+        \citealt*{jon90}                : Jones et al., 1990
+        \citealp*{jon90}                : Jones, Baker, and Williams, 1990
+        \citealp{jon90,jam91}           : Jones et al., 1990; James et al., 1991
+        \citealp[pg.~32]{jon90}         : Jones et al., 1990, pg.~32
+
+	2.12 目次 
+
+	目次を出力するときは3回コンパイルする必要がある。
+
+	\tableofcontents	目次作成
+	\listoffigures	図の目次作成
+	\listofftables	表の目次作成
+
+	2.13 その他のコマンド 
+
+	\addcounter	カウンタ値変更
+	\addtolength{変数名}{長さ}	長さを加える 
+	\addtocounter{figure}{-1}
+	\Alph	カウンタ値出力
+	\alph 	カウンタ値出力
+	\arabic	カウンタ値出力
+	\input{ファイル名}	ファイル取り込み
+	\newcommand{コマンド名} {マクロ名}	マクロ登録
+	\newcounter{カウンタ名}	新カウンタ定義
+	\newlength{変数名} 	長さ変数用意
+	\renewcommand	コマンド再定義
+	\Roman 	カウンタ値出力
+	\roman	カウンタ値出力
+	\setcounter 	カウンタ値変更
+	\setlength{変数名}{長さ}	長さ変数値変更
+	\unitlength	長さ基準設定
+	\value 	値置き換え
+
+	4.2 印刷用コマンド 
+
+	[分割印刷(１枚に複数ページ印刷)]
+	% dvi2ps filename.dvi | nup -num | lpr -PPrintername
+
+	numは，以下のように対応している.
+	num	分割数
+	2	2分割(1枚に2ページ印刷)
+	4	4分割(1枚に4ページ印刷)
+	8	8分割(1枚に8ページ印刷)
+
+	[容量の大きい.dviファイルの印刷]
+	%dvi2ps -s filename.dvi | lpr -PPrintername
+
+	[ページ指定印刷]
+	% dvi2ps -f Startpage -t Endpage filename.dvi | lpr -PPrintername
+
+	[ページ指定印刷&分割印刷]
+	% dvi2ps -f Startpage -t Endpage filename.dvi | nup -num | lpr -PPrintername
+
+	ぶち抜きで3段組の図を載せる
+
+	%\usepackage{nidanfloat}	% 図をページ下部に入れる場合 (普段は使用しない)
+	\begin{figure*}[h]
+	 \begin{center}
+	  \begin{minipage}[t]{0.333\hsize}
+	   \includegraphics[width=\hsize,clip]{1.eps}
+	   \vspace*{-6mm}
+	   \caption{Figure.1}
+	   \label{fg:f1}
+	  \end{minipage}
+	  \begin{minipage}[t]{0.333\hsize}
+	   \includegraphics[width=\hsize,clip]{2.eps}
+	   \vspace*{-6mm}
+	   \caption{Figure.2}
+	   \label{fg:f2}
+	  \end{minipage}
+	  \begin{minipage}[t]{0.333\hsize}
+	   \includegraphics[width=\hsize,clip]{3.eps}
+	   \vspace*{-6mm}
+	   \caption{Figure.3}
+	   \label{fg:f3}
+	  \end{minipage}
+	 \end{center}
+	\end{figure*}
+
+#EOF#

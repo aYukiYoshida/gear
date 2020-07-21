@@ -1,0 +1,107 @@
+Recurrent period 10^5 yr Bath & Shaviv 1978
+存在密度 10^-4pc-3 Bath & Shaviv 1978
+
+
+MMRD
+
+詳しくは現代の天文学シリーズIの77p参照
+
+実施等級 m
+絶対等級 M 10パーセクの距離に置いたと仮定した時の実施等級
+
+m = -2.5 log f + C
+
+r パーセクのとき
+
+m - M = (5 log(r)) - 5
+
+たとえばV2491 Cyg
+
+Assuming the maximum \textit{V}-band magnitude of 7.54~mag on 2008 April 11.36
+\citep{nakano2008}, 
+the nova declined at a rate of $t_{2}$ $\sim$ 4.6~d
+\citep{tomov2008b}, 
+Using the reddening of E(B-V) = 0.43 reported by Rudy et al. (IAUC 8938), 
+a distance of 10.5 kpc is estimated using the MMRD
+relation of Della Valle and Livio (1995, Ap.J. 452, 704).
+
+Mv = (-7.92) - (0.81*atan((1.32-log(4.6))/0.23))
+Mv = -8.91967658435830776605
+
+10^(((7.54-(-8.91967658435830776605)-(3.1*0.43))+5)/5)
+
+Magnitude = 7.54
+t2 = 4.6
+Maximum = (-7.92)-(0.81*atan((1.32-log(${t2}))/0.23))
+ebv = 0.43
+av = 3.1 * ${ebv}
+r = 10^(((${magnitude}-${maximum})+5.0)/5.0)
+
+の関係がある。
+
+Absolute magnitude and distance determination
+
+A determination of the distance is essential for determining absolute properties of a nova. A great deal of effort has been expended on determining MV, and thus the distance, of novae from samples of novae with independently known distances. A compilation of maximum magnitude versus rate of decline (MMRD) relationships is published in Chochol et al. (1993) for V1974 Cyg 1992. The relations are:
+
+1. M0,V = -10.70 + 2.41 log(t2) (Cohen 1985), 
+2. M0,V = -7.89 - 0.81 arctan((1.32 - log(t2))/0.19) (Capaccioli et al. 1989), 
+3. M0,V = -11.75 + 2.5 log(t3) (Schmidt 1957), 
+4. M15,V = -5.6 $\pm$ 0.14 (Cohen 1985), 
+5. M15,V = -5.23 $\pm$ 0.39 (Van den Bergh & Younger 1987), 
+
+della Valle and Livio
+Downes & duerbck 2000 AJ 120 2007
+
+where M0,V and M15,V are the absolute V magnitudes at maximum and 15 days after maximum, respectively. OS And had a t2 of 8 $\pm$ 1 days. The mean absolute magnitude at maximum light from the first three methods is M0,V = -8.6. If we assume an extinction of Av = 3.1E(B-V) = 0.78, then the distance to OS And is 6.6 kpc. A visual inspection of the lightcurve shows that OS And had V $\sim$ 9 mag fifteen days after optical maximum. Using the same extinction as before and the mean M15,V from the last two methods, we find a distance to OS And of 5.3 kpc.
+
+M0V = -8.6
+AV = 0.78
+Dis = 6.6 kpc
+
+距離指数(distance index)
+ 
+天体の絶対等級（10パーセクの位置に問題の天体をおいたときの明るさの等級）M，パーセク単位で表した地球と天体の距離を r，天体の見かけの等級を m としたとき
+
+m$(C#-M＝5log r$(C#-5
+
+なる関係が成立する．ここで m$(C#-M は天体までの距離と密接に関係した量で，これを距離指数という．見かけの等級は実測で求められるので，何らかの別の手段で絶対等級が求められれば，天体までの距離が計算可能となる． 
+
+
+書式
+
+解説
+
+オプション
+
+使用例
+
+Payne-Gaposchkin, C. 1957, The Galactic Novae (North-Holland, Amsterdam)
+Speed Class      Rate of Decline (mag./day)
+Very fast (VF)   : >0.20
+Fast (F)	 : 0.18 to 0.08
+Moderately fast	 : 0.07 to 0.025
+Slow (S)	 : 0.024 to 0.013
+Very slow (VS)	 : 0.013 to 0.008
+
+
+Next, we estimate a mass of the ejected envelope. A relation between the $N_{\rm{H,CSM}}$
+and a hydrogen mass of the ejected envelope ($M_{\rm{H,e}}$) is derived by
+\cite{krautter1996} to be
+\begin{equation}
+ M_{\rm{H,e}} = \frac{4}{3} \pi v_{\rm{e}}^{2} t^{2} m_{\rm{H}} N_{\rm{H,CSM}}
+\end{equation}
+% ((4/3)*pi()*((3.0E8)^2)*((9*24*60*60)^2)*(1.4E23)*(1.673E-27))/(1.9891E30)
+% ((4/3)*pi()*((3.0E8)^2)*((29*24*60*60)^2)*(9.0E21)*(1.673E-27))/(1.9891E30)
+
+It is converted
+to $M_{\rm{WD}}$~$\lesssim$~1.3~$M_{\odot}$ using a relation between a white dwarf
+radius and a mass
+\[
+ \frac{R_{\rm{WD}}}{R_{\odot}}=9.3\times10^{-3}\frac{(M_{\rm{Ch}}-M_{\rm{Ch}}(M_{\rm{WD}}/M_{\rm{Ch}})^{4/3})^{1/
+2}}{M_{\odot}(M_{\rm{WD}}/M_{\rm{Ch}})^{1/3}}
+\]
+derived by \citet{nauenberg1972}, where $M_{\rm{Ch}}$ represents the Chandrasekhar's
+limit of $\sim$1.4~$M_{\odot}$.
+
+
+Rwd[m] = (7.8E6)*(((M/1.4)^(-2/3))-((M/1.4)^(2/3)))^(1/2)

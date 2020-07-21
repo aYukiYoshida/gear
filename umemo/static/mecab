@@ -1,0 +1,21 @@
+################################################################################
+mecab
+################################################################################
+FORMAT
+
+
+
+EXPLAIN
+
+
+
+OPTION
+
+
+
+EXAMPLE
+
+/usr/local/Cellar/mecab/0.996/libexec/mecab/mecab-dict-index /usr/local/lib/mecab/dic/ipadic -u user.dic -f utf-8 -t utf-8 user.csv # 辞書のコンパイル
+
+
+#EOF#

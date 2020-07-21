@@ -1,0 +1,22 @@
+################################################################################
+fimgdmp
+################################################################################
+FORMAT
+
+   fimgdmp infile[ext#] outfil xlow xhigh ylow yhigh zlow zhigh
+
+
+EXPLAIN
+
+   fitsファイルのimage primary arrayもしくはimages extensionをASCIIに出力する.
+   詳細はfhelp参照.
+
+OPTION
+
+
+
+EXAMPLE
+
+
+
+#EOF#

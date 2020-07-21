@@ -1,0 +1,12 @@
+書式
+
+解説
+	ファイルの内容を末尾から表示する
+
+オプション
+
+使用例
+	tail input.txt		: 最後から10行目まで表示 (default)
+	tail -20 input.txt	: 最後から20行目まで表示
+	tail +5 input.txt	: 5行目から最後までを表示
+	tail -f input.txt	: 追加されるデータを待ちながら表示する (logを見るときに便利)

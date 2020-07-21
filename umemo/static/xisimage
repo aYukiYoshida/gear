@@ -1,0 +1,152 @@
+********************************************************************************
+image(xis)
+********************************************************************************
+
+================================================================================
+Image作成一通り
+================================================================================
+
+-------------------------------
+1.image
+-------------------------------
+
+1-1)
+xselectで各センサーごとの3x3,5x5のイベントを読み込み、イメージを抽出。
+このときxybinsizeは1pixelにし、pixel qualityに条件づけをして
+calソースの部分のフラグを立たせないようにする。
+
+xsel>select event "(STATUS<524287)&&(STATUS%(2**17)<2**16)"
+
+このときpixel qualityに条件づけしたevent(rmcal.evt)をsaveして
+次回からそのeventをreadするとよい。
+
+xsel>ext events
+xsel>save event rmcal.evt
+
+
+1-2)
+farithでimageを足し合わせる。
+farith infile1 infile2 outfile ADD
+
+
+--format--
+
+farith "" ""  01.fits ADD 
+farith "" 01.fits 012.fits ADD 
+farith "" 012.fits img_xis0123.fits ADD 
+rm 01.fits 012.fits -f
+
+-------------------------------
+2.exposuremap
+-------------------------------
+
+2-1)
+xselectで各センサーごとの3x3,5x5のイベントを読み込み、phaファイルを抽出する。
+pixel qualityに条件づけをしてcalソースの部分のフラグを立たせないようにする。
+1-1で同時に抽出してもよい。
+
+2-2)
+1で抽出したphaファイルから各検出器ごとのexposure mapをつくる。
+必要なファイル → phaファイル,attファイル
+作成したexposuremapはarf作成時に、パラメータdetmaskとしても使う。
+
+xisexpmapgen expmap(newname) phafile attfile
+
+script -> mapgen
+
+
+2-3)
+2でつくったexposuremapの足し合わせ
+farith "expmap1.fits[1]" "expmap2.fits[1]" newexpmap.fits ADD 
+*xisexpmapgenでつくったexpmapを足し合わせるには、
+"expmap1.fits[1]"のようにする必要がある。
+ただし、足し合わせてできたファイルには必要ない。
+
+--format--
+
+farith "[1]" "[1]" 01.fits ADD 
+farith "[1]" 01.fits 012.fits ADD 
+farith "[1]" 012.fits emap_xis0123.fits ADD 
+rm 01.fits 012.fits -f
+
+
+-------------------------------
+3.imageをexpmapで割る(merge)
+-------------------------------
+
+
+farith xis0123.fits xis0123expmap.fits newfile.fits DIV
+
+
+
+================================================================================
+frame image
+================================================================================
+
+
+xselect
+>
+>read event "Unfiltering Events(evt_uf)"
+>./
+>set xybinsize 1
+>set binsize 8.0
+>set xyname DETX DETY
+>filter grade 0-7
+>filter time file "frame_image.gti" #8sだけを抽出するGTI FILE
+>extract image
+>save image frame_img.img
+>exit
+>no
+
+
+
+================================================================================
+photon pileup estimate from image
+================================================================================
+グレード1のイメージからパイルアップの有無がある程度推定できる。
+
+xselect
+>
+>read event "Unfiltering Events(evt_uf)"
+>./
+>set xybinsize 1
+>set binsize 8.0
+>set xyname ACTX RAWY  #ここがミソ。1/4winだと4つの帯状のイメージがかける。
+>filter grade 1
+>extract image
+>save image uf_grade1_actx_rawy.img
+>exit
+>no
+
+
+ds9でスケールを対数表示、下限を1,上限を最大値に設定し、
+暗ければパイルアップが起きていない。
+明るければパイルアップが起きている。
+詳しくは
+How to check pile up of Suzaku XIS data
+を参照のこと。
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+XIMAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+1.
+
+1-1)起ち上げ
+
+unix%ximage
+
+
+1-2)image fits fileの読み込みと表示
+
+XIMAGE> READ/FITS image.fits 
+XIMAGE> display	  	     #表示
+
+
+1-3)
+
+
+
+
+#EOF#

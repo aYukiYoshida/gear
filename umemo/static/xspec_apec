@@ -1,0 +1,6 @@
+
+Emission measure = Norm(xspec.apec) * ( 4 * pi() * (Distance[cm])^2 ) * 1E14
+
+
+xset APECVELOCITY 1.0
+xset APECTHERMAL yes

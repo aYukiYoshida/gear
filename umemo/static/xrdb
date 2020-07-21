@@ -1,0 +1,10 @@
+書式
+
+解説
+
+オプション
+
+使用例
+	xrdb -remove
+	xrdb -merge ~/.Xresources
+	xrdb -query

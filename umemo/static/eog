@@ -1,0 +1,20 @@
+################################################################################
+eog
+################################################################################
+FORMAT
+  eog [options] files...
+
+
+EXPLAIN
+  a GNOME image viewer
+
+
+OPTION
+  
+
+
+EXAMPLE
+  eog hogehoge.png   :hogehoge.pngを開く
+
+
+#EOF#

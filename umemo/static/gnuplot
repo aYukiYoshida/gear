@@ -1,0 +1,273 @@
+## Greeek
+{/Symbol a}
+A Alpha	   N Nu		a alpha	   n nu
+B Beta	   O Omicron	b beta	   o omicron
+C Chi	   P Pi		c chi	   p pi
+D Delta	   Q Theta	d delta	   q theta
+E Epsilon  R Rho	e epsilon  r rho
+F Phi	   S Sigma	f phi	   s sigma
+G Gamma	   T Tau	g gamma	   t tau
+H Eta	   U Upsilon	h eta	   u upsilon
+I iota	   W Omega	i iota	   w omega
+K Kappa	   X Xi		k kappa	   x xi
+L Lambda   Y Psi	l lambda   y psi
+M Mu	   Z Zeta	m mu	   z zeta
+
+You can also specify various postscript characters by octal codes, for example, {/243} is a pound (L) mark, {/247} is a section mark. See ps_guide.ps which comes with gnuplot source distribution in detail.
+
+The next example is to draw the linear function y=Alpha x+ Gamma and two Greek letters with those values in the figure.
+
+gnuplot> set terminal postscript eps enhanced 
+gnuplot> set xrange [ 0 : 5 ]
+gnuplot> set label "{/Symbol a}=0.5, {/Symbol g}=0.2" at 2,0
+gnuplot> plot 0.5*x-0.2 ti "y={/Symbol a}x-{/Symbol g}"
+
+
+
+シンボルは
+{/Symbol=\264}
+など
+
+かけるは \264
+マイナスは \261 で表示できる
+
+{/Helvetica-Italic N} で一文字だけ斜体に出来る
+{/*0.60 Fe} 大きさが0.6
+{/=12 Fe} 大きさが12pt
+
+rgbで色指定
+set style line 1 linetype 1 linecolor rgbcolor "cyan" pointsize 0 linewidth 1
+
+
+******** GNUPLOT の代表的コマンド ***********
+
+注＞ Ultrix でしか使えません
+
+コマンド例）
+
+変数	：h0=75.0
+関数	：arccosh1(x)=log(x+sqrt(x**2-1)
+	  arccosh2(x)=log(x-sqrt(x**2-1)
+タイトル	：set title "Graph"
+ログスケール	：set logscale xy
+グリッド	：set grid
+パラメータ表示	：set parametric
+定義域・値域	：set xrange [0.01:]
+		  set autoscale
+プロット	：plot f(t),g(t)
+		  plot "file" with line		; 線でつなぐ
+
+コマンドファイルの読み込み	：load "file"
+ファイル形式の変換	：set terminal postscript など
+ファイルに落とす	：set output "file"
+
+○目盛りを1.2・10^1の形に
+se fo y'%1.1t{/Symbol \327}10^{%L}'
+○目盛りを1.2,AW10^1の形に
+se fo y'%1.1t{/Symbol \264}10^{%L}'
+○目盛りを10^1の形に
+se fo y'10^{%L}'
+
+○目盛の数字サイズを変更
+se fo x'{/=11 %3.2f}'
+
+○どの目盛にグリッドを張るかを指定
+se grid xtics mytics ytics
+
+
+
+------------------------------
+[グラフの枠]
+
+○グラフのタイトルを「TITLE」に
+set title'TITLE'
+se tit'TITLE'
+○枠の横x縦yのサイズを 0.6:0.8 に
+set size 0.6,0.8
+se si .6,.8
+○枠を削除
+unset border
+uns bor
+
+
+
+------------------------------
+[凡例]
+
+○凡例消去
+unset key
+uns k
+○凡例の座標位置(指定座標は凡例の右上端)
+set key at 5.0,1.0
+se k a 5.,2.
+○凡例の文字を左詰に
+set key Left
+se k L
+○凡例の文字を右詰に(default)
+set key Right
+se k R
+○凡例：グラフの下側
+set key bottom
+se k b
+○凡例：グラフの左側
+set key left
+se k l
+○凡例：グラフの左下側
+set key left bottom
+se k l b
+○凡例：グラフの欄外右
+set key outside
+se k o
+○凡例：グラフの欄外下
+set key below
+se k be
+○凡例の行間隔指定(default=1)
+set key spacing 1.3
+se k sp 1.3
+○凡例に枠をつける
+set key box linetype 2 linewidth 3
+se k box lt 2 lw 3
+
+------------------------------
+[Terminal:出力ファイル形式]
+
+○epsファイルの出力宣言(モノクロ)
+set terminal postscript enhanced
+se te po eps enh
+○出力ファイルの名前指定
+set output'a.eps'
+se o'a.eps'
+○epsファイルの出力宣言(カラー化)
+set terminal postscript enhanced color
+se te po eps enh c
+○epsファイルの出力宣言(モノクロ化)
+set terminal postscript enhanced mono
+se te po eps enh m
+
+○PNG形式
+se te png
+○GIF形式
+se te gif
+○ウィンドウズ上でのenhanced形式
+se te win enh
+
+
+[便利]
+○現在のターミナルの線種点種色種を表示
+test
+
+
+
+------------------------------
+[plot]
+
+○点で描く
+with points
+w p
+○線で描く
+with lines
+w l
+○線と点で描く
+with linespoints
+w lp
+
+
+○点種を1番目に
+pointtype 1
+pt 1
+○線種を2番目に
+linetype 2
+lt 2
+○点サイズを二倍に
+pointsize 2
+ps 2
+○線幅を二倍に
+linewidth 2
+lw 2
+
+○線と点によってsinをpoint size 1, point type 6で、
+範囲がx無指定、yがゼロ以上、凡例「HANREI」で描画
+plot [ ][0:]sin(x) with linespoints pointsize 1 pointtype 6 title'HANREI'
+p [ ][0:]sin(x) w lp ps 1 pt 6 ti'HANREI'
+
+○範囲が、xゼロから1、y無指定で、2つのファイルを出力(凡例なし)。
+a.datの数値ファイルの2列目をx軸、2列目磚ら萠蛄医瓮芍燹√眞晟愁瓮❾疥紜≦癲弱礇ュ稱紜鴪ク蝪飜螟」裘。「裙・ゥ裔・。3鳧ホ鰒ー裘テル・ッ裄ホワ、シエ、ヒ、キ、ソ・ー・鬣ユ、ナ、ヘ、襦(加えて、データを一行飛ばしにプロット)
+plot [0:1][ ]'a.dat'using 2:($2*$3) every 2 with lines notitle,\
+'a.dat'using 3:5 every 2 with lines notitle
+p [0:1][ ]'a.dat'u 2:($2*$3) ev 2 w l not,''u 3:5 ev 2 w l not
+
+
+(2つのグラフを異なるy軸でプロット)
+
+○共通x軸の範囲指定
+set xrange [-1:1]
+se xr[-1:1]
+○左側のy軸の範囲指定
+se yr[-1:1]
+○右側のy軸の範囲指定
+se y2r[-2:2]
+○右側の軸に左側の軸を映さない
+se ytics nomirror
+○右側のy軸の目盛間隔指定 [重要]
+se y2ti 0.2
+○各軸名の設定
+se xl'x label'
+se yl'left y label'
+se y2l'right y label'
+○軸を指定してプロット
+p sin(x) axis x1y1,cos(x) axis x1y2
+
+
+
+------------------------------
+[その他]
+
+コマンドラインにおける改行記号
+\
+label や title における改行記号
+(この改行記号は二重引用符"で囲まれた場合のみ有効)
+"\n"
+gnuplotの終了
+q
+下付き文字は小文字化 ⇒ _{eff}より綺麗に見える
+{/=10 eff}
+上付き+下付き
+A@^a_b
+記号が連続する場合、中括弧は一つだけで十分(,AW{/Symbol D}{/Symbol n})
+{/Symbol Dn\100}4.0
+積分記号
+{/Symbol=18 \362}@_{/=9.6 0}^{/=10 R}{/Symbol w^2rx^2} dV
+
+------------------------------
+[各種記号]
+
+天文学の太陽シンボルマーク
+{/=11 ~o{/=8.5 \267}}
+≠
+{/Symbol \271}
+,A1
+{/Symbol \261}
+,A0
+{/Symbol \260}
+∇
+{/Symbol \321}
+
+
+aウムラウト {\344}
+se encoding iso_8859_1
+se tit'V{\344}is{\344}l{\344}'
+
+oウムラウト {\366}
+se encoding iso_8859_1
+se tit'Schr{\366}dinger'
+
+アルフヴェンのe {\351}
+se encoding iso_8859_1
+se tit'Alfv{\351}n'
+
+オングストローム記号Å{\305}
+se encoding iso_8859_1
+se tit'6000{\305}'
+
+
+------------------------------

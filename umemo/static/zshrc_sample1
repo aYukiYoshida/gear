@@ -1,0 +1,362 @@
+# ref)http://svn.momonga-linux.org/svn/pkgs/trunk/pkgs/zsh/tab.zshrc 
+# /etc/zshrc is sourced in interactive shells.滋 It 
+# should contain commands to set up aliases, functions, 
+# options, key bindings, etc. 
+
+export PATH=export PATH=/usr/kerberos/bin:/usr/bin:/bin:/usr/X11R6/bin:/usr/sbin:/sbin:$HOME/bin:$PATH 
+export FPATH=/usr/share/zsh/$ZSH_VERSION/functions:/usr/share/zsh/$ZSH_VERSION/functions/Completion/Unix:$FPATH 
+
+autoload -U compinit 
+compinit 
+
+# compinstall 
+# 
+# autoload -U colors 
+# colors 
+
+# autoload promptinit 
+# autoload prompt 
+# promptinit 
+# prompt clint 
+
+# Shell functions 
+setenv() { export $1=$2 }滋 # csh compatibility 
+
+# Set prompts 
+# PROMPT='%m%# '滋滋滋 # default prompt 
+# RPROMPT=' %~'滋滋滋滋 # prompt for right side of screen 
+
+# bindkey -v滋滋滋滋滋滋滋滋滋滋滋滋 # vi key bindings 
+bindkey -e滋滋滋滋滋滋滋滋滋滋滋滋 # emacs key bindings 
+bindkey ' ' magic-space滋 # also do history expansion on space 
+
+export WORDCHARS='*?_.[]~=&amp;;!#$%^(){}&lt;&gt;' 
+bindkey "^[h" backward-kill-word 
+
+bindkey "^I" expand-or-complete-prefix 
+
+alias a=alias 
+alias j='jobs -l' 
+alias .='source' 
+alias wgetm='wget -m -np' 
+alias ncftplsx="ncftpls -x'-ltr'" 
+
+alias google='LANG=ja w3m http://www.google.net/' 
+alias g='LANG=ja w3m http://www.google.net/' 
+
+alias mew='emacs -nw -f mew' 
+alias navi2ch='emacs -nw -f navi2ch' 
+alias s/key='key' 
+alias w3m='LANG=ja w3m' 
+
+## zsh options 
+# unsetopt 
+# I'm not use 'setopt no&lt;hoge&gt;',滋 use 'unsetopt &lt;hoge&gt;' 
+
+setopt autocd 
+setopt appendhistory 
+setopt hist_ignore_space 
+setopt hist_ignore_dups # 前後のダブりのみ消す 
+setopt hist_ignore_all_dups # ヒストリに追加されるコマンド行が古いものと同じなら古いものを削除 
+#setopt hist_nostore 
+setopt autoremoveslash 
+#setopt bashautolist 
+setopt nomenucomplete 
+setopt auto_list 
+[[ $EMACS = t ]] &amp;&amp; setopt nozle 
+
+setopt interactive_comments 
+setopt numeric_glob_sort 
+setopt auto_cd 
+setopt hist_ignore_space # スペースで始まるコマンド行はヒストリリストから削除 
+setopt hist_reduce_blanks 
+setopt menucomplete 
+setopt list_packed 
+setopt prompt_subst 
+setopt autopushd 
+setopt pushdminus 
+setopt pushdsilent 
+setopt pushdtohome 
+setopt pushd_ignore_dups 
+setopt long_list_jobs 
+setopt complete_in_word 
+setopt extended_glob 
+setopt brace_ccl 
+setopt glob_dots 
+setopt print_exit_value 
+setopt menu_complete 
+setopt auto_menu 
+setopt inc_append_history # 履歴をインクリメンタルに追加 
+setopt auto_resume 
+setopt alwayslastprompt 
+setopt listtypes 
+setopt listambiguous 
+setopt rcquotes 
+setopt notify 
+setopt cdablevars 
+#ERROR setopt print_cheese_bit 
+setopt print_eight_bit 
+setopt hist_verify # ヒストリを呼び出してから実行する間に一旦編集可能 
+setopt check_jobs 
+setopt ignore_eof 
+
+setopt nohup 
+setopt nonomatch 
+
+### 
+# unsetopt 
+
+unsetopt rec_exact 
+unsetopt flow_control 
+unsetopt prompt_cr 
+unsetopt clobber 
+unsetopt bgnice 
+unsetopt correct 
+unsetopt beep 
+unsetopt listbeep 
+unsetopt multi_os 
+
+## prompt 
+PROMPT='%n@%m:%~%(#.#.$) ' 
+
+# RPROMPT='[\$?=%B%?%b]' 
+# RPROMPT='{%~}[%D{%H:%M}]' 
+# RPROMPT='{%*}[%D{%H:%M}]' 
+RPROMPT='[%*]' # 時刻 H:M:S 
+SPROMPT='zsh: replace '\''%R'\'' to '\''%r'\'' ? [Yes/No/Abort/Edit] ' 
+
+HISTFILE=$HOME/.zsh-history滋滋滋滋滋滋滋滋滋滋 # 履歴をファイルに保存する 
+HISTSIZE=100000滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋 # メモリ内の履歴の数 
+SAVEHIST=100000滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋滋 # 保存される履歴の数 
+setopt extended_history滋滋滋滋滋滋滋滋滋滋滋滋滋滋 # 履歴ファイルに時刻を記録 
+function history-all { history -E 1 } # 全履歴の一覧を出力する 
+
+# historyの共有 
+setopt share_history 
+
+zstyle ':completion:*:default' menu select=1 
+
+# from http://www.namazu.org/%7Esatoru/unimag/3/ 
+### 
+
+# sudoの補完 
+# &lt; 13 of http://pc.2ch.net/unix/kako/990/990283346.html 
+compctl -l '' nohup exec nice eval time sudo man 
+
+# findの -exec 後の補完 
+compctl -x 'r[-exec,;]' -l '' -- find 
+
+# 補完の日本語ページ 
+# http://ime.nu/dengaku.org/naoki/zsh/Doc/zsh_19.html 
+
+# 連番補完^H^H展開 {1..200} 
+
+# http://pc.2ch.net/unix/kako/990/990283346.html 
+# http://pc.2ch.net/test/read.cgi/unix/1036324177/ 
+
+# 141 名前：名無しさん＠お腹いっぱい。投稿日： 01/10/27 13:43
+#滋滋滋 &gt;&gt;138
+#滋滋滋 できるよ。.zshrc で
+#
+if [ "$TERM" = "kterm" ] || [ "$TERM" = "xterm" ] ; then
+precmd() {
+TITLE=`print -P $USER@%m on tty%l: %~`
+echo -n "\e]2;$TITLE\a"
+}
+fi
+# って書いとくと xterm のタイトルバーに
+# username@hostname on ttyp1:/home
+# みたいな感じで表示される。
+
+tcsh-backward-delete-word () { 
+local WORDCHARS="${WORDCHARS:s#/#}" 
+zle backward-delete-word 
+} 
+
+# bash-backward-kill-word () { 
+# local WORDCHARS='' 
+# zle .backward-kill-word 
+# } 
+
+#滋 zsh で rm **/*hogehoge するときちょっとドキドキする...。 
+# 先に echo **/*hogehoge で確認しといてからやるといいかも。 
+# C-x * して展開して確認した後，C-x u で戻すってのをよくつかいまふ． 
+# 
+# 展開結果をみるのはC-x gでいいみたい。 
+# http://dengaku.org/~naoki/zsh/FAQ-J/zshfaq04-j.html#l43 
+# 
+# C-x gを忘れたらtabで展開してからundoすればいいと覚えておくつもり。 
+
+# echo $ZSH_VERSION 
+
+# wiki 
+# http://ime.nu/zshintro.s22.xrea.com/ 
+
+# 281 名前：名無しさん＠お腹いっぱい。投稿日： 02/01/19 15:50 
+#滋滋滋 最近は 
+#滋滋滋 autoload -U compinit 
+#滋滋滋 compinit 
+#滋滋滋 だけでも、かなりのコマンドの引数の補完をしてくれるからねえ。 
+# 
+#滋滋滋 そうはいっても compctl で記述したのが 30 ぐらい残っている 
+#滋滋滋 んだけど。zsh の現状に付いていけているのは、開発にも関わって 
+#滋滋滋 いる田中さんを含めて日本には数人しかいないかも(w zsh のユーザ 
+#滋滋滋 自体は増えている感じなんだけど、その割には Web 上で得られる 
+#滋滋滋 日本語でのリソースは余り増えませんね。 
+# 
+#滋滋滋 tcsh での set complete = enhance な環境下の補完に近い状況するには、 
+#滋滋滋 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z} r:|[-_./]=* r:|=*' 
+#滋滋滋 とすればいいでしょう。tcsh でかなり怠惰になっている人には必要 
+#滋滋滋 かと思われます。ちょっとは努力することもある人なら、 
+#滋滋滋 zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z} r:|[-_./]=* r:|=*' 
+#滋滋滋 の方がいいかも。 
+# 
+
+# 287 名前：名無しさん＠お腹いっぱい。投稿日： 02/01/24 21:59 
+#滋滋滋 zstyle ':completion:*:cd:*' tag-order local-directories path-directories 
+#滋滋滋 としておくと、カレントディレクトリに候補が無い場合のみ 
+#滋滋滋 cdpath 上のディレクトリが候補となる。 
+# 
+#滋滋滋 zstyle ':completion:*:path-directories' hidden true 
+#滋滋滋 としてしまえば、cdpath 上のディレクトリは補完候補から外れる。 
+# 
+
+unlimit 
+limit -s 
+
+# core file抑制 
+ulimit -c 0 
+
+# ファイル作成時のパーミッション設定 
+umask 022 
+
+# 補完の時に大文字小文字を区別しない 
+#zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 
+# 
+#これを設定すると pkgsとPKGSをpとPの一文字で補完できない 
+#うっとうしいのでコメントアウトする. 
+
+# zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 
+# の方が、大文字の場合は小文字を補完しないのでお薦めです。 
+# (わざわざ大文字打ったのだから 
+# 小文字を補完する必要はないだろう) 
+# &lt; http://hiki.ex-machina.jp/zsh/?FAQ%40zsh%A5%B9%A5%EC 
+# 
+# 2005-01/28 コメントアウトした 
+# 小文字のときは小文字だけ補完して欲しいから. 
+
+# # 端末 
+# stty erase '^H' 
+# stty intr '^C' 
+# stty susp '^Z' 
+
+# カーソル位置から前方削除 
+# override kill-whole-line 
+bindkey '^U' backward-kill-line 
+
+# # Ctrl + P/N で履歴検索 tcsh風味 
+# # History completion 
+# autoload -U history-search-end 
+# zle -N history-beginning-search-backward-end history-search-end 
+# zle -N history-beginning-search-forward-end history-search-end 
+# bindkey "^P" history-beginning-search-backward-end 
+# bindkey "^N" history-beginning-search-forward-end 
+
+# optionの説明 
+# http://www.ayu.ics.keio.ac.jp/members/mukai/tips/zshoption.html 
+
+# setopt append_history 
+# setopt auto_list 
+# setopt auto_menu 
+# setopt auto_param_keys 
+# setopt auto_remove_slash 
+# setopt auto_resume 
+# setopt NO_beep 
+# setopt brace_ccl 
+# setopt bsd_echo 
+# setopt correct 
+# setopt complete_in_word 
+# setopt equals 
+# setopt extended_glob 
+# setopt NO_flow_control 
+# setopt hash_cmds 
+# setopt NO_hup 
+# setopt ignore_eof 
+# setopt list_types 
+# setopt long_list_jobs 
+# setopt magic_equal_subst 
+# setopt mail_warning 
+# setopt mark_dirs 
+# setopt multios 
+# setopt numeric_glob_sort 
+# setopt path_dirs 
+# setopt print_eightbit 
+# setopt pushd_ignore_dups 
+# setopt rm_star_silent 
+# setopt short_loops 
+
+# &lt; http://nyan2.tdiary.net/20020923.html#p12 
+
+#滋滋滋 google() { 
+#滋滋滋 ^滋滋滋滋滋滋 local google_opt="" 
+#滋滋滋 ^滋滋滋滋滋滋 if [ $# != 0 ]; then 
+#滋滋滋 ^滋滋滋滋滋滋 ^滋滋滋滋滋滋 google_opt="search?hl=ja&amp;ie=euc-jp&amp;oe=euc-jp&amp;lr=lang_ja&amp;q= 
+#滋滋滋 `echo $* | mimencode -q |sed -e 's/=/%/g;s/ /+/g'`" 
+#滋滋滋 ^滋滋滋滋滋滋 fi 
+#滋滋滋 ^滋滋滋滋滋滋 w3m "http://www.google.com/$google_opt" 
+#滋滋滋 } 
+# 
+
+# http://hiki.ex-machina.jp/zsh/ 
+
+# http://hiki.ex-machina.jp/zsh/?CompletionCache 
+zstyle ':completion:*' use-cache true 
+# いくつかのコマンドでは~/.zcompcacheディレクトリに補完候補のキャッ 
+# シュを生成してくれる。 
+# 
+# 対応しているのは、 
+# 
+# ・ apt-get, dpkg (Debian) 
+# ・ rpm (Redhat) 
+# ・ urpmi (Mandrake) 
+# ・ perlの-Mオプション 
+# 
+# のみ。(zsh 4.0.6にて) 
+
+# cvs -d :pserver:anonymous@cvs.m17n.org:/cvs/zsh checkout dot-zsh 
+
+# zshが起動してからの時間? 
+# echo $SECONDS 
+
+export CACHECC1_DIR=${HOME}/.cachecc1 
+#export CACHECC1_DIR=/var/tmp/cachecc1 
+
+export CCACHE_DIR=${HOME}/.ccache 
+export CCACHE_LOGFILE=%{HOME}/.ccache/log 
+
+
+alias rpmqf='rpm -qa --queryformat "%{NAME}\t%{BUILDHOST}\n"' 
+
+# 設定ファイルの読み込みが遅い 
+# 
+# zsh のシェルスクリプトはコンパイルすることができますので、少し速くなるかもしれ 
+# ません。 
+# 
+# % zcompile .zshrc 
+# % ls .zshrc* 
+# .zshrc滋 .zshrc.zwc 
+# 
+# 同一ディレクトリに .zwc ファイルがある場合 zsh はそちらを実行しようとします。 
+# だから、元のソースファイルを変更する度に zcompile を実行しなければなりません。 
+# 
+# &lt; http://hiki.ex-machina.jp/zsh/?FAQ%40zsh%A5%B9%A5%EC 
+
+#alias -g G='| grep ' 
+#alias -g L='| lv' 
+#alias -g X='| xargs' 
+#alias -g T='| tail' 
+#alias -g H='| head' 
+
+export repo='http://svn.momonga-linux.org/svn/pkgs' 
+
+# END</pre> 

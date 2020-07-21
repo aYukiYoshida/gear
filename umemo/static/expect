@@ -1,0 +1,11 @@
+書式
+
+解説
+
+オプション
+
+使用例
+expect -c "set aho \"boke\" ; spawn echo \$aho ; expect" 
+
+適当にコマンドを入力
+expect -c "spawn echo aho" ; expect"

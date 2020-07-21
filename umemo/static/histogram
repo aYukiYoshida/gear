@@ -1,0 +1,21 @@
+書式
+
+解説
+
+オプション
+
+使用例
+
+
+## 平均値から3-sigmaまでを200分割でヒストグラムを作る
+## 以下は0以下を分割したくない場合
+
+for i in ppp_*test01*eqw.dat ppp_*test01*flux.dat ; do
+    mean="`stat.pl < ${i} | grep 'mean' | awk '{printf \"%.9e\n\", $3}'`"
+    stddev="`stat.pl < ${i} | grep 'stddev ' | awk '{printf \"%.9e\n\", $3}'`"
+    pltmin="`echo \"${mean} ${stddev}\" | awk '{printf \"%.9e\n\", (($1)-(($2)*3))}'`"
+    pltmax="`echo \"${mean} ${stddev}\" | awk '{printf \"%.9e\n\", (($1)+(($2)*3))}'`"
+    [ "`echo ${pltmin} | grep \"^-\"`"x != "x" ] && pltmin="0.0"
+    echo ${pltmin} ${pltmax}
+    cat ${i} | gsl-histogram ${pltmin} ${pltmax} 200 >! ${i%.dat}_hist.dat
+done

@@ -1,0 +1,16 @@
+書式
+
+解説
+
+オプション
+
+使用例
+	make -B			: 無理矢理Makeする
+	make ls_inputs		: Inputリスト
+	make ls_figs		: Figureリスト
+
+	gmake dvi-v		: 
+	gmake diff		: Diffをとる
+	gmake ps-v		: 
+	gmake pdf-v		: 
+	gmake upload

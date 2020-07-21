@@ -1,0 +1,61 @@
+解説
+	Fitsファイルの見方
+
+オプション
+
+
+使用例
+	fdumq aho.fits			: header表示 (Local)
+	imhead aho.fits			: header表示 (IRAF)
+	fdump aho.fits STDOUT - -	: header表示 (HEAsoft)
+	dmlist aho.fits header		: header表示 (CIAO)
+	fstruct aho.fits		: struct表示 (HEAsoft)
+	dmlist aho.fits struct		: struct表示 (CIAO)
+	dmlist aho.fits data		: data表示   (CIAO)
+	fv aho.fits			: GUI表示    (HEAsoft)
+
+FITSに関するメモ
+１．キーワードについて
+Primary　Header
+キーワードの名前        意味
+SIMPLE  論理値
+T: FITS 標準規格に沿っている。
+F: FITS 標準規格に沿っていない。
+BITPIX  各ピクセルがどんな数値なのか
+値      ピクセルの値
+8       文字または符号なし2進整数
+16      16ビット2進整数
+32      32ビット2進整数
+-32     IEEE単精度浮動小数点
+-64     IEEE倍精度浮動小数点
+NAXIS   軸の数。非負の整数値。
+NAXISn  n番目の軸の大きさ。非負の整数値。
+EXTEND  論理値
+T: extension が存在する。
+F: extension なし。
+バイナリーテーブル
+キーワード      意味もしくは値
+XTENSION        'BINTABLE'
+BITPIX  8
+NAXIS   2
+NAXIS1  各行のバイト数
+NAXIS2  表の中の行の数
+PCOUNT  通常 0
+GCOUNT  1
+TFIELDS         表中の列(field)の数
+TFORMn  n番目の列（フィールド）のサイズとデータタイプ。
+1 -- TFILEDS の範囲の値をとる。
+rL      論理値
+rX      ビット
+rI      16ビット整数
+rU      16ビット符号なし整数
+rJ      32ビット整数
+rV      32ビット符号なし整数
+rA      キャラクタ
+rE      単精度(32 bits)
+rD      倍精度(64 bits)
+rB      符号なしバイト
+rC      単精度値の複素数(32bits)
+rM      倍精度値の複素数(64bits)
+rP      可変長の配列記述子(64ビット)
+ここで"r"は要素の数を表す。
