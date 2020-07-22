@@ -70,7 +70,6 @@ usage(){
     echo "USAGE"
     echo "    ${cmdname} [OPTION] <INPUT>"
     echo "OPTIONS"
-    [ ${host} = "sir" ] && echo "  -b,--backup     Backup all useful memos"
     echo "  -d,--delete     Delete useful memo"    
     echo "  -e,--edit       Edit useful memo"
     echo "  -h,--help       Show this help script"
@@ -175,28 +174,6 @@ mknewmemo(){
     editFile ${srcdir}/${fname}
 }
 
-## Backup
-backup(){
-    local today=`date +"%Y%m%d"`
-    local time=`date +"%Y/%m/%d %k:%M:%S"`
-    local bakdir=$HOME/Works/Memo/umemo
-    local readme=${bakdir}/${today}/README
-
-    if [ ! -d ${bakdir}/${today} ];then
-        cp -r ${srcdir} ${bakdir}/${today}
-        message="Copy all usefull file into following directory."
-    else
-        rsync -avi --delete --update ${srcdir}/ ${bakdir}/${today}
-        message="Updata usefull file revised on today into follow directory."
-    fi
-
-    cat /dev/null > ${readme}
-    echo "From ${srcdir} to ${bakdir}/${today}" >> ${readme}
-    echo "In last ${cmdname} backed up at ${time}"  >> ${readme}
-    echo ${message} >> ${readme}
-    echo "${bakdir}/${today}"  >> ${readme}
-	exit 0
-}
 
 ################################################################################
 ##　STARTUP
@@ -214,13 +191,8 @@ FLG_L=0
 FLG_S=0
 FLG_D=0
 
-if [ ${host} = "sir" ];then
-    GETOPT=`getopt -q -o hubli:edDs:r -l help,usage,backup,list,initial:,edit,delete,Debug,search:,random -- "$@"`
-    [ $? != 0 ] && abort "InvalidOption"
-else
-    GETOPT=`getopt -q -o huli:edDs:r -l usage,help,backup,list,initial:,edit,delete,Debug,search:,random -- "$@"`
-    [ $? != 0 ] && abort "InvalidOption"
-fi
+GETOPT=`getopt -q -o huli:edDs:r -l usage,help,list,initial:,edit,delete,Debug,search:,random -- "$@"`
+[ $? != 0 ] && abort "InvalidOption"
 
 logger 0 "$@" ##DEBUG
 
@@ -231,7 +203,6 @@ logger 0 "$@" ##DEBUG
 while true ;do
     case $1 in
         -h|-u|--usage|--help) usage ;;
-        -b|--backup) backup ;;
         -r|--random) randomlyDisplay;;
         -D|--Debug) logLevelCriteria=0; shift;;
         -l|--list) FLG_L=1; shift;;
