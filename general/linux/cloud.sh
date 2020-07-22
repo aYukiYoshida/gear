@@ -1,55 +1,33 @@
-#!/bin/bash
+#!/bin/bash -u
 
 ################################################################################
-## Redaction history
+## Set Values
 ################################################################################
-# Version | Date       | Author   | Description
-#-------------------------------------------------------------------------------
-#     2.0 | 2017.09.07 | yyoshida | prototype
-#     2.1 | 2019.03.07 | yyoshida | add long options
-#
+AUTHOR="Y.Yoshida"
+SCRIPTFILE=$(basename $0)
+SCRIPTNAME=${SCRIPTFILE%.*}
 
-
-################################################################################
-## Set Command & Value
-################################################################################
-
-## Value
-author="Y.Yoshida"
-version="2.1"
-
-srcdir="$HOME"
-bakdir="$HOME/Irearmo/backup"
-wrkdir=Works
-
+## Backup dirctory
+BACK=$HOME/Irearmo/backup
 #datdir=tmp
-logfile=${bakdir}/$(basename $0)backup.log
-
-## Command
-rm="/bin/rm -rf"
-link="/bin/ln -sf"
-rsync="/usr/bin/rsync -avilz --delete --progress --update"
-rm="/bin/rm -rf"
-ls='/bin/ls --color -FABGh --show-control-chars --time-style="+%Y-%m-%dT%H:%M:%S" --ignore=".DS_Store" --ignore="Icon?" --ignore=".grive" --ignore=.grive_state --ignore=".trash'
+LOGFILE=${BACK}/${SCRIPTNAME}backup.log
 
 
 ###########################################################################
 ## Function
 ###########################################################################
 usage(){
-    cat <<EOF
-USAGE
-   `basename $0` <OPTION>
-
-OPTION
-   -b,--backup        backup
-   -r,--restoration   restoration
-   -c,--check         check last running
-   -h,--help          show this help script
-
-Ver${version} written by ${author}
-EOF
-    exit 1
+    echo "USAGE"
+    echo "   ${SCRIPTNAME} <OPTION>"
+    echo ""
+    echo "OPTION"
+    echo "   -b,--backup        backup"
+    echo "   -r,--restoration   restoration"
+    echo "   -c,--check         check last running"
+    echo "   -h,--help          show this help script"
+    echo ""
+    echo "written by ${AUTHOR}"
+    exit 0
 }
 
 message(){
@@ -58,14 +36,14 @@ message(){
     local clobber_arg=$3
 
     case ${clobber_arg} in
-	"true"|"True"|"TRUE") clobber=1 ;;
-	"false"|"False"|"FALSE") clobber=0 ;;
+        "true"|"True"|"TRUE") clobber=1 ;;
+        "false"|"False"|"FALSE") clobber=0 ;;
     esac
 
     if [ ${clobber} -eq 1 ];then
-	echo ${script} | tee ${logfl}
+	    echo ${script} | tee ${logfl}
     else
-	echo ${script} | tee -a ${logfl}
+	    echo ${script} | tee -a ${logfl}
     fi
 }
 
@@ -81,30 +59,20 @@ log(){
 }
 
 
-sync(){
-    local src=$1
-    local out=$2
-    
-    ${rsync} ${src} ${out}
-}
-
-
 ## List
 chk(){
     local bak=$1
     local log=$2
     echo ${bak}
-    ${ls} ${bak}
+    ls --color -FABGh --show-control-chars --ignore=".DS_Store" --ignore="Icon?" --ignore=".grive" --ignore=.grive_state --ignore=".trash" ${bak}
     cat ${log}
 }
-
-
 
 
 ################################################################################
 ## OPTION
 ################################################################################
-GETOPT=`getopt -q -o brcu -l backup -l restoration -l check -l help -- "$@"` ; [ $? != 0 ] && usage
+GETOPT=`getopt -q -o brcuh -l backup,restoration,check,usage,help -- "$@"` ; [ $? != 0 ] && usage
 
 #echo $@ ##DEBUG
 
@@ -112,24 +80,19 @@ eval set -- "$GETOPT"
 
 #echo $@ ##DEBUG
 
+FLG_C=0
+FLG_B=0
+FLG_R=0
+
 while true ;do
-  case $1 in
-      -h|--help) usage
-          ;;
-      -c|--check) FLG_c="TRUE"
-	  shift
-	  ;;
-      -b|--backup) FLG_b="TRUE" #;echo ${FLG_b}
-	  shift
-	  ;;
-      -r|--restoration) FLG_r="TRUE" #;echo ${FLG_r}
-	  shift
-	  ;;
-      --) shift ; break 
-          ;;
-       *) usage 
-          ;;
-  esac
+    case $1 in
+        -h|--help|-u|--usage) usage;;
+        -c|--check)       FLG_C=1; shift;;
+        -b|--backup)      FLG_B=1; shift;;
+        -r|--restoration) FLG_R=1; shift;;
+        --) shift; break;;
+        *) usage;;
+    esac
 done
 
 #echo "\$@=$@" ##DEBUG
@@ -137,18 +100,18 @@ done
 
 
 #checking
-if [ "${FLG_c}" = "TRUE" ]&&[ "x${FLG_r}" = "x" -a "x${FLG_b}" = "x" ];then
-	chk ${bakdir} ${logfile}
+if [ ${FLG_C} -eq 1 ]&&[ ${FLG_R} -eq 0  -a ${FLG_B} -eq 0 ];then
+	chk ${BACK} ${LOGFILE}
 	
 #restoration
-elif [ "${FLG_r}" = "TRUE" ]&&[ "x${FLG_c}" = "x" -a "x${FLG_b}" = "x" ];then 
-    sync ${bakdir}/${wrkdir}/ ${srcdir}/${wrkdir}     
-    log ${logfile} "RESTORATION"
+elif [ ${FLG_R} -eq 1 ]&&[ ${FLG_C} -eq 0 -a ${FLG_B} -eq 0 ];then
+    rsync -avilz --delete --progress --update $BACK/Works/ $HOME/Works
+    log ${LOGFILE} "RESTORATION"
 	
 #backup
-elif [ "${FLG_b}" = "TRUE" ]&&[ "x${FLG_r}" = "x" -a "x${FLG_c}" = "x" ];then 
-    sync ${srcdir}/${wrkdir}/ ${bakdir}/${wrkdir}
-    log ${logfile} "BACKUP"
+elif [ ${FLG_B} -eq 1 ]&&[ ${FLG_R} -eq 0 -a ${FLG_C} -eq 0 ];then 
+    rsync -avilz --delete --progress --update --exclude "Tools" $HOME/Works/ $BACK/Works
+    log ${LOGFILE} "BACKUP"
     
 else
     usage
