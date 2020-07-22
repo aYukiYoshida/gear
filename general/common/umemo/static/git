@@ -182,6 +182,14 @@ COMMAND
     git stash drop hoge                 退避したhogeスタッシュの作業を削除する
     git stash clear                     退避した全ての作業を削除する
 
+    git submodule add URL hoge          リポジトリ内にhogeというリポジトリをサブモジュールとして追加
+    git submodule init                  サブモジュールを含むリポジトリのローカルの設定ファイルの初期化
+    git submodule update                サブモジュールのプロジェクトからのデータを取得し,
+                                        リポジトリで指定されている適切なコミットをチェックアウトする.
+    git clone --recursive URL hoge      git clone URL hoge && git submodule init && git submodule update
+                                        と同義.
+    git submodule update --remote       サブモジュールの更新を反映
+
     HEAD          現在のブランチの先頭をさす.HEADを移動することで, ブランチが切り替わる.
                   HEAD~(チルダ)とHEAD^(キャレット)の違いは,
                   ~は世代を遡って指定,  ^は複数ある親コミットの中から指定.
