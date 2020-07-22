@@ -1,28 +1,17 @@
 #!/bin/bash
 
-#GTI file format
-#START(in suzaku time) STOP(in suzaku time)
-
-################################################################################
-## Redaction history
-################################################################################
-# Ver.  | Date       | Author   | Matter
-#-------------------------------------------------------------------------------
-# 1.0.0 | 2012.XX.XX | yyoshida | prototype
-# 2.0.0 | 2015.06.21 | yyoshida | remake
-# 2.0.1 | 2016.07.09 | yyoshida | miner revise
-# 
-
+# GTI file format
+# START(in suzaku time) STOP(in suzaku time)
 
 ################################################################################
 ## Setup
 ################################################################################
-author="Y.Yoshida"
-version="2.0.1"
+AUTHOR="Y.Yoshida"
+SCRIPTFILE=$0
+[ -L ${SCRIPTFILE} ] && SCRIPTFILE=$(readlink ${SCRIPTFILE})
+SCRIPTNAME=$(basename ${SCRIPTFILE%.*})
+sys=$(dirname ${SCRIPTFILE})
 keyprint=`which fkeyprint`
-scriptname=$(basename $0)
-[ -L ${scriptname} ] && scriptname=$(readlink ${scriptname})
-sys=$(cd $(dirname ${scriptname}); pwd)
 calc_std=${sys}/aespingtigen.awk
 calc_ext=$${sys}/aextspingtigen.awk
 
@@ -42,28 +31,21 @@ FLG_OW=
 ## Function
 ################################################################################
 title(){
-cat <<EOF
-`basename $0` version ${version}
-Written by ${author}
-
-EOF
+    echo "${SCRIPTNAME} written by ${AUTHOR}"
+    echo ""
 }
 
 usage(){
-cat << EOF
-USAGE : `basename $0` [OPTION] <LCFITS> <EPOCH> <PERIOD> <IPHASE> <TPHASE> <OUTPUT>
-
-EOF
-exit 1
+    echo "USAGE : ${SCRIPTNAME} [OPTION] <LCFITS> <EPOCH> <PERIOD> <IPHASE> <TPHASE> <OUTPUT>"
+    exit 0
 }
 
 usagehelp(){
-cat << EOF|less
-`basename $0` version ${version}
-Written by ${author}
+    cat << EOF
+${SCRIPTNAME} written by ${AUTHOR}
 
 USAGE:
-   `basename $0` [OPTION] <LCFITS> <EPOCH> <PERIOD> <IPHASE> <TPHASE> <OUTPUT>
+   ${SCRIPTNAME} [OPTION] <LCFITS> <EPOCH> <PERIOD> <IPHASE> <TPHASE> <OUTPUT>
 
 
 PARAMETERS:
@@ -111,7 +93,7 @@ EXAMPLE:
         OUTPUT=xis0_03_05__07_09.gti
 
 EOF
-exit 1
+    exit 0
 }
 
 getparam(){
@@ -139,20 +121,20 @@ mkgtifile(){
 
     ${calc_std} -v iph=${in_iph} -v tph=${in_tph} -v mjdref=${mjdref} -v mjdstart=${mjdstart} -v mjdstop=${mjdstop} -v tstart=${tstart} -v tstop=${tstop} -v epoch=${in_epoch} -v period=${in_period} > ${output}
 
-    cat <<EOF
-Input lightcurve FITS File    : ${in_lcfits}
+    
+    echo "Input lightcurve FITS File    : ${in_lcfits}"
+    echo ""
+    echo "Setted paramters as follow:"
+    echo "TSTART           :  ${tstart}"
+    echo "TSTOP            :  ${tstop}"
+    echo "MJD-START        :  ${mjdstart}"
+    echo "EPOCH            :  ${in_epoch}"
+    echo "PERIOD           :  ${in_period}"
+    echo "INTERVAL PHASE   :  ${in_iph} - ${in_tph}"
+    echo ""
+    echo "Output GTI File  :  ${in_output}"
+    echo "${SCRIPTNAME} finished."
 
-Setted paramters as follow:
-TSTART           :  ${tstart}
-TSTOP            :  ${tstop}
-MJD-START        :  ${mjdstart}
-EPOCH            :  ${in_epoch}
-PERIOD           :  ${in_period}
-INTERVAL PHASE   :  ${in_iph} - ${in_tph}
-
-Output GTI File  :  ${in_output}
-`basename $0` finished.
-EOF
 }
 
 ## MAKE GTI FILE (Non-contiguous phase) 	
@@ -176,20 +158,19 @@ mkgtiextfile(){
 
     ${calc_ext} -v iph_a=${in_iph} -v tph_a=${in_tph} -v iph_b=${in_iph2} -v tph_b=${in_tph2}  -v mjdref=${mjdref} -v mjdstart=${mjdstart} -v mjdstop=${mjdstop} -v tstart=${tstart} -v tstop=${tstop} -v epoch=${in_epoch} -v period=${in_period} > ${output}
 
-	cat <<EOF
 Input lightcurve FITS File    : ${in_lcfits}
 
-Setted paramters as follow:
-TSTART            :  ${tstart}
-TSTOP             :  ${tstop}
-EPOCH             :  ${in_epoch}
-PERIOD            :  ${in_period}
-INTERVAL PHASE    :  ${in_iph} - ${in_tph}
-EXTRA INTERVAL    :  ${in_iph2} - ${in_tph2}
+    echo "Setted paramters as follow:"
+    echo "TSTART            :  ${tstart}"
+    echo "TSTOP             :  ${tstop}"
+    echo "EPOCH             :  ${in_epoch}"
+    echo "PERIOD            :  ${in_period}"
+    echo "INTERVAL PHASE    :  ${in_iph} - ${in_tph}"
+    echo "EXTRA INTERVAL    :  ${in_iph2} - ${in_tph2}"
+    echo ""
+    echo "Output GTI File   :  ${in_output}"
+    echo "${SCRIPTNAME} finished."
 
-Output GTI File   :  ${in_output}
-`basename $0` finished.
-EOF
 }
 
 
@@ -240,10 +221,10 @@ for var in ${var1} ${var2} ${var3} ${var4} ${var5} ${var6} ${var7} ${var8} ${var
         "PERIOD"|"period") period=${val} ;;
         "IPHASE"|"iphase") iph=${val} ;;
         "TPHASE"|"tphase") tph=${val} ;;
-	"IPHASE_EXT"|"iphase_ext") iph2=${val} ;;
-	"TPHASE_EXT"|"tphase_ext") tph2=${val} ;;
-	"OUTPUT"|"output") output=${val} ;;
-	"CLOBBER"|"clobber") FLG_OW=${val} ;;
+        "IPHASE_EXT"|"iphase_ext") iph2=${val} ;;
+        "TPHASE_EXT"|"tphase_ext") tph2=${val} ;;
+        "OUTPUT"|"output") output=${val} ;;
+        "CLOBBER"|"clobber") FLG_OW=${val} ;;
         *) title;usage;;
     esac
 done #for var in ${var1} ${var2} ${var3} ${var4} ${var5} ${var6} ${var7} ${var8};do
@@ -297,44 +278,44 @@ if [ "${FLG_VAL}" = "FALSE" ];then
     exit 1
 else
     if [ ! -e ${output} ] ;then
-	if [ "${FLG_EXT}" != "TRUE" ];then ## MAKE GTI FILE
-	    mkgtifile ${lcfits} ${output} ${iph} ${tph} ${epoch} ${period}
-	else     ## MAKE GTI FILE (Non-contiguous phase) 	
-	    mkgtiextfile ${lcfits} ${output} ${iph} ${tph} ${iph2} ${tph2} ${epoch} ${period}
-	fi
+        if [ "${FLG_EXT}" != "TRUE" ];then ## MAKE GTI FILE
+            mkgtifile ${lcfits} ${output} ${iph} ${tph} ${epoch} ${period}
+        else     ## MAKE GTI FILE (Non-contiguous phase) 	
+            mkgtiextfile ${lcfits} ${output} ${iph} ${tph} ${iph2} ${tph2} ${epoch} ${period}
+        fi
     else
-	if [ "${FLG_OW}" = "YES" ]||[ "${FLG_OW}" = "yes" ] ;then
-	    if [ "${FLG_EXT}" != "TRUE" ];then ## MAKE GTI FILE
-	    mkgtifile ${lcfits} ${output} ${iph} ${tph} ${epoch} ${period}
-	    else     ## MAKE GTI FILE (Non-contiguous phase) 	
-		rm ${output}
-		mkgtiextfile ${lcfits} ${output} ${iph} ${tph} ${iph2} ${tph2} ${epoch} ${period}
-	    fi
-	else
-	    echo "${output} already exists !!" # 1>&2
-	    echo -n "Overwrite ?? (y/n) >> "
-	    read answer
-	    case ${answer} in
-		y|Y|yes|Yes|YES)
-		    if [ "${FLG_EXT}" != "TRUE" ];then ## MAKE GTI FILE
-			rm ${output}
-			mkgtifile ${lcfits} ${output} ${iph} ${tph} ${epoch} ${period}
-		    else     ## MAKE GTI FILE (Non-contiguous phase) 	
-			rm ${output}
-			mkgtiextfile ${lcfits} ${output} ${iph} ${tph} ${iph2} ${tph2} ${epoch} ${period}	    
-		    fi
-		    ;;
-		n|N|no|No|NO)
-		    echo "`basename $0` has not been executed. "
-		    exit 1
-		    ;;
-		
-		*)
-		    echo "`basename $0` has not been executed. "
-		    exit 1
+        if [ "${FLG_OW}" = "YES" ]||[ "${FLG_OW}" = "yes" ] ;then
+            if [ "${FLG_EXT}" != "TRUE" ];then ## MAKE GTI FILE
+                mkgtifile ${lcfits} ${output} ${iph} ${tph} ${epoch} ${period}
+            else ## MAKE GTI FILE (Non-contiguous phase) 	
+                rm ${output}
+                mkgtiextfile ${lcfits} ${output} ${iph} ${tph} ${iph2} ${tph2} ${epoch} ${period}
+            fi
+        else
+            echo "${output} already exists !!" # 1>&2
+            echo -n "Overwrite ?? (y/n) >> "
+            read answer
+            case ${answer} in
+                y|Y|yes|Yes|YES)
+                    if [ "${FLG_EXT}" != "TRUE" ];then ## MAKE GTI FILE
+                        rm ${output}
+                        mkgtifile ${lcfits} ${output} ${iph} ${tph} ${epoch} ${period}
+                    else     ## MAKE GTI FILE (Non-contiguous phase) 	
+                        rm ${output}
+                        mkgtiextfile ${lcfits} ${output} ${iph} ${tph} ${iph2} ${tph2} ${epoch} ${period}
+                    fi
                     ;;
+                n|N|no|No|NO)
+                    echo "`basename $0` has not been executed. "
+                    exit 1
+                    ;;
+                
+                *)
+                    echo "`basename $0` has not been executed. "
+                    exit 1
+                            ;;
             esac
-	fi
+        fi
     fi
 fi
 

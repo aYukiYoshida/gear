@@ -1,48 +1,19 @@
-#!/bin/bash
-
-################################################################################
-## Redaction history
-################################################################################
-# Ver.  | Date       | Author   | ����
-#-------------------------------------------------------------------------------
-# 1.0.0 | 2013.XX.XX | yyoshida | prototype
-# 1.1.0 | 2014.08.16 | yyoshida | �¹ԥ��ޥ�ɤ�function��
-# 1.2.0 | 2014.08.16 | yyoshida | list command�����ѹ�
-# 1.3.1 | 2014.08.16 | yyoshida | �¹ԥ��ޥ�ɤηٹ��ɲ�
-# 2.0.0 | 2015.10.01 | yyoshida | scrpit�¹ԥ��ޥ�����������ѹ�
-# 2.1.0 | 2015.10.01 | yyoshida | server�Ȥ�sample fileƱ����ǽ�ɲ�
-# 2.2.0 | 2016.02.24 | yyoshida | ���ʬ�������ѹ�
-# 2.2.1 | 2016.05.05 | yyoshida | aebarycen,xisnxbgen�ɲ�
-
+#!/bin/bash -u
 
 ################################################################################
 ## Set Command & Value
 ################################################################################
 
 ## values
-author="Y.Yoshida"
-version="2.2.0"
-scriptname=$(basename $0)
-[ -L ${scriptname} ] && scriptname=$(readlink ${scriptname})
-sys=$(cd $(dirname ${scriptname}); pwd)
+AUTHOR="Y.Yoshida"
+SCRIPTFILE=$0
+[ -L ${SCRIPTFILE} ] && SCRIPTFILE=$(readlink ${SCRIPTFILE})
+SCRIPTNAME=$(basename ${SCRIPTFILE%.*})
+sys=$(dirname ${SCRIPTFILE})
 srcdir=${sys}/static #; echo ${srcdir} ##DEBUG
 
-## command
-rm="/bin/rm -rf"
-mv="/bin/mv -f"
-mkdir="/bin/mkdir -p"
-sed="/bin/sed"
-cp="/bin/cp -f"
-editor="/usr/bin/emacs23 --geometry=90x40 --font=9x15"
-arfgen=`which xissimarfgen`
-barycen=`which aebarycen`
-grppha=`which grppha` 
-lcmath=`which lcmath`
-mathpha=`which mathpha`
-xselect=`which xselect`
-xspec=`which xsp`
-nxbgen=`which xisnxbgen`
-
+LOG_LEVEL_CRITERIA=1
+COMMAND_NOT_FOUND=0
 
 
 ################################################################################
@@ -58,18 +29,16 @@ clean(){
 
 ## Title
 title(){
-    echo "${scriptname} -- special scripts written by ${author} version ${version}"
+    echo "${SCRIPTNAME} -- special scripts written by ${AUTHOR}"
     echo ""
 }
 
 
 ## Usage
-## Usage
 usage(){
     title #show title
-	echo ""
     echo "USAGE"
-    echo "    ${scriptname} [OPTION] [-r COMMAND]"
+    echo "    ${SCRIPTNAME} [OPTION] [-r COMMAND]"
     echo "OPTIONS"
     echo "  -d,--delete    Delete useful memo"    
     echo "  -e,--edit      Edit useful memo"
@@ -90,6 +59,46 @@ usage(){
 }
 
 
+logger(){
+    local level=$1
+    local message=$2
+    case ${level} in
+        0) local context="DEBUG" ;;
+        1) local context="INFO" ;;
+        2) local context="WARNING" ;;        
+        3) local context="ERROR" ;;
+    esac
+    [ ${level} -ge ${LOG_LEVEL_CRITERIA} ] && echo "[${context}] ${message}"
+}
+
+abort(){
+    local evt=$1
+    case ${evt} in
+        InvalidInput) local message="Invalid arguments !!" ;;
+        InvalidInputNumber) local message="Input is excess or deficiency !!" ;;        
+        InvalidOption) local message="Invalid input option !!" ;;
+		NotInput) local message="Please enter the file name" ;;
+        NotFoundCommand) local message="Not found necessary command !!" ;;
+        NotFoundScript) local message="Not found Script file !!" ;;
+        NotFoundFile) local message="Not found shown file !!" ;;
+        *) local message="Abort !!" ;;
+    esac
+    logger 3 "${message}"
+    exit 1
+}
+
+
+## Check command
+check_command(){
+    local command=$1
+    which ${command} > /dev/null 2>&1
+    if [ $? -eq 1 ];then
+        COMMAND_NOT_FOUND=1
+        logger 2 "Command not found: ${command}"
+    fi
+    logger 0 "COMMAND_NOT_FOUND=${COMMAND_NOT_FOUND}"
+}
+
 ## List 
 list(){
     title #show title
@@ -98,7 +107,7 @@ list(){
 
 
 ## Editor
-editFile(){
+edit(){
     local file=$1
 	local edtopt="--font=9x15 -bg black -fg white" 
 	$EDITOR ${edtopt} ${file} &
@@ -113,7 +122,7 @@ mknewmemo(){
     echo ${fname} >> ${srcdir}/${fname}
     echo "################################################################################" >> ${srcdir}/${fname}    
     cat ${srcdir}/.template >> ${srcdir}/${fname}
-    editFile ${srcdir}/${fname}
+    edit ${srcdir}/${fname}
 }
 
 
@@ -126,52 +135,61 @@ runner(){
     ls *_${src_in} > /dev/null 2>&1
     if [ $? -eq 0 ];then
 
-	if [ "${key_in}" = "xsp" ];then
-	    for i in *_${src_in} ;do
-		${cmd_in} < ${i} && ${rm} ${i}       
-            done
+		if [ "${key_in}" = "xsp" ];then
+			for i in *_${src_in} ;do
+				${cmd_in} < ${i} && rm -rf ${i}       
+			done
 
-	elif [ "${key_in}" = "mpi" ];then
-	    if [ ! -d ${dir_in} ];then
-		${mkdir} ${dir_in}
-	    fi
-	    for i in *_${src_in} ;do
-		${cmd_in} "clobber=yes" "backscal=%" "errmeth=Gauss" < ${i} |tee ${dir_in}/${i%.txt}.log && ${rm} ${i}       
-            done
+		elif [ "${key_in}" = "mpi" ];then
+			if [ ! -d ${dir_in} ];then
+				mkdir -p ${dir_in}
+			fi
+			for i in *_${src_in} ;do
+				${cmd_in} "clobber=yes" "backscal=%" "errmeth=Gauss" < ${i} |tee ${dir_in}/${i%.txt}.log && rm -rf ${i}       
+			done
 
-	elif [ "${key_in}" = "arf" ]||[ "${key_in}" = "grp" ]||[ "${key_in}" = "nxb" ];then
-	    if [ ! -d ${dir_in} ];then
-		${mkdir} ${dir_in}
-	    fi
-	    for i in *_${src_in} ;do
-		${cmd_in} "clobber=yes" < ${i} |tee ${dir_in}/${i%.txt}.log && ${rm} ${i}       
-            done
+		elif [ "${key_in}" = "arf" ]||[ "${key_in}" = "grp" ]||[ "${key_in}" = "nxb" ];then
+			if [ ! -d ${dir_in} ];then
+				mkdir -p ${dir_in}
+			fi
+			for i in *_${src_in} ;do
+				${cmd_in} "clobber=yes" < ${i} |tee ${dir_in}/${i%.txt}.log && rm -rf ${i}       
+			done
 
-	elif [ "${key_in}" = "xsl" ];then
-	    if [ ! -d ${dir_in} ];then
-		${mkdir} ${dir_in}
-	    fi
+		elif [ "${key_in}" = "xsl" ];then
+			if [ ! -d ${dir_in} ];then
+				mkdir -p ${dir_in}
+			fi
 
-	    lognum=$(ls -1 ${dir_in}|sed -n '/.log/p'|wc -l)
-	    [ ${lognum} -ge 1 ]&&rm -f ${dir_in}/*.log
+			lognum=$(ls -1 ${dir_in}|sed -n '/.log/p'|wc -l)
+			[ ${lognum} -ge 1 ]&&rm -f ${dir_in}/*.log
 
-	    for i in *_${src_in} ;do
-		${cmd_in} < ${i} |tee ${dir_in}/${i%.xco}.log && ${rm} ${i}       
-	    done
+			for i in *_${src_in} ;do
+				${cmd_in} < ${i} |tee ${dir_in}/${i%.xco}.log && rm -rf ${i}       
+			done
 
-	else
-	    if [ ! -d ${dir_in} ];then
-		${mkdir} ${dir_in}
-	    fi
-	    for i in *_${src_in} ;do
-		${cmd_in} < ${i} |tee ${dir_in}/${i%.txt}.log && ${rm} ${i}       
-            done 
-	fi
+		else
+			if [ ! -d ${dir_in} ];then
+				mkdir -p ${dir_in}
+			fi
+			for i in *_${src_in} ;do
+				${cmd_in} < ${i} |tee ${dir_in}/${i%.txt}.log && rm -rf ${i}       
+			done 
+		fi
     else
-	echo "Not Found Script file for ${key_in}."
-	echo "${scriptname} has not been executed. "
+		abort NotFoundScript
     fi
 }
+
+
+################################################################################
+## Check commands
+################################################################################
+for command in xselect xissimarfgen aebarycen grppha lcmath mathpha xsp xisnxbgen;do
+    check_command ${command}
+done
+
+[ ${COMMAND_NOT_FOUND} -eq 1 ] && abort NotFoundCommand
 
 
 ################################################################################
@@ -186,19 +204,16 @@ eval set -- "$GETOPT"
 
 #echo $@ ##DEBUG
 
+FLG_L=0
+FLG_E=0
+FLG_R=0
+
 while true ;do
     case $1 in
 		-h) usage ;;
-		-l) FLG_L="TRUE"
-			shift
-			;;
-		-e) FLG_E="TRUE"
-			shift
-			;;
-		-r) FLG_R="TRUE"
-			key=$2
-			shift 2
-			;;
+		-l) FLG_L=1; shift ;;
+		-e) FLG_E=1; shift ;;
+		-r) FLG_R=1; key=$2; shift 2;;
 		--) shift ; break ;;
 		*)  usage ;;
     esac
@@ -213,15 +228,15 @@ done
 
 clean #clear jyama file
 
-#list��edit��Ʊ���ˤǤ��ʤ�����
-if [ "${FLG_L}" = "TRUE" ] && [ "${FLG_E}" = "TRUE" ] ;then
+if [ ${FLG_L} -eq 1 ] && [ ${FLG_E} -eq 1 ] ;then
     usage
 else
 	# List
-    if [ "${FLG_L}" = "TRUE" ];then 
+    if [ ${FLG_L} -eq 1 ];then
 		list
+
     # Edit
-    elif [ "${FLG_E}" = "TRUE" ];then 
+    elif [ ${FLG_E} -eq 1 ];then 
 		if [ $# = 0 ];then
 			list; echo " "
 			echo -n "Enter edit file name >> "
@@ -230,64 +245,62 @@ else
             editfile=$1
             #echo "input=${editfile}" ##DEBUG
         else
-            echo "Input was exceeded!!"
-            exit 1
-	fi
+            abort InvalidInputNumber
+		fi
 
-
-	if [ _${editfile} = _ ];then
-            echo "Please Enter Edit File Name !!"
-	    exit 1
-	elif [ -e ${dir}/${editfile}.txt ] ;then
-	    echo "${editfile} exists. Open ${editfile}."
-	    ${editor} ${dir}/${editfile}.txt & 
-	else
-	    echo "Not Found ${editfile}. Make and Open New File."
-	    mknewmemo ${editfile}
-	    ${editor} ${dir}/${editfile}.txt &
-	fi
-    
+		if [ _${editfile} = _ ];then
+			abort NotInput
+		elif [ -e ${dir}/${editfile}.txt ] ;then
+			echo "${editfile} exists. Open ${editfile}."
+			edit ${dir}/${editfile}.txt & 
+		else
+			echo "Not Found ${editfile}. Make and Open New File."
+			mknewmemo ${editfile}
+			edit ${dir}/${editfile}.txt &
+		fi
         
-    elif [ "${FLG_R}" = "TRUE" ];then ## runner
+	# runner
+    elif [ ${FLG_R} -eq 1 ];then
 		case ${key} in 
 			arf) # Run Script of xissimarfgen
-				cmd=${arfgen}
+				cmd=xissimarfgen
 				src="arfgen.txt"
 				dir="ARFGenLog"
 				;;
 			bry) # Run Script of aebarycen
-				cmd=${barycen}
+				cmd=aebarycen
 				src="barycen.txt"
 				dir="BarycenLog"
 				;;
 			grp) # Run Script of grppha
-				cmd=${grppha}
+				cmd=grppha
 				src="grp.txt"
 				dir="GRPPHALog"
 				;;
 			lcm) # Run Script of lcmath
-				cmd=${lcmath} 
+				cmd=lcmath 
 				src="lcmath.txt"
 				dir="LCMathLog"
 				;;
 			mpi) # Run Script of mathpha
-				cmd=${mathpha} 
+				cmd=mathpha 
 				src="mathpha.txt"
 				dir="MathPHALog"
 				;;
 			nxb) # Run Script of mathpha
-				cmd=${nxbgen} 
+				cmd=xisnxbgen 
 				src="nxbgen.txt"
 				dir="NXBGenLog"
 				;;
 			xsl) # Run Script of xselect
-				cmd=${xselect} 
+				cmd=xselect 
 				src="xsl.xco"
 				dir="XselectLog"
 				;;
 			xsp|fit) # Run Script of xspec 
-				cmd=${xspec} 
-				src="xspfit.xcm" 
+				cmd=xsp 
+				src="xspfit.xcm"
+				dir="XspecLog"
 				;;
 			*) # echo "CHECK" ##DEBUG
 				usage ;;
@@ -303,19 +316,18 @@ else
             shownfile=$1
             # echo "input=${shownfile}" ##DEBUG
         else
-            echo "Input was exceeded!!"
+            abort InvalidInputNumber
         fi
         
         if [ _${shownfile} = _ ] ;then
-            echo "Please Enter File Name !!"
+            abort NotInput
 		else
 			if [ -e ${srcdir}/${shownfile} ] ;then
 				less ${srcdir}/${shownfile}
 			else
-				echo "Not Found ${shownfile} !!"
-				echo "${shownfile} doesn't exist !!"
-	    fi
-	fi
+				abort NotFoundFile
+	    	fi
+		fi
     fi
 fi
 

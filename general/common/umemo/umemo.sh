@@ -1,25 +1,19 @@
 #!/bin/bash
 
-############################################
-#               Useful MEMO                #
-############################################
-
 ################################################################################
 ## Set Command & Value
 ################################################################################
 
 ## Value
-author="Y.Yoshida"
-version="3.1"
+AUTHOR="Y.Yoshida"
 os=$(uname)
 host=$(hostname)
-shellscript=$0 #; echo ${shellscript} ##DEBUG
-cmdname=$(basename ${shellscript})
+SCRIPTFILE=$0
+[ -L ${SCRIPTFILE} ] && SCRIPTFILE=$(readlink $0)
+SCRIPTNAME=$(basename ${SCRIPTFILE%.*})
+SYS=$(dirname ${SCRIPTFILE})
 logLevelCriteria=1
-if [ -L ${shellscript} ];then
-    shellscript=$(readlink $0) #; echo ${shellscript} ##DEBUG
-fi
-srcdir=$(dirname ${shellscript})/static #; echo ${srcdir} ##DEBUG
+srcdir=${SYS}/static #; echo ${srcdir} ##DEBUG
 
 ################################################################################
 ## Set Function
@@ -60,7 +54,7 @@ clean(){
 
 ## Title
 title(){
-    echo "${cmdname} -- useful scripts written by ${author} version ${version}"
+    echo "${cmdname} -- useful scripts written by ${AUTHOR}"
     echo ""
 }
 
@@ -160,7 +154,7 @@ editFile(){
 	"Darwin")
 	    $EDITOR ${file}
 	    ;;
-    esac    
+    esac
 }
 
 ## Make New UMEMO

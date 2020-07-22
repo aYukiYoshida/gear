@@ -1,9 +1,10 @@
 #!/bin/bash -f -n
 
-scriptname=$(basename $0)
-[ -L ${scriptname} ] && scriptname=$(readlink ${scriptname})
-sys=$(cd $(dirname ${scriptname}); pwd)
-executor="${sys}/lctimebinup"
+SCRIPTFILE=$0
+[ -L ${SCRIPTFILE} ] && SCRIPTFILE=$(readlink ${SCRIPTFILE})
+SCRIPTNAME=$(basename ${SCRIPTFILE%.*})
+sys=$(dirname ${SCRIPTFILE})
+executor=${sys}/lctimebinup
 
 sed '1,/!/d' $1 > test2.qdp
 ${executor} > $2

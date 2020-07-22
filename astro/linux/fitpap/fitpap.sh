@@ -3,9 +3,10 @@
 ########################################################################
 ## Value
 ########################################################################
-scriptname=$(basename $0)
-[ -L ${scriptname} ] && scriptname=$(readlink ${scriptname})
-sys=$(cd $(dirname ${scriptname}); pwd)
+SCRIPTFILE=$0
+[ -L ${SCRIPTFILE} ] && SCRIPTFILE=$(readlink ${SCRIPTFILE})
+SCRIPTNAME=$(basename ${SCRIPTFILE%.*})
+sys=$(dirname ${SCRIPTFILE})
 srcfile=${sys}/staticsource.tex
 
 
