@@ -7,7 +7,7 @@ SCRIPTFILE=$0
 [ -L ${SCRIPTFILE} ] && SCRIPTFILE=$(readlink ${SCRIPTFILE})
 SCRIPTNAME=$(basename ${SCRIPTFILE%.*})
 sys=$(dirname ${SCRIPTFILE})
-srcfile=${sys}/staticsource.tex
+srcfile=${sys}/static/source.tex
 
 
 ########################################################################
