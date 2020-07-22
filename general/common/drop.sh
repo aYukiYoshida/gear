@@ -114,7 +114,7 @@ else
     if [ ${FLG_T} -eq 1 ];then
         dropbox=$HOME/Dropbox/transport
     else
-        dropbox=$HOME/Dropbox/arXiv
+        dropbox=$HOME/Dropbox/pocket
     fi
 
     [ ! -d ${dropbox} ] && mkdir -p ${dropbox} 
