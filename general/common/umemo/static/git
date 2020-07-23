@@ -188,7 +188,8 @@ COMMAND
                                         リポジトリで指定されている適切なコミットをチェックアウトする.
     git clone --recursive URL hoge      git clone URL hoge && git submodule init && git submodule update
                                         と同義.
-    git submodule update --remote       サブモジュールの更新を反映
+    git submodule update --remote --rebase
+                                        サブモジュールの更新を反映
 
     HEAD          現在のブランチの先頭をさす.HEADを移動することで, ブランチが切り替わる.
                   HEAD~(チルダ)とHEAD^(キャレット)の違いは,
