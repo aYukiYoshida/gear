@@ -224,8 +224,8 @@ else
                     fig_tex=${fig_dir}/$(basename ${fig_dir}).tex
                     caption=$(basename ${fig_dir}|sed 's/\_/-/g')
                     cat ${FIGTEXFILE} | sed "s%(FILE)%${fig_dir}\/$(basename ${fig})%g; s%(CAPTION)%${caption}%g; s%(NAME)%${fig_dir}%g" > ${fig_tex}
+                    echo "\input{${fig_tex%.tex}}"
                 fi
-                echo "\input{${fig_tex%.tex}}"
             done
 		fi
     else
