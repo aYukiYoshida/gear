@@ -154,7 +154,7 @@ runner(){
 				${cmd_in} "clobber=yes" "backscal=%" "errmeth=Gauss" < ${i} |tee ${dir_in}/${i%.txt}.log && rm -rf ${i}       
 			done
 
-		elif [[ ${key_in} = arf -o ${key_in} = nxb -o ${key_in} = grp ]];then
+		elif [[ ${key_in} = arf ]]||[[ ${key_in} = nxb ]]||[[ ${key_in} = grp ]];then
 			[ -d ${dir_in} ] || mkdir -p ${dir_in}
 			for i in *_${src_in} ;do
 				${cmd_in} "clobber=yes" < ${i} |tee ${dir_in}/${i%.txt}.log && rm -rf ${i}       
@@ -180,7 +180,7 @@ runner(){
 		fi
 
 		# notification
-		if [[ ${key_in} = xsp -o ${key_in} = arf -o ${key_in} = nxb -o ${key_in} = xsl ]];then
+		if [[ ${key_in} = xsp ]]||[[ ${key_in} = arf ]]||[[ ${key_in} = nxb ]]||[[ ${key_in} = xsl ]];then
 			alert ${cmd_in}
 		fi
     else
