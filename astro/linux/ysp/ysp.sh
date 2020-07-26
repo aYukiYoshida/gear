@@ -129,8 +129,8 @@ mknewmemo(){
 ## notification
 alert(){
 	local command=$1
-	local datatime=$(LC_TIME=en_US.UTF-8 date +"%Y/%m/%d-%H:%M:%S")
-	cat ${srcdir}/.notification|sed "s%(COMMAND)%${command}%;s%(DATETIME)%${datatime}%"|sendmail -i -t
+	local datetime=$2
+	cat ${srcdir}/.notification|sed "s%(COMMAND)%${command}%;s%(DATETIME)%${datetime}%"|sendmail -i -t
 }
 
 
@@ -139,6 +139,7 @@ runner(){
     local src_in=$2
     local key_in=$3
     local dir_in=$4
+	local datetime=$(LC_TIME=en_US.UTF-8 date +"%Y/%m/%d-%H:%M:%S")
 
     ls *_${src_in} > /dev/null 2>&1
     if [ $? -eq 0 ];then
@@ -169,7 +170,6 @@ runner(){
 			for i in *_${src_in} ;do
 				${cmd_in} < ${i} |tee ${dir_in}/${i%.xco}.log && rm -rf ${i}       
 			done
-			alert ${cmd_in}
 
 		else
 			[ -d ${dir_in} ] || mkdir -p ${dir_in}
@@ -181,7 +181,7 @@ runner(){
 
 		# notification
 		if [[ ${key_in} = xsp ]]||[[ ${key_in} = arf ]]||[[ ${key_in} = nxb ]]||[[ ${key_in} = xsl ]];then
-			alert ${cmd_in}
+			alert ${cmd_in} ${datetime}
 		fi
     else
 		abort NotFoundScript
