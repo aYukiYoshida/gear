@@ -3,7 +3,7 @@
 ###########################################################################
 ## VARIABLES
 ###########################################################################
-xray=/usr/local/xray
+XRAYSYS=/usr/local/xray
 scriptname=`basename $0`
 aliasname=${scriptname%.sh}
 DONE_USAGE_FLG=0
@@ -90,7 +90,7 @@ set_arch_for_heasoft(){
 			local os=unsupported
 			;;
 	esac
-	arch=$(/bin/ls ${xray}/heasoft/${version} | grep ${sys})
+	arch=$(/bin/ls ${XRAYSYS}/heasoft/${version} | grep ${sys})
 }
 
 ################################################################################
@@ -168,7 +168,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
                 NO_XRAY_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
             fi
 
-			export PATH=$NO_XRAY_PATH
+			export PATH=${XRAYSYS}/bin:$NO_XRAY_PATH
             export PYTHONPATH=$NO_XRAY_PYTHONPATH
             export LD_LIBRARY_PATH=$NO_XRAY_LD_LIBRARY_PATH
 
@@ -191,8 +191,8 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
 				set_arch_for_heasoft ${heasoft_version}
 				
 				## setup analysis main tool 
-				export HEADAS=${xray}/heasoft/${heasoft_version}/${arch}
-				export LMODDIR=${xray}/heasoft/local-model
+				export HEADAS=${XRAYSYS}/heasoft/${heasoft_version}/${arch}
+				export LMODDIR=${XRAYSYS}/heasoft/local-model
 				source $HEADAS/headas-init.sh && echo "HEAsoft was configured for $HEADAS"
 
 				## alias
@@ -201,7 +201,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
 
 				## Set-up MAXI FTOOLS
 				if [[ ${input} = maxi ]] ;then
-					export MXFTOOLS=${xray}/mxftools
+					export MXFTOOLS=${XRAYSYS}/mxftools
 					export PATH="$MXFTOOLS/bin:$PATH"
 					export LD_LIBRARY_PATH=$MXFTOOLS/lib:$LD_LIBRARY_PATH
 					export PFILES=$HOME/pfiles:$MXFTOOLS/syspfiles:$HEADAS/syspfiles
@@ -211,7 +211,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
 				
 				## CALDB
 				# source $CALDB/software/tools/caldbinit.sh
-				export CALDB=${xray}/caldb
+				export CALDB=${XRAYSYS}/caldb
 				export CALDBCONFIG=$CALDB/software/tools/caldb.config
 				export CALDBALIAS=$CALDB/software/tools/alias_config.fits
 				echo "CALDB set to $CALDB"
@@ -235,7 +235,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
 				fi
 
 				## setup analysis main tool 
-				export CIAOSYS=${xray}/ciao/ciao-${ciao_version}
+				export CIAOSYS=${XRAYSYS}/ciao/ciao-${ciao_version}
 				source ${CIAOSYS}/bin/ciao.bash -o && echo "CIAO was configured for $CIAOSYS"
 
 				## CALDB	    
@@ -250,7 +250,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
 				if [ ${SPEX_FLG} -eq 0 ]&&[ ${IS_SPEX_SETUP} -eq 1 ];then
 					spex_version=$(set|sed -n '/PREVIOUS_SETUP_SPEX_VERSION/p'|cut -d= -f2)
 				fi
-				export SPEX90=${xray}/spex/SPEX-${spex_version}-Linux
+				export SPEX90=${XRAYSYS}/spex/SPEX-${spex_version}-Linux
 				source $SPEX90/tools/spexdist.sh && echo "SPEX was configured for $SPEX90"
 
 				## set flags
