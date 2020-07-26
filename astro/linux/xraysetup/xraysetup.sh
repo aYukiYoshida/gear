@@ -26,6 +26,7 @@ usage(){
 	echo "    heasoft624    : heasoft v6.24"
 	echo "    heasoft625    : heasoft v6.25"
 	echo "    heasoft626    : heasoft v6.26"
+	echo "    heasoft627    : heasoft v6.27"
 	echo "    asca          : heasoft v6.26"
 	echo "    suzaku        : heasoft v6.26"
 	echo "    maxi          : heasoft v6.26"
@@ -134,16 +135,17 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
 
 		case ${input} in
 			common) : ;;
-			heasoft)    heasoft_version=6.26; HEASOFT_FLG=1 ;;	
+			heasoft)    heasoft_version=6.26; HEASOFT_FLG=1 ;;
 			heasoft616) heasoft_version=6.16; HEASOFT_FLG=1 ;;
 			heasoft617) heasoft_version=6.17; HEASOFT_FLG=1 ;;
 			heasoft618) heasoft_version=6.18; HEASOFT_FLG=1 ;;
 			heasoft619) heasoft_version=6.19; HEASOFT_FLG=1 ;;
 			heasoft620) heasoft_version=6.20; HEASOFT_FLG=1 ;;
 			heasoft623) heasoft_version=6.23; HEASOFT_FLG=1 ;;
-			heasoft624) heasoft_version=6.24; HEASOFT_FLG=1 ;;	
-			heasoft625) heasoft_version=6.25; HEASOFT_FLG=1 ;;	
-			heasoft626) heasoft_version=6.26; HEASOFT_FLG=1 ;;	
+			heasoft624) heasoft_version=6.24; HEASOFT_FLG=1 ;;
+			heasoft625) heasoft_version=6.25; HEASOFT_FLG=1 ;;
+			heasoft626) heasoft_version=6.26; HEASOFT_FLG=1 ;;
+			heasoft627) heasoft_version=6.27; HEASOFT_FLG=1 ;;
 			asca|suzaku|hitomi|nustar|swift|maxi|nicer) heasoft_version=6.26; HEASOFT_FLG=1 ;;
 			chandra|ciao|ciao48) ciao_version=4.8; CIAO_FLG=1 ;;
 			spex|spex305) spex_version=3.05.00; SPEX_FLG=1;;
