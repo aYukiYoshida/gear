@@ -126,40 +126,42 @@ mknewmemo(){
 }
 
 
+## notification
+alert(){
+	local command=$1
+	local datatime=$(LC_TIME=en_US.UTF-8 date +"%Y/%m/%d-%H:%M:%S")
+	cat ${srcdir}/.notification|sed "s%(COMMAND)%${command}%;s%(DATETIME)%${datatime}%"|sendmail -i -t
+}
+
+
 runner(){
-    cmd_in=$1
-    src_in=$2
-    key_in=$3
-    dir_in=$4
+    local cmd_in=$1
+    local src_in=$2
+    local key_in=$3
+    local dir_in=$4
 
     ls *_${src_in} > /dev/null 2>&1
     if [ $? -eq 0 ];then
 
-		if [ "${key_in}" = "xsp" ];then
+		if [[ ${key_in} = xsp ]];then
 			for i in *_${src_in} ;do
 				${cmd_in} < ${i} && rm -rf ${i}       
 			done
 
-		elif [ "${key_in}" = "mpi" ];then
-			if [ ! -d ${dir_in} ];then
-				mkdir -p ${dir_in}
-			fi
+		elif [[ ${key_in} = mpi ]];then
+			[ -d ${dir_in} ] || mkdir -p ${dir_in}
 			for i in *_${src_in} ;do
 				${cmd_in} "clobber=yes" "backscal=%" "errmeth=Gauss" < ${i} |tee ${dir_in}/${i%.txt}.log && rm -rf ${i}       
 			done
 
-		elif [ "${key_in}" = "arf" ]||[ "${key_in}" = "grp" ]||[ "${key_in}" = "nxb" ];then
-			if [ ! -d ${dir_in} ];then
-				mkdir -p ${dir_in}
-			fi
+		elif [[ ${key_in} = arf -o ${key_in} = nxb -o ${key_in} = grp ]];then
+			[ -d ${dir_in} ] || mkdir -p ${dir_in}
 			for i in *_${src_in} ;do
 				${cmd_in} "clobber=yes" < ${i} |tee ${dir_in}/${i%.txt}.log && rm -rf ${i}       
 			done
 
-		elif [ "${key_in}" = "xsl" ];then
-			if [ ! -d ${dir_in} ];then
-				mkdir -p ${dir_in}
-			fi
+		elif [[ ${key_in} = xsl ]];then
+			[ -d ${dir_in} ] || mkdir -p ${dir_in}
 
 			lognum=$(ls -1 ${dir_in}|sed -n '/.log/p'|wc -l)
 			[ ${lognum} -ge 1 ]&&rm -f ${dir_in}/*.log
@@ -167,14 +169,19 @@ runner(){
 			for i in *_${src_in} ;do
 				${cmd_in} < ${i} |tee ${dir_in}/${i%.xco}.log && rm -rf ${i}       
 			done
+			alert ${cmd_in}
 
 		else
-			if [ ! -d ${dir_in} ];then
-				mkdir -p ${dir_in}
-			fi
+			[ -d ${dir_in} ] || mkdir -p ${dir_in}
+
 			for i in *_${src_in} ;do
 				${cmd_in} < ${i} |tee ${dir_in}/${i%.txt}.log && rm -rf ${i}       
 			done 
+		fi
+
+		# notification
+		if [[ ${key_in} = xsp -o ${key_in} = arf -o ${key_in} = nxb -o ${key_in} = xsl ]];then
+			alert ${cmd_in}
 		fi
     else
 		abort NotFoundScript
@@ -185,7 +192,7 @@ runner(){
 ################################################################################
 ## Check commands
 ################################################################################
-for command in xselect xissimarfgen aebarycen grppha lcmath mathpha xsp xisnxbgen;do
+for command in xselect xissimarfgen aebarycen grppha lcmath mathpha xsp xisnxbgen sendmail;do
     check_command ${command}
 done
 
