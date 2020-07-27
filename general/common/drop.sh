@@ -3,31 +3,30 @@
 ###########################################################################
 ## Value
 ###########################################################################
-#date=`date +"%Y%m%d"`
-author="Y.Yoshida"
-os=`uname`
+# date=$(date +"%Y%m%d")
+OS=$(uname)
+SCRIPTFILE=$0
+[ -L ${SCRIPTFILE} ] && SCRIPTFILE=$(readlink ${SCRIPTFILE})
+SCRIPTNAME=$(basename ${SCRIPTFILE%.*})
+
+TARGET=$HOME/Dropbox/pocket
+TARGET_NAME=$(basename ${TARGET})
+[ ! -d ${TARGET} ] && mkdir -p ${TARGET} 
 
 
 ###########################################################################
 ## Function
 ###########################################################################
 usage(){
-    local box=$1
-    if [[ _${box} = _ ]];then
-        box_name="the target directory in the Dropbox"
-    else
-        box_name=`basename ${box}`
-    fi
     echo "USAGE" 
-    echo "    `basename $0` [OPTION] FILE... [-f DIRECTORY]"
+    echo "    ${SCRIPTNAME} [OPTION] FILE... [-f DIRECTORY]"
     echo "OPTION"
-    echo "    -c,--copy         Copy file to ${box_name}"
-    echo "    -d,--dust         Trash all files in ${box_name}"
-    echo "    -f,--fetch        Fetch file from ${box_name}"
+    echo "    -c,--copy         Copy file to ${TARGET_NAME}"
+    echo "    -d,--dust         Trash all files in ${TARGET_NAME}"
+    echo "    -f,--fetch        Fetch file from ${TARGET_NAME}"
     echo "    -h,--help         Show this help message"
-    echo "    -l,--list         List files in ${box_name}"
+    echo "    -l,--list         List files in ${TARGET_NAME}"
     echo "    -u,--usage        Synonymous with -h or --help"
-    echo "    -t,--transport    Change target directory to transport"
     exit 0
 }
 
@@ -42,7 +41,7 @@ dustshoot(){
     if [ ! -d ${box} ];then
 	    echo "There is no file or directory in ${box}"
     else
-        case $os in
+        case ${OS} in
             "Linux")
                 trash-put ${box}/*
                 ;;
@@ -55,7 +54,7 @@ dustshoot(){
     exit 0    
 }
 
-lstdir(){
+list_target_directory(){
     local box=$1
     echo ${box}
     ls --color -FBGh --ignore=".DS_Store" --ignore=".dropbox" --ignore="Icon?" ${box}
@@ -72,29 +71,19 @@ else
 
     # Initialization of Flags
     FLG_C=0
-    FLG_L=0
-    FLG_T=0
     FLG_F=0
-    FLG_D=0
 
-    GETOPT=`getopt -q -o cdf:hlut --long copy,dust,fetch,help,list,usage,transport -- "$@"` ; [ $? != 0 ] && usage
+    GETOPT=$(getopt -q -o cdf:hlu --long copy,dust,fetch,help,list,usage -- "$@")
+    [ $? != 0 ] && abort "Invalid option"
     eval set -- "$GETOPT"
 
     while true ;do
         case $1 in
-            -h|-u|--help|--usage) 
-                usage ;;
-            -l|--list) 
-                FLG_L=1
-                shift ;;
-            -d|--dust) 
-                FLG_D=1
-                shift ;;
+            -h|-u|--help|--usage) usage ;;
+            -l|--list) list_target_directory ${TARGET} ;;
+            -d|--dust) dustshoot ${TARGET} ;;
             -c|--copy) 
                 FLG_C=1
-                shift ;;
-            -t|--transport) 
-                FLG_T=1
                 shift ;;
             -f|--fetch) 
                 FLG_F=1
@@ -106,39 +95,21 @@ else
     done
 
     # echo "FLG_C=${FLG_C}" ## DEBUG
-    # echo "FLG_L=${FLG_L}" ## DEBUG
-    # echo "FLG_T=${FLG_T}" ## DEBUG
     # echo "FLG_F=${FLG_F}" ## DEBUG
-    # echo "FLG_D=${FLG_D}" ## DEBUG
-
-    if [ ${FLG_T} -eq 1 ];then
-        dropbox=$HOME/Dropbox/transport
-    else
-        dropbox=$HOME/Dropbox/pocket
-    fi
-
-    [ ! -d ${dropbox} ] && mkdir -p ${dropbox} 
-
-    # LIST
-    if [ ${FLG_L} -eq 1 ];then
-        lstdir ${dropbox}
-    elif [ ${FLG_D} -eq 1 ];then
-        dustshoot ${dropbox}
-    fi
 
     # FETCH
     if [ ${FLG_F} -eq 1 ];then
-        if [ -z ${dstdir} ]||[ ! -d ${dstdir} ]||[ ${dstdir} = ${dropbox} ];then
+        if [ -z ${dstdir} ]||[ ! -d ${dstdir} ]||[ ${dstdir} = ${TARGET} ];then
             abort "Please enter destination !!"
         else
             if [ $# -eq 0 ];then
-                mv ${dropbox}/* ${dstdir}
+                mv ${TARGET}/* ${dstdir}
             else
                 while [ $# -ne 0 ];do
-                    if [ -e ${dropbox}/$1 ];then
-                        mv ${dropbox}/$1 ${dstdir}
+                    if [ -e ${TARGET}/$1 ];then
+                        mv ${TARGET}/$1 ${dstdir}
                     else
-                        echo "`basename $0` couldn't find \"$1\"." 1>&2
+                        echo "${SCRIPTNAME} couldn't find \"$1\"." 1>&2
                     fi
                     shift 1                
                 done
@@ -150,12 +121,12 @@ else
         while [ $# -ne 0 ];do
             if [ -e $1 ];then
                 if [ ${FLG_C} -eq 1 ];then
-                    cp -r $1 ${dropbox}
+                    cp -r $1 ${TARGET}
                 else
-                    mv $1 ${dropbox}
+                    mv $1 ${TARGET}
                 fi
             else
-                echo "`basename $0` couldn't find \"$1\"." 1>&2
+                echo "${SCRIPTNAME} couldn't find \"$1\"." 1>&2
             fi
             shift 1        
         done
