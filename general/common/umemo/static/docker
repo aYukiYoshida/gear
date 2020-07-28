@@ -21,7 +21,7 @@ COMMAND
     docker rm CONTAINERID       CONTAINERIDのコンテナを削除
     docker images               イメージの一覧表示
     docker rmi IMAGEID          IMAGEIDのイメージを削除
-    docker pull IMAGE[:TAB]     IMAGE[:TAB]のダウンロード
+    docker pull IMAGE[:TAG]     IMAGE[:TAG]のダウンロード
     docker inspect IMAGEID      IMAGEIDのイメージの詳細確認
     
 
