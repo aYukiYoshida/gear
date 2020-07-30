@@ -28,6 +28,11 @@ EXAMPLE
 
     git reset --hard HEAD~        commitもindexもワーキングツリーも戻す
 
+  別リポジトリの特定コミットを取り込む
+    git remote add hoge URL       別リモートリポジトリをhogeとして追加
+    git fetch std master          ローカルにリモート追跡ブランチstd/master追加
+    git cherry-pick HASH          リモート追跡ブランチの取り込みたいコミットを取り込む
+
 
 COMMAND
     git init                            初期設定する. ステージングエリアとローカルリポジトリができる
