@@ -141,7 +141,7 @@ notify(){
 		cat ${srcdir}/.notification|sed "s%(COMMAND)%${command}%;s%(DATETIME)%${datetime};s%(ADDRESS)%${USER_EMAIL_ADDRESS}%"|sendmail -i -t
 	elif [[ x${LINE_NOTIFICATION_ACCESS_TOKEN} != x ]];then
 		local message=$(cat ${srcdir}/.notification|sed '1,3d'|sed "s%(COMMAND)%${command}%;s%(DATETIME)%${datetime}%")
-		curl -X POST -H "Authorization: Bearer ${LINE_NOTIFICATION_ACCESS_TOKEN}" -F "message=${message}" https://notify-api.line.me/api/notify|jq > /dev/null 2>&1
+		curl -X POST -H "Authorization: Bearer ${LINE_NOTIFICATION_ACCESS_TOKEN}" -F "message=${message}" https://notify-api.line.me/api/notify > /dev/null 2>&1
 	else
 		logger 2 "No notification"
 	fi
@@ -206,7 +206,7 @@ runner(){
 ################################################################################
 ## Check commands
 ################################################################################
-for command in xselect xissimarfgen aebarycen grppha lcmath mathpha xsp xisnxbgen sendmail curl jq;do
+for command in xselect xissimarfgen aebarycen grppha lcmath mathpha xsp xisnxbgen sendmail curl;do
     check_command ${command}
 done
 
