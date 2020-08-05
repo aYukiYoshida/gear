@@ -11,6 +11,7 @@ SCRIPTFILE=$0
 SCRIPTNAME=$(basename ${SCRIPTFILE%.*})
 sys=$(dirname ${SCRIPTFILE})
 srcdir=${sys}/static #; echo ${srcdir} ##DEBUG
+CONFIG_FILE=${srcdir}/.config
 
 LOG_LEVEL_CRITERIA=1
 COMMAND_NOT_FOUND=0
@@ -47,14 +48,14 @@ usage(){
     echo "  -u,--usage     Synonymous with -h or --help"
     echo "  -r,--run       Run script file(s)"    
 	echo "COMMAND"
-   	echo "  arf    Run script for xissimarfgen (suffix=_arfge.txt)"
-   	echo "  bry    Run script for aebarycen    (suffix=_barycen.txt)"
+	echo "  arf    Run script for xissimarfgen (suffix=_arfge.txt)"
+	echo "  bry    Run script for aebarycen    (suffix=_barycen.txt)"
     echo "  grp    Run script for grppha       (suffix=_grp.txt)"
-   	echo "  lcm    Run script for lcmath       (suffix=_lcmath.txt)"
-   	echo "  mpi    Run script for mathpha      (suffix=_mathpha.txt)"
-   	echo "  nxb    Run script for xisnxbgen    (suffix=_nxbgen.txt)"
-   	echo "  xsl    Run script for xselect      (suffix=_xsl.xco)"
-   	echo "  xsp    Run script for xspec        (suffix=_xspfit.xcm)"
+	echo "  lcm    Run script for lcmath       (suffix=_lcmath.txt)"
+	echo "  mpi    Run script for mathpha      (suffix=_mathpha.txt)"
+	echo "  nxb    Run script for xisnxbgen    (suffix=_nxbgen.txt)"
+	echo "  xsl    Run script for xselect      (suffix=_xsl.xco)"
+	echo "  xsp    Run script for xspec        (suffix=_xspfit.xcm)"
     exit 0
 }
 
@@ -70,6 +71,7 @@ logger(){
     esac
     [ ${level} -ge ${LOG_LEVEL_CRITERIA} ] && echo "[${context}] ${message}"
 }
+
 
 abort(){
     local evt=$1
@@ -99,6 +101,7 @@ check_command(){
     logger 0 "COMMAND_NOT_FOUND=${COMMAND_NOT_FOUND}"
 }
 
+
 ## List 
 list(){
     title #show title
@@ -127,10 +130,21 @@ mknewmemo(){
 
 
 ## notification
-alert(){
+notify(){
 	local command=$1
 	local datetime=$2
-	cat ${srcdir}/.notification|sed "s%(COMMAND)%${command}%;s%(DATETIME)%${datetime}%"|sendmail -i -t
+	local USER_EMAIL_ADDRESS=""
+	local LINE_NOTIFICATION_ACCESS_TOKEN=""
+
+	[ -e ${CONFIG_FILE} ] && source ${CONFIG_FILE}
+	if [[ x${USER_EMAIL_ADDRESS} != x ]];then
+		cat ${srcdir}/.notification|sed "s%(COMMAND)%${command}%;s%(DATETIME)%${datetime};s%(ADDRESS)%${USER_EMAIL_ADDRESS}%"|sendmail -i -t
+	elif [[ x${LINE_NOTIFICATION_ACCESS_TOKEN} != x ]];then
+		local message=$(cat ${srcdir}/.notification|sed '1,3d'|sed "s%(COMMAND)%${command}%;s%(DATETIME)%${datetime}%")
+		curl -X POST -H "Authorization: Bearer ${LINE_NOTIFICATION_ACCESS_TOKEN}" -F "message=${message}" https://notify-api.line.me/api/notify|jq
+	else
+		logger 2 "No notification"
+	fi
 }
 
 
@@ -181,7 +195,7 @@ runner(){
 
 		# notification
 		if [[ ${key_in} = xsp ]]||[[ ${key_in} = arf ]]||[[ ${key_in} = nxb ]]||[[ ${key_in} = xsl ]];then
-			alert ${cmd_in} ${datetime}
+			notify ${cmd_in} ${datetime}
 		fi
     else
 		abort NotFoundScript
@@ -192,7 +206,7 @@ runner(){
 ################################################################################
 ## Check commands
 ################################################################################
-for command in xselect xissimarfgen aebarycen grppha lcmath mathpha xsp xisnxbgen sendmail;do
+for command in xselect xissimarfgen aebarycen grppha lcmath mathpha xsp xisnxbgen sendmail curl jq;do
     check_command ${command}
 done
 
