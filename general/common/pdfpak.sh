@@ -59,7 +59,7 @@ fi
 if [ $# -ne 0 ];then
     gs -dNOPAUSE -dBATCH -q -sDEVICE=pdfwrite -sOutputFile=${output%.*}.pdf $@
 
-    if [[ ${FLG_R} = TRUE ]];then
+    if [ ${FLG_R} -eq 1 ];then
         for eachfile in $@ ;do
             [ -e ${eachfile} ]&&rm -f ${eachfile}
         done
