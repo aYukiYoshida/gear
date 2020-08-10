@@ -25,6 +25,7 @@ usage(){
     echo "OBJECT"
     echo "  al:  for All"
     echo "  az:  for A0535+262"
+    echo "  cg:  for CygX-3"
     echo "  cn:  for CenX-3"
     echo "  cp:  for CepX-4"
     echo "  ex:  for EXO2030+375"
@@ -52,6 +53,7 @@ usage(){
     echo "OPTION"
     echo "  -h)  Show this help script"
     echo "  -s)  snapshot"
+    echo "  -f)  Make TeX file for figure"
     exit 0
 }
 
@@ -103,7 +105,7 @@ FLG_I=1
 while true ;do
     case $1 in
         -u|-h|--usage|--help) usage ;;
-	    -s|--snapshot) FLG_S=1; shift ;;
+        -s|--snapshot) FLG_S=1; shift ;;
         -f|--figure)   FLG_F=1; shift ;;
         --) shift; break ;;
         *) usage ;;
@@ -129,7 +131,7 @@ else
         cn) objdir=CenX-3
             type=APXP
             name=CN ;;
-        cy) objdir=CygX-3
+        cg) objdir=CygX-3
             type=PLZM
             name=CY ;;
         cp) objdir=CepX-4
@@ -213,7 +215,7 @@ else
             cd ${out_dir}
             figset=()
             [ ${pdfflnum} -ne 0 ] && figset+=($(ls ./fig/*.pdf))
-    		[ ${epsflnum} -ne 0 ] && figset+=($(ls ./fig/*.*ps))
+            [ ${epsflnum} -ne 0 ] && figset+=($(ls ./fig/*.*ps))
             for fig in ${figset};do
                 fig_dir=${fig%.*}
                 if [ -d ${fig_dir} ];then
@@ -229,7 +231,7 @@ else
             done
 		fi
     else
-	    outfile=${out_dir}/${obj}-${num}.tex
+        outfile=${out_dir}/${obj}-${num}.tex
         if [ -e ${outfile} ];then
             echo "Report ID:${type}-${name}-${num} already exist !!"
             echo -n "Overwrite ?? [Y/n] >> "
