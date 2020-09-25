@@ -62,6 +62,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
     HEROKU_FLG=0
     ANDROID_FLG=0
     ROOT_FLG=0
+    EPUB_FLG=0
     UNSUPPORTED_FLG=0
 
     if [ $# -eq 0 ]; then
@@ -73,6 +74,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
             heroku)  HEROKU_FLG=1 ;;
             android) ANDROID_FLG=1 ;;
             root)    ROOT_FLG=1 ;;
+            epub)    ANDROID_FLG=1; EPUB_FLG=1 ;;
             *) 		 error ${platform} ;;
         esac
 
@@ -119,6 +121,10 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
                 export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH
             fi
 
+            if [ ${EPUB_FLG} -eq 1 ];then
+                export EPUBCHECKSYS=$HOME/Works/tool/epub/epubcheck
+                export PATH=$EPUBCHECKSYS:$PATH
+            fi
             [ "$PATH" = "$NO_DEV_PATH" ]||echo "PATH sets to $PATH"
             [ "$PYTHONPATH" = "$NO_DEV_PYTHONPATH" ]||echo "PYTHONPATH sets to $PYTHONPATH"
             [ "$LD_LIBRARY_PATH" = "$NO_DEV_LD_LIBRARY_PATH" ]||echo "LD_LIBRARY_PATH sets to $LD_LIBRARY_PATH"
