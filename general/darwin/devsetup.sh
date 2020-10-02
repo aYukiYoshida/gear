@@ -122,7 +122,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
             fi
 
             if [ ${EPUB_FLG} -eq 1 ];then
-                export EPUBCHECKSYS=$HOME/Works/tool/epub/epubcheck
+                export EPUBCHECKSYS=$HOME/Works/epub/tool/epubcheck
                 export PATH=$EPUBCHECKSYS:$PATH
             fi
             [ "$PATH" = "$NO_DEV_PATH" ]||echo "PATH sets to $PATH"
