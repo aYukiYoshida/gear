@@ -13,11 +13,12 @@ DONE_USAGE_FLG=0
 usage(){
     echo "USAGE: ${aliasname} <PLATFORM>"
     echo ""
-    echo "PLATFORMS"
-    echo "    gcp     : GCP environment"
-    echo "    heroku  : Heroku environment"
-    echo "    root    : ROOT environment"
-    echo "    android : Android environment"
+    echo "TASKS:"
+    echo "  aws     : AWS environment"
+    echo "  gcp     : GCP environment"
+    echo "  heroku  : Heroku environment"
+    echo "  root    : ROOT environment"
+    echo "  android : Android environment"
 	DONE_USAGE_FLG=1
 }
 
@@ -58,6 +59,7 @@ done
 if [ ${DONE_USAGE_FLG} -eq 0 ];then
     platform=$1
 
+    AWS_FLG=0
     GCP_FLG=0
     HEROKU_FLG=0
     ANDROID_FLG=0
@@ -69,6 +71,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
         usage
     else
         case ${platform} in
+            aws)     AWS_FLG=1 ;;
             gcp)     GCP_FLG=1 ;;
             google)  GCP_FLG=1 ;;
             heroku)  HEROKU_FLG=1 ;;
@@ -99,15 +102,20 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
             if [ ${ROOT_FLG} -eq 1 ];then
                 export ROOTSYS=/usr/local/xray/root && echo "ROOTSYS sets to $ROOTSYS"
                 export PATH=$ROOTSYS/bin:$PATH
-        		export PYTHONPATH=$ROOTSYS/lib:$PYTHONPATH
+                export PYTHONPATH=$ROOTSYS/lib:$PYTHONPATH
                 export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
             fi
 
             if [ ${GCP_FLG} -eq 1 ];then
-		        # The next line updates PATH for the Google Cloud SDK.
-		        [ -f $HOME/Works/tool/google/google-cloud-sdk/path.zsh.inc ] && source $HOME/Works/tool/google/google-cloud-sdk/path.zsh.inc
+                # The next line updates PATH for the Google Cloud SDK.
+                [ -f $HOME/Works/tool/google/google-cloud-sdk/path.zsh.inc ] && source $HOME/Works/tool/google/google-cloud-sdk/path.zsh.inc
                 # The next line enables shell command completion for gcloud.
                 [ -f $HOME/Works/tool/google/google-cloud-sdk/completion.zsh.inc ] && source $HOME/Works/tool/google/google-cloud-sdk/completion.zsh.inc
+            fi
+
+            if [ ${AWS_FLG} -eq 1 ];then
+                # The next line updates PATH for the AWS CLI
+                export PATH=$HOME/Works/tool/amazon/aws-cli/bin:$PATH
             fi
 
             if [ ${HEROKU_FLG} -eq 1 ];then
@@ -125,6 +133,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
                 export EPUBCHECKSYS=$HOME/Works/epub/tool/epubcheck
                 export PATH=$EPUBCHECKSYS:$PATH
             fi
+
             [ "$PATH" = "$NO_DEV_PATH" ]||echo "PATH sets to $PATH"
             [ "$PYTHONPATH" = "$NO_DEV_PYTHONPATH" ]||echo "PYTHONPATH sets to $PYTHONPATH"
             [ "$LD_LIBRARY_PATH" = "$NO_DEV_LD_LIBRARY_PATH" ]||echo "LD_LIBRARY_PATH sets to $LD_LIBRARY_PATH"
