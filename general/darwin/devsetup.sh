@@ -17,8 +17,9 @@ usage(){
     echo "  aws     : AWS environment"
     echo "  gcp     : GCP environment"
     echo "  heroku  : Heroku environment"
-    echo "  root    : ROOT environment"
+    # echo "  root    : ROOT environment"
     echo "  android : Android environment"
+    echo "  epub    : EPUB environment"
 	DONE_USAGE_FLG=1
 }
 
@@ -76,7 +77,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
             google)  GCP_FLG=1 ;;
             heroku)  HEROKU_FLG=1 ;;
             android) ANDROID_FLG=1 ;;
-            root)    ROOT_FLG=1 ;;
+            # root)    ROOT_FLG=1 ;;
             epub)    ANDROID_FLG=1; EPUB_FLG=1 ;;
             *) 		 error ${platform} ;;
         esac
@@ -107,10 +108,12 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
             fi
 
             if [ ${GCP_FLG} -eq 1 ];then
+                export GOOGLE_CLOUD_SDK_SYS="/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk" && echo "GOOGLE_CLOUD_SDK_SYS sets to $GOOGLE_CLOUD_SDK_SYS"
+                export CLOUDSDK_PYTHON="/usr/local/opt/python@3.8/libexec/bin/python" && echo "CLOUDSDK_PYTHON sets to $CLOUDSDK_PYTHON"
                 # The next line updates PATH for the Google Cloud SDK.
-                [ -f $HOME/Works/tool/google/google-cloud-sdk/path.zsh.inc ] && source $HOME/Works/tool/google/google-cloud-sdk/path.zsh.inc
+                [ -f $GOOGLE_CLOUD_SDK_SYS/path.zsh.inc ] && source $GOOGLE_CLOUD_SDK_SYS/path.zsh.inc
                 # The next line enables shell command completion for gcloud.
-                [ -f $HOME/Works/tool/google/google-cloud-sdk/completion.zsh.inc ] && source $HOME/Works/tool/google/google-cloud-sdk/completion.zsh.inc
+                [ -f $GOOGLE_CLOUD_SDK_SYS/completion.zsh.inc ] && source$GOOGLE_CLOUD_SDK_SYS/completion.zsh.inc
             fi
 
             if [ ${AWS_FLG} -eq 1 ];then
