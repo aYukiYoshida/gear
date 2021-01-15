@@ -195,6 +195,7 @@ COMMAND
                                         と同義.
     git submodule update --remote --rebase
                                         サブモジュールの更新を反映
+    git submodule deinit hoge           サブモジュールの削除
 
     HEAD          現在のブランチの先頭をさす.HEADを移動することで, ブランチが切り替わる.
                   HEAD~(チルダ)とHEAD^(キャレット)の違いは,
