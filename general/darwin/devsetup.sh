@@ -20,6 +20,7 @@ usage(){
     # echo "  root    : ROOT environment"
     echo "  android : Android environment"
     echo "  epub    : EPUB environment"
+    echo "  pconv   : PCONV/NCOM environment"
 	DONE_USAGE_FLG=1
 }
 
@@ -79,6 +80,7 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
             android) ANDROID_FLG=1 ;;
             # root)    ROOT_FLG=1 ;;
             epub)    ANDROID_FLG=1; EPUB_FLG=1 ;;
+            pconv)    PCONV_FLG=1 ;;
             *) 		 error ${platform} ;;
         esac
 
@@ -133,8 +135,13 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
             fi
 
             if [ ${EPUB_FLG} -eq 1 ];then
-                export EPUBCHECKSYS=$HOME/Works/epub/tool/epubcheck
+                export EPUBCHECKSYS=$HOME/Works/qa/epub/tool/epubcheck
                 export PATH=$EPUBCHECKSYS:$PATH
+            fi
+
+            if [ ${PCONV_FLG} -eq 1 ];then
+                export MQTTLOADERSYS=$HOME/Works/qa/pconv/tool/mqttloader/sys
+                export PATH=$MQTTLOADERSYS/bin:$PATH
             fi
 
             [ "$PATH" = "$NO_DEV_PATH" ]||echo "PATH sets to $PATH"
