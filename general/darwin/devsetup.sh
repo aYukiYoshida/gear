@@ -141,7 +141,12 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
 
             if [ ${PCONV_FLG} -eq 1 ];then
                 export MQTTLOADERSYS=$HOME/Works/qa/pconv/tool/mqttloader/sys
-                export PATH=$MQTTLOADERSYS/bin:$PATH
+                # Go
+				export GOENV_ROOT=$HOME/.goenv
+				export GOENV_GOPATH_PREFIX=/usr/local/go
+                export PATH=$GOENV_ROOT/bin:$MQTTLOADERSYS/bin:$PATH
+                eval "$(goenv init -)"
+				export PATH=$GOROOT/bin:$PATH:$GOPATH/bin
             fi
 
             [ "$PATH" = "$NO_DEV_PATH" ]||echo "PATH sets to $PATH"
