@@ -67,6 +67,8 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
     ANDROID_FLG=0
     ROOT_FLG=0
     EPUB_FLG=0
+    PCONV_FLG=0
+    WEB_FLG=0
     UNSUPPORTED_FLG=0
 
     if [ $# -eq 0 ]; then
@@ -80,7 +82,8 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
             android) ANDROID_FLG=1 ;;
             # root)    ROOT_FLG=1 ;;
             epub)    ANDROID_FLG=1; EPUB_FLG=1 ;;
-            pconv)    PCONV_FLG=1 ;;
+            pconv)   PCONV_FLG=1 ;;
+            web)     WEB_FLG=1 ;;
             *) 		 error ${platform} ;;
         esac
 
@@ -134,9 +137,15 @@ if [ ${DONE_USAGE_FLG} -eq 0 ];then
                 export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH
             fi
 
+            if [ ${WEB_FLG} -eq 1 ];then
+                export NVM_ROOT="$HOME/.nvm" && echo "NVM_ROOT sets to $NVM_ROOT"
+                [ -s "$NVM_ROOT/nvm.sh" ] && source "$NVM_ROOT/nvm.sh"  # This loads nvm
+            fi
+
             if [ ${EPUB_FLG} -eq 1 ];then
-                export EPUBCHECKSYS=$HOME/Works/qa/epub/tool/epubcheck
-                export PATH=$EPUBCHECKSYS:$PATH
+                export EPUBCHECKSYS=$HOME/Works/qa/epub/tool/epubcheck/latest
+                export PINBTOOLSYS=$HOME/Works/qa/epub/tool/qa4pinb
+                export PATH=$EPUBCHECKSYS:$PINBTOOLSYS/bin:$PATH
             fi
 
             if [ ${PCONV_FLG} -eq 1 ];then
